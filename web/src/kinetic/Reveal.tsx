@@ -1,26 +1,29 @@
 /*
  * Scroll reveal. Zone: src/kinetic/**.
  *
- * The one decorative transition this design allows: content arrives with a 12px
- * rise and an opacity ramp, once, on first intersection. No parallax, no
- * staggered letter animations, no scroll-jacking. Everything else that moves on
- * this page moves because data moved.
+ * The page's one scroll behaviour: content arrives with a small rise and an
+ * opacity ramp, once, on first intersection. No parallax, no scroll jacking,
+ * nothing that replays when you scroll back up.
  *
- * It is also the only IntersectionObserver in this zone that changes React
- * state, and it does so exactly once per instance.
+ * `rise` is the travel in pixels (4 to 16 is the whole range this design uses)
+ * and `long` swaps the 800ms ramp for the 1000ms one the hero headline wants.
  */
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import "./kinetic.css";
 
 export interface RevealProps {
   children: ReactNode;
-  /** Delay in ms. Keep under 160: this is punctuation, not choreography. */
+  /** Delay in ms. Sections stagger by 100ms, never more. */
   delay?: number;
+  /** Travel in px. Default 16. */
+  rise?: number;
+  /** Use the 1000ms ramp instead of 800ms. */
+  long?: boolean;
   className?: string;
 }
 
-export function Reveal({ children, delay = 0, className }: RevealProps) {
+export function Reveal({ children, delay = 0, rise = 16, long = false, className }: RevealProps) {
   const ref = useRef<HTMLDivElement | null>(null);
   const [shown, setShown] = useState(false);
 
@@ -39,17 +42,22 @@ export function Reveal({ children, delay = 0, className }: RevealProps) {
           observer.disconnect();
         }
       },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.08 },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.05 },
     );
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
+  const style: CSSProperties = {
+    ["--reveal-rise" as string]: `${rise}px`,
+    ...(delay ? { transitionDelay: `${delay}ms` } : {}),
+  };
+
   return (
     <div
       ref={ref}
-      className={`reveal${shown ? " is-in" : ""}${className ? " " + className : ""}`}
-      style={delay ? { transitionDelay: `${delay}ms` } : undefined}
+      className={`reveal${long ? " reveal-long" : ""}${shown ? " is-in" : ""}${className ? " " + className : ""}`}
+      style={style}
     >
       {children}
     </div>

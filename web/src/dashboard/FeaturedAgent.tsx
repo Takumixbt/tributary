@@ -1,26 +1,21 @@
 /*
  * The agent under the lens. Zone: src/dashboard/**.
  *
- * Score dial, the line's terms, the debt drain, and the underwriter's latest
- * reason in its own words. Every figure here is the same figure the roster row
- * shows, so clicking a row and reading this panel can never disagree.
- *
- * This is what the graph's "score" camera scene is looking at, so it anchors the
- * featured node.
+ * Identity, the score, the line's terms, the debt drain, and the underwriter's
+ * latest reason in its own words. Every figure here is the same figure the
+ * roster row shows, so clicking a row and reading this panel can never
+ * disagree.
  */
 
-import { BorderCurrent, Odometer, Sparkline } from "../kinetic";
-import { useEventPulse, useFeaturedAgent } from "../data";
+import { Sparkline } from "../kinetic";
+import { useFeaturedAgent } from "../data";
 import {
   formatAgo,
   formatBps,
   formatRate,
   formatUsdc,
   shortAddress,
-  toUsdcNumber,
 } from "../lib/format";
-import { ANCHORS } from "../lib/stage";
-import { useGraphAnchor } from "../graph";
 import { DebtBar } from "./DebtBar";
 import { ScoreDial } from "./ScoreDial";
 import { StatTile } from "./StatTile";
@@ -34,15 +29,13 @@ const HEALTH_NOTE: Record<string, string> = {
 };
 
 export function FeaturedAgent() {
-  const anchor = useGraphAnchor(ANCHORS.featuredAgent, "featured", "left");
   const agent = useFeaturedAgent();
-  const repayments = useEventPulse(["repay", "split"]);
   const second = useSeconds();
   const now = second * 1000;
 
   if (!agent) {
     return (
-      <div ref={anchor}>
+      <div>
         <PanelHead title="Borrower under review" note="Score 0 to 1000" />
         <Waiting>waiting for the first agent to register</Waiting>
       </div>
@@ -52,8 +45,7 @@ export function FeaturedAgent() {
   const drawn = agent.debt > 0n ? agent.debt : 0n;
 
   return (
-    <div ref={anchor}>
-      <BorderCurrent trigger={repayments} />
+    <div>
       <PanelHead title="Borrower under review" note={HEALTH_NOTE[agent.health] ?? "Current"} />
 
       <div className="fa-top">
@@ -65,23 +57,13 @@ export function FeaturedAgent() {
             <span>ERC-8004 {agent.erc8004Id > 0 ? agent.erc8004Id : "none"}</span>
             <span>{formatUsdc(agent.unitPrice, { decimals: 6 })} per call</span>
           </div>
-          <Sparkline values={agent.revenueSeries.values} width={168} height={34} live />
+          <Sparkline values={agent.revenueSeries.values} width={168} height={34} live={false} />
         </div>
-        <ScoreDial score={agent.score} size={148} reason={agent.scoreReason} />
+        <ScoreDial score={agent.score} reason={agent.scoreReason} />
       </div>
 
       <div className="fa-terms">
-        <StatTile
-          label="Credit line"
-          value={
-            <Odometer
-              value={toUsdcNumber(agent.limit)}
-              decimals={2}
-              label={`${formatUsdc(agent.limit)} USDC credit line`}
-            />
-          }
-          unit="USDC"
-        />
+        <StatTile label="Credit line" value={formatUsdc(agent.limit)} unit="USDC" />
         <StatTile label="APR" value={formatBps(agent.aprBps)} note="accrues per second" />
         <StatTile
           label="Repayment share"
@@ -93,31 +75,15 @@ export function FeaturedAgent() {
       <div className="fa-debt">
         {/* The share is already stated in the terms grid above, so it is not
             repeated here: the bar's job is the amount and the headroom. */}
-        <DebtBar debt={Number(drawn)} limit={Number(agent.limit)} activity={repayments} />
+        <DebtBar debt={Number(drawn)} limit={Number(agent.limit)} />
       </div>
 
       <div className="fa-terms">
-        <StatTile
-          label="Revenue, trailing"
-          value={
-            <Odometer
-              value={toUsdcNumber(agent.revenue24h)}
-              decimals={4}
-              label={`${formatUsdc(agent.revenue24h)} USDC trailing revenue`}
-            />
-          }
-          unit="USDC"
-        />
+        <StatTile label="Revenue, trailing" value={formatUsdc(agent.revenue24h)} unit="USDC" />
         <StatTile label="Throughput" value={formatRate(agent.paymentsPerMin)} unit="per min" />
         <StatTile
           label="Debt service"
-          value={
-            <Odometer
-              value={toUsdcNumber(agent.repaidTotal)}
-              decimals={2}
-              label={`${formatUsdc(agent.repaidTotal)} USDC of lifetime debt service`}
-            />
-          }
+          value={formatUsdc(agent.repaidTotal)}
           unit="USDC"
           note="lifetime"
         />

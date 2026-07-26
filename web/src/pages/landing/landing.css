@@ -1,502 +1,775 @@
-/* Zone: src/pages/landing/**.
+/*
+ * Landing page. Zone: src/pages/landing/**.
  *
- * The page is a spec sheet laid over a running simulation. Sections sit on
- * --scrim rather than an opaque surface so the graph stays visible through the
- * whole scroll, and no section uses a backdrop filter: the three the shell owns
- * are the budget for the entire app.
+ * Design direction v2, ztocks-derived: black page, white ink, hairlines at
+ * white/10, zero radius, no shadows, one inverted white section, and motion
+ * that reveals rather than performs. See web/DESIGN.md section 0.
  */
 
+/* The nav is transparent over the hero, so the hero has to start underneath it
+ * rather than after it. The shell reserves the nav's height for every route;
+ * this gives it back to the one route that paints its own top edge. */
 .landing {
   position: relative;
+  margin-top: calc(var(--topbar-h) * -1);
 }
 
-/* ------------------------------------------------------------------- hero */
-
-.hero {
+/* Every section is the same column. The nav uses the same max width, so the
+ * logo and the first character of every headline sit on one vertical line. */
+.sec {
   position: relative;
-  min-height: calc(100vh - var(--topbar-h) - var(--banner-h));
-  display: grid;
-  grid-template-rows: 1fr auto;
-  padding: var(--s-9) 0 0;
+  padding-block: var(--section-y);
 }
 
-/* Procedural texture layer. Behind the claim, never over it. */
-.hero-field {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
+.sec-rule {
+  border-top: 1px solid var(--hair);
 }
 
-/* Specific enough to win against .dither in kinetic.css regardless of import order. */
-.hero-field .hero-dither {
-  position: absolute;
-  inset: -14% -6%;
-  width: auto;
-  height: auto;
-  opacity: 0.34;
+.sec-rule-b {
+  border-bottom: 1px solid var(--hair);
 }
 
-.hero-stage {
+.col {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
   padding-inline: var(--pad-x);
 }
 
-/* The measure is set in px, not ch. This wrapper inherits the body font, so a ch
- * cap here would be measured in 17px Inter and squeeze the 132px display claim
- * into a two-character column. The claim's own line length is governed by the
- * display size against this width. */
-.hero-claim {
-  align-self: center;
+/* Eyebrow, then a two-line headline whose second line drops to secondary ink.
+ * That drop is the reference's one typographic trick and it carries the page. */
+.sec-head {
+  margin-bottom: clamp(56px, 6vw, 96px);
+}
+
+.sec-head-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-6);
+  flex-wrap: wrap;
+}
+
+.sec-title {
+  margin-top: var(--s-5);
+}
+
+.sec-title .dim {
+  color: var(--ink-mid);
+}
+
+.sec-intro {
+  margin-top: var(--s-5);
+  font-size: var(--t-lead);
+  color: var(--ink-mid);
+  line-height: 1.5;
+  max-width: 58ch;
+}
+
+.sec-center {
+  text-align: center;
+  margin-inline: auto;
+  max-width: 68ch;
+}
+
+.sec-center .sec-intro {
+  margin-inline: auto;
+}
+
+/* ==================================================================== hero */
+
+.hero {
+  position: relative;
+  min-height: 145vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--s-5);
-  width: 100%;
-  max-width: 1180px;
-  text-align: center;
-}
-
-.hero-display {
-  font-size: var(--t-display);
-  margin: 0;
-}
-
-.hero-lead {
-  max-width: 52ch;
-  text-align: center;
-}
-
-/* One metric strip, hairline framed, flush to the bottom of the viewport. */
-.hero-metrics {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--hair);
-  border-top: 1px solid var(--hair);
-}
-
-.hero-metric {
-  position: relative;
-  background: var(--scrim);
-  padding: var(--s-4) var(--s-4) var(--s-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-  min-width: 0;
-}
-
-.hero-metric:first-child {
-  padding-left: var(--pad-x);
-}
-
-.hero-metric:last-child {
-  padding-right: var(--pad-x);
-}
-
-.hero-metric-value {
-  font-family: var(--font-mono);
-  font-size: clamp(1.5rem, 1rem + 1.6vw, 2.25rem);
-  font-variant-numeric: tabular-nums slashed-zero;
-  line-height: 1;
-  color: var(--ink-strong);
-}
-
-.hero-metric-note {
-  font-family: var(--font-mono);
-  font-size: var(--t-2xs);
-  line-height: 1.3;
-  color: var(--ink-dim);
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-/* -------------------------------------------------------------- manifesto */
-
-.manifesto-band {
-  padding: var(--s-10) var(--pad-x);
-  border-top: 1px solid var(--hair);
-  border-bottom: 1px solid var(--hair);
-  background: var(--paper);
+/* The living graph, boxed and quiet, sitting off the right shoulder of the
+ * headline exactly where the reference puts its canvas. */
+.hero-visual {
+  position: absolute;
+  right: 0;
+  top: 32%;
+  transform: translateY(-50%);
+  width: min(820px, 88vw);
+  height: min(820px, 88vw);
+  opacity: 0.42;
+  pointer-events: none;
 }
 
-.manifesto-band .manifesto {
-  font-size: clamp(1.75rem, 1.1rem + 2.6vw, 3.25rem);
-  max-width: 30ch;
+/* Two class selectors, so it beats .graph-box's own surface regardless of the
+ * order the two stylesheets land in the bundle. */
+.hero-visual .graph-box {
+  background: transparent;
 }
 
-/* ------------------------------------------------- numbered spec sections */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to right, var(--hair) 0 1px, transparent 1px 8.3333%),
+    repeating-linear-gradient(to bottom, var(--hair) 0 1px, transparent 1px 12.5%);
+}
 
-.sec {
-  position: relative;
+.hero-top {
+  padding-top: clamp(140px, 15vh, 184px);
+}
+
+.hero-eyebrow {
+  margin-bottom: var(--s-6);
+}
+
+.hero-title {
+  margin-bottom: clamp(40px, 5vw, 56px);
+}
+
+.hero-title .line {
+  display: block;
+}
+
+.hero-lede {
   display: grid;
-  grid-template-columns: 168px minmax(0, 1fr);
-  gap: var(--s-7);
-  padding: var(--s-10) var(--pad-x);
-  border-bottom: 1px solid var(--hair);
-  background: var(--scrim);
-}
-
-.sec-index {
-  display: flex;
-  align-items: baseline;
-  gap: var(--s-3);
-  position: sticky;
-  top: calc(var(--topbar-h) + var(--banner-h) + var(--s-6));
-  align-self: start;
-  height: max-content;
-}
-
-.sec-num {
-  font-family: var(--font-spec);
-  font-size: var(--t-xs);
-  letter-spacing: var(--tr-spec);
-  color: var(--ink);
-}
-
-.sec-body {
-  display: grid;
-  grid-template-columns: minmax(0, 27rem) minmax(0, 1fr);
-  gap: var(--s-7) var(--s-8);
-  align-items: start;
-}
-
-.sec-body.is-stack {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.sec-prose {
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-4);
-  max-width: var(--measure);
-}
-
-.sec-note {
-  font-family: var(--font-mono);
-  font-size: var(--t-sm);
-  line-height: var(--lh-mono);
-  color: var(--ink-dim);
-  max-width: var(--measure);
-}
-
-/* ------------------------------------------------------------ data insets */
-
-.inset {
-  position: relative;
-  display: grid;
-  gap: 1px;
-  background: var(--hair);
-  border: 1px solid var(--hair);
-}
-
-.inset-cell {
-  position: relative;
-  background: var(--paper);
-  padding: var(--s-4);
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-2);
-}
-
-.inset-quad {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-9);
 }
 
-.inset-value {
-  font-family: var(--font-mono);
-  font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.4rem);
-  font-variant-numeric: tabular-nums slashed-zero;
-  line-height: 1;
-  color: var(--ink-strong);
-}
-
-.inset-value-lg {
-  font-size: clamp(2rem, 1.4rem + 2vw, 3.25rem);
-}
-
-.inset-sub {
-  font-family: var(--font-mono);
-  font-size: var(--t-2xs);
-  color: var(--ink-dim);
-}
-
-.inset-reason {
-  font-size: var(--t-sm);
+.hero-lede p {
+  font-size: clamp(1.125rem, 0.9rem + 0.7vw, 1.5rem);
   line-height: 1.5;
   color: var(--ink-mid);
 }
 
-.inset-span {
-  grid-column: 1 / -1;
-}
-
-.waiting {
-  font-family: var(--font-mono);
-  font-size: var(--t-2xs);
-  color: var(--ink-faint);
-}
-
-/* Tape rows inside an inset: the shared grammar from global.css, narrower and a
- * shade quieter because it sits inside prose rather than in the terminal. The
- * descendant selectors win on specificity, so stylesheet order cannot matter. */
-.inset .tape {
-  --tape-cols: 5.5rem minmax(0, 1fr) auto;
-  --tape-rule: var(--hair-soft);
-  --tape-actor-ink: var(--ink-mid);
-  display: flex;
-  flex-direction: column;
-}
-
-.inset .tape-amount {
-  color: var(--ink-strong);
-}
-
-/* ------------------------------------------------------------ split proof
- * The editorial version of the split: 30px tall, hatched, legible from across a
- * room. The terminal's compact `.split-*` row is a different component and keeps
- * that name; this one is `.proof-*` so the two can never overwrite each other.
- */
-
-.proof-total {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--s-3);
-}
-
-.proof-bar {
-  position: relative;
-  height: 30px;
-  background: var(--paper-sunken);
-  overflow: hidden;
-}
-
-.proof-vault {
-  position: absolute;
-  inset: 0 auto 0 0;
-  background: repeating-linear-gradient(45deg, var(--ink) 0 1px, transparent 1px 4px);
-  transition: width var(--dur-base) var(--ease-in-out);
-}
-
-.proof-agent {
-  position: absolute;
-  inset: 0 0 0 auto;
-  background: repeating-linear-gradient(45deg, var(--hair-soft) 0 1px, transparent 1px 4px);
-  transition: width var(--dur-base) var(--ease-in-out);
-}
-
-.proof-divider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--ink-strong);
-  transition: left var(--dur-base) var(--ease-in-out);
-}
-
-.proof-legend {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--s-3);
-}
-
-.proof-leg {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.proof-leg.is-agent {
-  text-align: right;
-}
-
-.proof-leg-value {
-  font-family: var(--font-mono);
-  font-size: var(--t-md);
-  font-variant-numeric: tabular-nums slashed-zero;
-  color: var(--ink);
-}
-
-/* --------------------------------------------------------------- why arc */
-
-.claims {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--hair);
-  border: 1px solid var(--hair);
-}
-
-.claim {
-  background: var(--paper);
-  padding: var(--s-5) var(--s-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  min-width: 0;
-}
-
-.claim-body {
-  font-size: var(--t-sm);
-  line-height: 1.55;
-  color: var(--ink-mid);
-}
-
-/* ---------------------------------------------------------- threat model */
-
-.threat-band {
-  background: var(--paper);
-}
-
-.threat-prices {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--hair);
-  border: 1px solid var(--hair);
-}
-
-.threat-price {
-  background: var(--paper);
-  padding: var(--s-5) var(--s-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--s-3);
-  min-width: 0;
-}
-
-.threat-price-num {
-  font-family: var(--font-spec);
-  font-size: var(--t-2xs);
-  letter-spacing: var(--tr-spec);
-  color: var(--ink-dim);
-}
-
-.threat-close {
-  padding-top: var(--s-2);
-}
-
-/* -------------------------------------------------------------------- cta */
-
-.cta {
-  position: relative;
-  padding: var(--s-11) var(--pad-x);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--s-5);
-  text-align: center;
-  background: var(--scrim);
-}
-
-.cta-readout {
+.hero-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--s-2) var(--s-5);
-  font-family: var(--font-mono);
-  font-size: var(--t-xs);
-  font-variant-numeric: tabular-nums slashed-zero;
-  color: var(--ink-mid);
+  gap: var(--s-4);
+  margin-top: clamp(72px, 8vw, 112px);
 }
 
-.cta-readout-label {
-  color: var(--ink-dim);
-  margin-right: var(--s-2);
+/* One word of the headline arrives letter by letter, with a soft block of
+ * white under it. Once, on load, and then it is still forever. */
+.charin {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
 }
 
-/* ----------------------------------------------------------- status strip */
+.charin-letters {
+  display: inline-flex;
+  white-space: nowrap;
+}
 
-.strip {
-  border-top: 1px solid var(--hair);
-  border-bottom: 1px solid var(--hair);
-  background: var(--paper-sunken);
-  padding-block: 7px;
+.charin-letter {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.55em);
+  animation: char-in 700ms var(--ease-out) forwards;
+}
+
+.charin-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.02em;
+  height: 0.1em;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes char-in {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .charin-letter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:root[data-motion="0"] .charin-letter {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* ------------------------------------------------------------ stat marquee
+ * The only strip that moves in the entire product. Slow, linear, seamless,
+ * and it stops when the pointer is on it.
+ */
+
+.hero-strip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--s-6);
+  z-index: 1;
 }
 
 .strip-item {
   display: flex;
   align-items: baseline;
-  gap: var(--s-2);
-  padding-inline: var(--s-5);
-  font-family: var(--font-mono);
-  font-size: var(--t-xs);
+  gap: var(--s-4);
+  padding-right: var(--s-9);
+}
+
+.strip-figure {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1rem + 2vw, 3rem);
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-display);
+  line-height: 1;
+  color: var(--ink-strong);
   font-variant-numeric: tabular-nums slashed-zero;
+}
+
+.strip-copy {
+  font-size: var(--t-md);
   color: var(--ink-mid);
   white-space: nowrap;
 }
 
-.strip-item .spec {
+.strip-tag {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tr-caps);
   color: var(--ink-faint);
 }
 
-.strip-tick {
-  color: var(--ink-ghost);
+/* ============================================================ capabilities */
+
+.cap-row {
+  display: flex;
+  gap: clamp(28px, 4vw, 64px);
+  padding-block: clamp(48px, 5vw, 80px);
+  border-bottom: 1px solid var(--hair);
 }
 
-/* ------------------------------------------------------------ responsive */
+.cap-index {
+  flex: none;
+  width: 48px;
+  font-family: var(--font-mono);
+  font-size: var(--t-md);
+  color: var(--ink-dim);
+  padding-top: 0.5em;
+}
+
+.cap-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: clamp(32px, 4vw, 64px);
+  align-items: center;
+}
+
+.cap-title {
+  margin-bottom: var(--s-4);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.cap-row:hover .cap-title {
+  transform: translateX(8px);
+}
+
+.cap-copy {
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  color: var(--ink-mid);
+  max-width: 56ch;
+}
+
+.cap-art {
+  display: flex;
+  justify-content: flex-end;
+  color: var(--ink);
+}
+
+.cap-art svg {
+  width: 200px;
+  height: 160px;
+  opacity: 0.8;
+}
+
+/* ============================================================ how it works
+ * The one inverted band on the page. White paper, black ink, a very faint
+ * diagonal hatch, and four numbered steps.
+ */
+
+.steps {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.steps-hatch {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 40px,
+    currentColor 40px 41px
+  );
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 clamp(40px, 5vw, 96px);
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-6);
+  padding-block: var(--s-7);
+  border-bottom: 1px solid var(--hair);
+}
+
+.step-num {
+  font-family: var(--font-display);
+  font-size: 1.875rem;
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-display);
+  line-height: 1.1;
+  color: var(--ink-faint);
+  flex: none;
+  width: 44px;
+}
+
+.step-title {
+  margin-bottom: var(--s-3);
+}
+
+.step-copy {
+  color: var(--ink-mid);
+  line-height: var(--lh-body);
+}
+
+.step-note {
+  margin-top: var(--s-4);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+
+/* ================================================================= numbers */
+
+.nums-live {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--font-mono);
+  font-size: var(--t-md);
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+.nums-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--ink-strong);
+}
+
+.nums-sep {
+  color: var(--ink-faint);
+}
+
+/* Hairline grid: the gap is the border. */
+.nums-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hair);
+}
+
+.num-cell {
+  background: var(--paper);
+  padding: clamp(28px, 3vw, 48px);
+}
+
+.num-figure {
+  display: flex;
+  align-items: baseline;
+  font-family: var(--font-display);
+  font-size: var(--t-mega);
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-display);
+  line-height: 1;
+  color: var(--ink-strong);
+}
+
+.num-figure .odometer {
+  line-height: 1;
+}
+
+.num-unit-lg {
+  font-size: 0.4em;
+  color: var(--ink-mid);
+  margin-left: 0.24em;
+  letter-spacing: var(--tr-normal);
+}
+
+.num-caption {
+  margin-top: var(--s-4);
+  font-size: var(--t-lead);
+  color: var(--ink-mid);
+}
+
+.num-note {
+  margin-top: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+
+/* =============================================================== ecosystem */
+
+.eco-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hair);
+}
+
+.eco-cell {
+  background: var(--paper);
+  padding: clamp(28px, 3vw, 44px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  transition: background var(--dur-base) var(--ease-out);
+}
+
+.eco-cell:hover {
+  background: var(--paper-raised);
+}
+
+.eco-name {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-tight);
+  color: var(--ink-strong);
+}
+
+.eco-role {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tr-spec);
+  color: var(--ink-dim);
+}
+
+.eco-note {
+  margin-top: var(--s-2);
+  color: var(--ink-mid);
+  font-size: var(--t-md);
+  line-height: 1.5;
+}
+
+/* ================================================================ security */
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-bottom: clamp(40px, 4vw, 64px);
+}
+
+.pill {
+  padding: 8px 14px;
+  border: 1px solid var(--hair);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-mid);
+}
+
+.threat-lead {
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 66ch;
+  margin-bottom: clamp(40px, 4vw, 64px);
+}
+
+.threat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hair);
+}
+
+.threat-cell {
+  background: var(--paper);
+  padding: clamp(24px, 2.6vw, 40px);
+}
+
+.threat-index {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+  display: block;
+  margin-bottom: var(--s-4);
+}
+
+.threat-title {
+  margin-bottom: var(--s-3);
+}
+
+.threat-copy {
+  color: var(--ink-mid);
+  line-height: var(--lh-body);
+  font-size: var(--t-md);
+}
+
+.threat-close {
+  margin-top: clamp(40px, 4vw, 64px);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--hair);
+  font-size: var(--t-lead);
+  color: var(--ink-mid);
+  max-width: 76ch;
+}
+
+/* ================================================================ protocol */
+
+.proto-list {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--hair);
+}
+
+.proto-row {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr) auto;
+  gap: var(--s-6);
+  align-items: center;
+  padding: var(--s-6) var(--s-4);
+  margin-inline: calc(var(--s-4) * -1);
+  border-bottom: 1px solid var(--hair);
+  transition: background var(--dur-base) var(--ease-out);
+}
+
+.proto-row:hover {
+  background: var(--paper-raised);
+}
+
+.proto-name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-tight);
+  color: var(--ink-strong);
+}
+
+.proto-role {
+  color: var(--ink-mid);
+  font-size: var(--t-md);
+}
+
+.proto-addr {
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: var(--ink-mid);
+  font-variant-numeric: tabular-nums slashed-zero;
+  transition: color var(--dur-fast) var(--ease-out);
+  white-space: nowrap;
+}
+
+.proto-row:hover .proto-addr {
+  color: var(--ink-strong);
+}
+
+.proof {
+  margin-top: clamp(56px, 6vw, 88px);
+}
+
+.proof-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--s-5);
+}
+
+.proof-table {
+  border-top: 1px solid var(--hair);
+}
+
+.proof-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: var(--s-5);
+  align-items: baseline;
+  padding-block: var(--s-4);
+  border-bottom: 1px solid var(--hair);
+}
+
+.proof-step {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+
+.proof-what {
+  color: var(--ink-mid);
+  font-size: var(--t-md);
+}
+
+.proof-value {
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: var(--ink-strong);
+  font-variant-numeric: tabular-nums slashed-zero;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ===================================================================== cta */
+
+.cta {
+  position: relative;
+  border-top: 1px solid var(--hair);
+  padding-block: clamp(96px, 11vw, 176px);
+}
+
+.cta-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 1rem + 5.5vw, 5.5rem);
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-display);
+  line-height: 0.95;
+  color: var(--ink-strong);
+  max-width: 18ch;
+}
+
+.cta-copy {
+  margin-top: var(--s-6);
+  font-size: var(--t-lead);
+  color: var(--ink-mid);
+  max-width: 54ch;
+  line-height: 1.5;
+}
+
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  margin-top: clamp(40px, 4vw, 64px);
+}
+
+.cta-note {
+  margin-top: var(--s-6);
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: var(--ink-faint);
+}
+
+/* Engineering corners on the CTA band, as in the reference. */
+.cta-corner {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  pointer-events: none;
+}
+
+.cta-corner-tr {
+  top: 0;
+  right: 0;
+  border-bottom: 1px solid var(--hair);
+  border-left: 1px solid var(--hair);
+}
+
+.cta-corner-bl {
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid var(--hair);
+  border-right: 1px solid var(--hair);
+}
+
+/* ============================================================= responsive */
 
 @media (max-width: 1180px) {
-  .sec-body {
+  .cap-body {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .claims,
-  .threat-prices {
+  .cap-art {
+    justify-content: flex-start;
+  }
+
+  .eco-grid,
+  .threat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-visual {
+    opacity: 0.28;
+  }
+
+  .proto-row {
+    grid-template-columns: 200px minmax(0, 1fr);
+  }
+
+  .proto-addr {
+    grid-column: 2;
+    text-align: left;
   }
 }
 
 @media (max-width: 900px) {
-  .sec {
+  .hero {
+    min-height: 120vh;
+  }
+
+  .hero-lede,
+  .steps-grid,
+  .nums-grid {
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--s-5);
-    padding-block: var(--s-8);
   }
 
-  .sec-index {
-    position: static;
-  }
-
-  .hero-metrics {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .hero-metric:nth-child(odd) {
-    padding-left: var(--pad-x);
-  }
-
-  .hero-metric:nth-child(even) {
-    padding-right: var(--pad-x);
-  }
-
-  .claims,
-  .threat-prices {
+  .proto-row {
     grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-2);
+  }
+
+  .proto-addr {
+    grid-column: 1;
   }
 }
 
-@media (max-width: 700px) {
-  .hero {
-    padding-top: var(--s-7);
-  }
-
-  .hero-claim {
-    max-width: none;
-  }
-
-  .inset-quad {
+@media (max-width: 620px) {
+  .eco-grid,
+  .threat-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .cta {
-    padding-block: var(--s-9);
+  .cap-row {
+    flex-direction: column;
+    gap: var(--s-4);
+  }
+
+  .proof-row {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .proof-value {
+    grid-column: 2;
+    text-align: left;
   }
 }

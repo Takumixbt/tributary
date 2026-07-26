@@ -1,11 +1,10 @@
 /*
  * Route hand-off.
  *
- * The graph does not transition between pages, it reframes: GraphStage moves the
- * camera to the new scene while the same simulation keeps running. All this
- * wrapper adds is the content half of that hand-off, one settle keyed on the path,
- * plus the scroll reset a single-page app has to do for itself. Under reduced
- * motion the duration tokens collapse to 1ms and the settle becomes a cut.
+ * One settle keyed on the path, plus the scroll reset a single-page app has to
+ * do for itself. It uses the same ramp as the scroll reveals, so arriving on a
+ * route and scrolling down it feel like the same page. Under reduced motion the
+ * duration tokens collapse to 1ms and the settle becomes a cut.
  */
 
 import { useEffect, type ReactNode } from "react";

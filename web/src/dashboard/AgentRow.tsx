@@ -1,10 +1,10 @@
 /*
  * One roster row. Zone: src/dashboard/**.
  *
- * A real button, not a clickable div: clicking it moves the lens and the graph
- * camera follows. Health is carried as form, never as hue. Throttled rows get a
- * dashed rule and drop to secondary ink; flagged rows are prefixed with a blinking
- * bang in spec mono. Kill the CSS and the health column still says it in words.
+ * A real button, not a clickable div: clicking it moves the lens. Health is
+ * carried as form, never as hue. Throttled rows drop to secondary ink, flagged
+ * rows are prefixed with a static bang in mono, and nothing blinks. Kill the
+ * CSS and the health column still says it in words.
  *
  * Memoized on the agent object, so a busy stream only re-renders the rows whose
  * numbers actually moved.
@@ -60,7 +60,7 @@ function AgentRowBase({ agent, featured = false, onSelect }: AgentRowProps) {
         <Amount value={agent.debt} />
       </span>
       <span className="roster-spark">
-        <Sparkline values={agent.revenueSeries.values} width={92} height={20} live />
+        <Sparkline values={agent.revenueSeries.values} width={92} height={20} live={false} />
       </span>
       <span className="roster-rate roster-dim">{formatRate(agent.paymentsPerMin)}</span>
       <span className="roster-health">

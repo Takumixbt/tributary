@@ -208,9 +208,8 @@ export function useEventTape(kinds?: EventKind[], limit = 50): TributaryEvent[] 
 }
 
 /**
- * A counter that increments on every matching event. Feed it to
- * `<BorderCurrent trigger>`, `<DitherField kick>` and anything else that wants
- * "something just happened here".
+ * A counter that increments on every matching event, for anything that wants
+ * to know "something just happened here" without reading the event itself.
  */
 export function useEventPulse(kinds?: EventKind[]): number {
   const stream = useEventStream();

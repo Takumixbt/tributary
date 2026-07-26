@@ -1,22 +1,18 @@
 /*
  * Vault panel. Zone: src/dashboard/**.
  *
- * The lender's view. Total assets is the largest odometer on the page because it
- * is the only number a lender checks first; everything else is the arithmetic
- * behind it.
+ * The lender's view. Total assets is the one rolling figure on the desk because
+ * it is the number a lender checks first; everything under it is the arithmetic
+ * behind it, and it updates plainly.
  *
  * Share price and interest earned run to six decimals because that is the scale
- * they move at. A book this size earning a mid-teens APR moves its share price in
- * the sixth decimal, and printing four would show a number that never changes.
- * Debt service received is the panel's fast number: it climbs on every flush.
- *
- * The graph's vault node terminates its edges on this panel's left border, and a
- * border current fires on every repayment, because a repayment is literally money
- * arriving here.
+ * they move at. A book this size earning a mid-teens APR moves its share price
+ * in the sixth decimal, and printing four would show a number that never
+ * changes.
  */
 
-import { BorderCurrent, HatchBar, Odometer, Sparkline } from "../kinetic";
-import { useEventPulse, useLenders, useVaultState } from "../data";
+import { Odometer, Sparkline } from "../kinetic";
+import { useLenders, useVaultState } from "../data";
 import {
   compactUsdc,
   formatBps,
@@ -25,26 +21,25 @@ import {
   padCount,
   toUsdcNumber,
 } from "../lib/format";
-import { ANCHORS } from "../lib/stage";
-import { useGraphAnchor } from "../graph";
 import { StatTile } from "./StatTile";
 import { PanelHead, Waiting } from "./parts";
 import "./dashboard.css";
 
 export function VaultPanel() {
-  const anchor = useGraphAnchor(ANCHORS.vaultPanel, "vault", "left");
   const vault = useVaultState();
   const lenders = useLenders();
-  const repayments = useEventPulse(["repay", "deposit"]);
 
   const empty = vault.totalShares === 0n;
   const position = lenders[0] ?? null;
   const positionShare =
     position && vault.totalShares > 0n ? Number((position.shares * 10_000n) / vault.totalShares) : 0;
+  const utilization =
+    vault.totalAssets > 0n
+      ? Math.min(100, Number((vault.totalPrincipal * 10_000n) / vault.totalAssets) / 100)
+      : 0;
 
   return (
-    <div ref={anchor}>
-      <BorderCurrent trigger={repayments} />
+    <div>
       <PanelHead title="Vault" note={`${padCount(vault.lenderCount)} lenders`} />
 
       {empty ? (
@@ -60,55 +55,33 @@ export function VaultPanel() {
                 decimals={2}
                 label={`${formatUsdc(vault.totalAssets)} USDC of total assets`}
               />
+              <span className="stat-note">USDC, lender capital plus outstanding principal</span>
             </div>
             <Sparkline
               className="vault-spark"
               values={vault.assetsSeries.values}
               width={124}
               height={40}
-              live
+              live={false}
             />
           </div>
 
           <div className="vault-grid">
             <StatTile
               label="Available liquidity"
-              value={
-                <Odometer
-                  value={toUsdcNumber(vault.availableLiquidity)}
-                  decimals={2}
-                  label={`${formatUsdc(vault.availableLiquidity)} USDC available`}
-                />
-              }
+              value={formatUsdc(vault.availableLiquidity)}
               unit="USDC"
               note="drawable now"
             />
             <StatTile
               label="Share price"
-              value={
-                <Odometer
-                  value={toUsdcNumber(vault.sharePrice)}
-                  decimals={6}
-                  group={false}
-                  label={`${formatSharePrice(vault.sharePrice)} USDC per share`}
-                />
-              }
+              value={formatSharePrice(vault.sharePrice)}
               note="assets over shares"
             />
-            <StatTile
-              label="Lender yield"
-              value={formatBps(vault.apyBps)}
-              note="at current terms"
-            />
+            <StatTile label="Lender yield" value={formatBps(vault.apyBps)} note="at current terms" />
             <StatTile
               label="Interest earned"
-              value={
-                <Odometer
-                  value={toUsdcNumber(vault.interestEarned)}
-                  decimals={6}
-                  label={`${formatUsdc(vault.interestEarned, { decimals: 6 })} USDC of interest earned`}
-                />
-              }
+              value={formatUsdc(vault.interestEarned, { decimals: 6 })}
               unit="USDC"
               note="lifetime, to lenders"
             />
@@ -120,31 +93,24 @@ export function VaultPanel() {
             />
             <StatTile
               label="Debt service received"
-              value={
-                <Odometer
-                  value={toUsdcNumber(vault.repaidTotal)}
-                  decimals={4}
-                  label={`${formatUsdc(vault.repaidTotal)} USDC of debt service received`}
-                />
-              }
+              value={formatUsdc(vault.repaidTotal)}
               unit="USDC"
               note={`${compactUsdc(vault.drawnTotal)} USDC drawn lifetime`}
             />
           </div>
 
-          <div className="vault-util">
-            <div className="vault-util-head">
+          <div className="bar-block">
+            <div className="bar-head">
               <span className="stat-label">Utilization</span>
               <span className="stat-value">{formatBps(vault.utilizationBps)}</span>
             </div>
-            <HatchBar
-              value={Number(vault.totalPrincipal)}
-              max={Math.max(1, Number(vault.totalAssets))}
-              mode="fill"
-              activity={repayments}
-              height={12}
-              label={`Utilization ${formatBps(vault.utilizationBps)}`}
-            />
+            <div
+              className="bar"
+              role="img"
+              aria-label={`Utilization ${formatBps(vault.utilizationBps)}`}
+            >
+              <span className="bar-fill" style={{ width: `${utilization}%` }} />
+            </div>
           </div>
 
           {position ? (

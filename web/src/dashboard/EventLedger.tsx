@@ -2,25 +2,25 @@
  * Full event ledger. Zone: src/dashboard/**.
  *
  * Everything, newest first, with a kind filter: payments, splits, draws, debt
- * service, scores, deposits, clearances. Same tape mechanics as the rail with more
- * columns. The DOM holds 40 rows; the stream's ring buffer holds far more, and the
+ * service, scores, deposits, clearances. It lives behind the Activity
+ * disclosure, closed by default, because a desk that is always shouting its log
+ * at you is harder to read, not more honest.
+ *
+ * The DOM holds 40 rows; the stream's ring buffer holds far more, and the
  * filter reads from that buffer rather than from what happens to be on screen.
  */
 
 import { useMemo, useState } from "react";
 import { useEventTape, useStats } from "../data";
 import { compactUsdc, formatClock, padCount, shortAddress } from "../lib/format";
-import { ANCHORS } from "../lib/stage";
 import type { EventKind } from "../lib/types";
-import { useGraphAnchor } from "../graph";
 import { KIND_LABEL, KIND_ORDER, describeEvent } from "./describe";
-import { Amount, PanelHead, Waiting, useAgentLabels } from "./parts";
+import { Amount, Waiting, useAgentLabels } from "./parts";
 import "./dashboard.css";
 
 const ROWS = 40;
 
 export function EventLedger() {
-  const anchor = useGraphAnchor(ANCHORS.eventLedger, "router", "top");
   const [filter, setFilter] = useState<EventKind | null>(null);
   const kinds = useMemo(() => (filter ? [filter] : undefined), [filter]);
   const events = useEventTape(kinds, ROWS);
@@ -28,9 +28,8 @@ export function EventLedger() {
   const label = useAgentLabels();
 
   return (
-    <div ref={anchor}>
+    <div>
       <div className="led-head">
-        <span className="p-title">Ledger</span>
         <span className="p-note">
           {padCount(stats.paymentsTotal, 6)} payments / {compactUsdc(stats.volumeTotal)} USDC gross /{" "}
           {compactUsdc(stats.routedToVault)} USDC routed to the vault

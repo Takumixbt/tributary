@@ -4,8 +4,6 @@
  * change their internals, never their names or signatures.
  */
 
-export { GraphStage, default as GraphStageDefault } from "./GraphStage";
-export type { GraphStageProps } from "./GraphStage";
 export { NetworkGraph } from "./NetworkGraph";
 export type { NetworkGraphProps } from "./NetworkGraph";
 export { GraphAnchor, GraphAnchorProvider, useGraphAnchor, useAnchorRects } from "./anchors";

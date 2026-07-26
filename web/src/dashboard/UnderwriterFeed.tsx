@@ -1,32 +1,29 @@
 /*
  * Underwriter decision feed. Zone: src/dashboard/**.
  *
- * Decisions as sentences: what it saw, what it did, what the line looks like now.
- * OPENED, RAISED, HELD, THROTTLED and CLOSED sit in spec mono, the score move in
- * mono, the reason in body text. A feed of numbers proves nothing. A feed of
- * reasons is what makes an autonomous lender believable.
+ * Three rows, quiet. What it did, to whom, the score move, and the sentence
+ * that justified it. A feed of numbers proves nothing. A feed of reasons is
+ * what makes an autonomous lender believable, and three of them are enough:
+ * the whole history is in the activity log at the bottom of the desk.
  */
 
 import { useEventTape } from "../data";
 import { formatAgo, formatScore } from "../lib/format";
-import { ANCHORS } from "../lib/stage";
 import { isKind, type ScoreEvent } from "../lib/types";
-import { useGraphAnchor } from "../graph";
 import { ACTION_LABEL } from "./describe";
 import { PanelHead, Waiting, useAgentLabels, useSeconds } from "./parts";
 import "./dashboard.css";
 
-const ROWS = 8;
+const ROWS = 3;
 
 export function UnderwriterFeed() {
-  const anchor = useGraphAnchor(ANCHORS.underwriterFeed, "underwriter", "left");
   const events = useEventTape(["score"], ROWS);
   const label = useAgentLabels();
   const now = useSeconds() * 1000;
   const decisions = events.filter((event): event is ScoreEvent => isKind(event, "score"));
 
   return (
-    <div ref={anchor}>
+    <div>
       <PanelHead title="Underwriter" note="Autonomous" />
 
       {decisions.length === 0 ? (
@@ -46,14 +43,9 @@ export function UnderwriterFeed() {
                   <span>{formatScore(decision.previousScore)}</span>
                   <span aria-hidden="true">&rarr;</span>
                   <span className="uw-score-now">{formatScore(decision.score)}</span>
-                  {delta !== 0 ? (
-                    <span className="uw-delta">
-                      {delta > 0 ? "+" : ""}
-                      {delta}
-                    </span>
-                  ) : (
-                    <span className="uw-delta">no change</span>
-                  )}
+                  <span className="uw-delta">
+                    {delta === 0 ? "no change" : `${delta > 0 ? "+" : ""}${delta}`}
+                  </span>
                 </div>
                 <p className="uw-reason">{decision.reason}</p>
               </li>

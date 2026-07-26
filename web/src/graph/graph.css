@@ -1,33 +1,7 @@
 /* Zone: src/graph/**. */
 
-.graph-layer {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-}
-
-.graph-layer-back {
-  z-index: var(--z-graph-back);
-}
-
-/* Above the content so pulses arrive on top of panels, never interactive.
- *
- * The blend mode is not decoration and is not conditional. This layer is cleared
- * with translucent black every frame for the phosphor trail, so it always holds
- * near-opaque black ink. Composited normally it would sit over the page as a
- * black sheet and dim the entire product. Screen makes that black transparent
- * and lets only the light ink through, on every motion path.
- */
-.graph-layer-front {
-  z-index: var(--z-graph-front);
-  mix-blend-mode: screen;
-}
-
-/* ---------------------------------------------------------- contained variant
- * Same engine, boxed. Used where a framed instance is genuinely wanted; the
- * page-wide stage above is the default.
+/* The engine is always boxed now: one instance, inside the hero. The two
+ * layers stack inside the host element and neither of them is interactive.
  */
 
 .graph-box {
@@ -43,7 +17,10 @@
   pointer-events: none;
 }
 
-/* Same reason as the full-bleed front layer: it clears to black, so it screens. */
+/* The layer is cleared with translucent black every frame for the phosphor
+ * trail, so it always holds near-opaque black ink. Composited normally it would
+ * sit over the page as a black sheet. Screen makes that black transparent and
+ * lets only the light ink through. */
 .graph-box-front {
   mix-blend-mode: screen;
 }

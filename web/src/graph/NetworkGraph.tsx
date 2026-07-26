@@ -1,10 +1,10 @@
 /*
  * Contained network graph. Zone: src/graph/**.
  *
- * The signature visual is the full-bleed <GraphStage>: two fixed canvases the
- * whole page lives inside. This is the same engine boxed into an element, for the
- * places that genuinely need a framed instance rather than the stage: a terminal
- * panel, a card in a deck, a screenshot.
+ * The engine, boxed into an element. Design direction v2 retired the page-wide
+ * fixed stage: a canvas that ran under every section fought the calm the rest
+ * of the page is built on. The graph now lives inside the hero, at its quietest
+ * preset, where it belongs.
  *
  * It runs the same physics, the same event handling and the same renderers. Only
  * the viewport differs, and the camera zoom is scaled so a narrow box still

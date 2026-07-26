@@ -7,25 +7,23 @@
  * features that agent and the graph camera follows it.
  *
  * A list of buttons rather than a table, so the whole row is a real control and
- * the column grid still holds across every breakpoint.
+ * the column grid still holds across every breakpoint. Clicking a row moves the
+ * lens: the panel above it follows.
  */
 
 import { useAgents, useFeaturedAgent, useSetFeatured } from "../data";
 import { padCount } from "../lib/format";
-import { ANCHORS } from "../lib/stage";
-import { useGraphAnchor } from "../graph";
 import { AgentRow } from "./AgentRow";
 import { PanelHead, Waiting } from "./parts";
 import "./dashboard.css";
 
 export function AgentRoster() {
-  const anchor = useGraphAnchor(ANCHORS.rosterPanel, "agent", "right");
   const agents = useAgents();
   const featured = useFeaturedAgent();
   const setFeatured = useSetFeatured();
 
   return (
-    <div ref={anchor}>
+    <div>
       <PanelHead title="Loan book" note={`${padCount(agents.length)} borrowers`} />
 
       {agents.length === 0 ? (

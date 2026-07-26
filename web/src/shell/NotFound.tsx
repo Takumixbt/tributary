@@ -1,6 +1,6 @@
 /*
- * 404. The graph keeps running behind it and the numbers keep moving, because the
- * economy does not care that a URL was wrong. Two ways out, no apology.
+ * 404. The numbers keep moving, because the economy does not care that a URL
+ * was wrong. Two ways out, no apology.
  */
 
 import { Link } from "react-router-dom";
@@ -16,8 +16,8 @@ export function NotFound() {
       <span className="spec">Error 404</span>
       <h1 className="h2">No page at that address</h1>
       <p className="lead notfound-lead">
-        Nothing is routed here. The stream behind this text is still running, so pick a direction and
-        the numbers come with you.
+        Nothing is routed here. The stream is still running, so pick a direction and the numbers
+        come with you.
       </p>
 
       <div className="notfound-readout">

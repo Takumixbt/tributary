@@ -1,14 +1,14 @@
 /*
- * Status strip. Zone: src/kinetic/**.
+ * The one moving strip in the product. Zone: src/kinetic/**.
  *
- * The ledger tape laid on its side, for surfaces that have a wide row and no
- * column to spare. Same rule as the tape: it exists because events exist, and it
- * runs off the one shared frame rather than a CSS animation, so it stays in phase
- * with the dither, the counters and the graph.
+ * It sits at the bottom edge of the hero and carries five facts past at a walk.
+ * It runs off the shared frame rather than a CSS animation, so it stays in
+ * phase with everything else on the page and costs one transform per frame.
  *
  * Copies of the children repeat until they overflow the container, so the loop
- * has no seam even when there are only two rows to show. Under reduced motion the
- * strip holds still and reads as a static row of the same facts.
+ * has no seam. It stops under the pointer, because a strip a reader cannot read
+ * is decoration. Under reduced motion it never starts and reads as a static row
+ * of the same facts.
  */
 
 import { memo, useEffect, useRef, useState, type ReactNode } from "react";
@@ -22,15 +22,27 @@ export interface MarqueeProps {
   speed?: number;
   /** Reverse the travel direction. */
   reverse?: boolean;
+  /** Hold still while the pointer is over the strip. Default true. */
+  pauseOnHover?: boolean;
   className?: string;
+  /** Describes the strip for a screen reader, since the copies are duplicates. */
+  label?: string;
 }
 
-function MarqueeImpl({ children, speed = 26, reverse = false, className }: MarqueeProps) {
+function MarqueeImpl({
+  children,
+  speed = 26,
+  reverse = false,
+  pauseOnHover = true,
+  className,
+  label,
+}: MarqueeProps) {
   const host = useRef<HTMLDivElement | null>(null);
   const track = useRef<HTMLDivElement | null>(null);
   const copy = useRef<HTMLDivElement | null>(null);
   const span = useRef(0);
   const offset = useRef(0);
+  const paused = useRef(false);
   const [copies, setCopies] = useState(2);
   const { motionScale } = useMotion();
   const reducedRef = useRef(motionScale === 0);
@@ -56,7 +68,7 @@ function MarqueeImpl({ children, speed = 26, reverse = false, className }: Marqu
   }, [children]);
 
   useTick((dt) => {
-    if (reducedRef.current || span.current < 8) return;
+    if (reducedRef.current || paused.current || span.current < 8) return;
     offset.current = wrap(offset.current + (speed * dt) / 1000, span.current);
     const node = track.current;
     if (!node) return;
@@ -65,7 +77,13 @@ function MarqueeImpl({ children, speed = 26, reverse = false, className }: Marqu
   });
 
   return (
-    <div className={`marquee${className ? " " + className : ""}`} ref={host}>
+    <div
+      className={`marquee${className ? " " + className : ""}`}
+      ref={host}
+      aria-label={label}
+      onPointerEnter={pauseOnHover ? () => (paused.current = true) : undefined}
+      onPointerLeave={pauseOnHover ? () => (paused.current = false) : undefined}
+    >
       <div className="marquee-track" ref={track}>
         <div className="marquee-copy" ref={copy}>
           {children}

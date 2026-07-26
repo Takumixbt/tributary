@@ -1,10 +1,9 @@
 /*
  * The split ticker. Zone: src/dashboard/**.
  *
- * One row per flush, animating the moment itself: the total arrives, then a hard
- * 1px divider slides across the bar to the split ratio and leaves a vault share
- * and an agent share behind it. This is the product thesis in a three-column
- * panel, so the claim stays legible even when the graph is off screen.
+ * One row per flush: the total that arrived, a bar divided at the split ratio,
+ * and the two legs it left behind. This is the product thesis in one panel, and
+ * it is legible standing still.
  *
  * When a line has cleared the share is zero and the row says so: the agent keeps
  * every cent. That row is worth as much as the others, because it is the proof
@@ -13,22 +12,19 @@
 
 import { useEventTape } from "../data";
 import { formatBps, formatClock } from "../lib/format";
-import { ANCHORS } from "../lib/stage";
 import { isKind, type SplitEvent } from "../lib/types";
-import { useGraphAnchor } from "../graph";
 import { Amount, PanelHead, Waiting, useAgentLabels } from "./parts";
 import "./dashboard.css";
 
-const ROWS = 7;
+const ROWS = 6;
 
 export function SplitTicker() {
-  const anchor = useGraphAnchor(ANCHORS.splitTicker, "router", "left");
   const events = useEventTape(["split"], ROWS);
   const label = useAgentLabels();
   const splits = events.filter((event): event is SplitEvent => isKind(event, "split"));
 
   return (
-    <div ref={anchor}>
+    <div>
       <PanelHead title="Split on receipt" note="Vault / agent" />
 
       {splits.length === 0 ? (
@@ -40,7 +36,7 @@ export function SplitTicker() {
             return (
               <li key={split.id} className="split-row" style={{ ["--split" as string]: `${share}%` }}>
                 <div className="split-meta">
-                  <span className="tape-time">{formatClock(split.at).slice(0, 8)}</span>
+                  <span className="split-time">{formatClock(split.at).slice(0, 8)}</span>
                   <span className="split-agent">{label(split.agent)}</span>
                   <span className="split-total">
                     <Amount value={split.total} />

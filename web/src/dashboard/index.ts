@@ -1,10 +1,10 @@
 /*
  * Public API of the dashboard zone. Zone owner: dashboard and data builder.
- * App.tsx mounts DashboardPage on /app and LedgerRail on every route.
+ * App.tsx mounts DashboardPage on /app. There is no persistent ledger rail any
+ * more: the full log lives behind the Activity disclosure on the desk itself.
  */
 
 export { DashboardPage } from "./DashboardPage";
-export { LedgerRail } from "./LedgerRail";
 export { VaultPanel } from "./VaultPanel";
 export { AgentRoster } from "./AgentRoster";
 export { AgentRow } from "./AgentRow";
