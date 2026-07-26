@@ -1,6 +1,8 @@
 # secrets
 .env
 .env.*
+# The example carries no secrets and has to be readable by anyone cloning this.
+!.env.example
 *.key
 
 # node

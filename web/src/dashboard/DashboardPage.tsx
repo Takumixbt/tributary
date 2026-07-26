@@ -13,7 +13,7 @@
  */
 
 import { useState, type ReactNode } from "react";
-import { useStats } from "../data";
+import { useEventStream, useStats } from "../data";
 import { compactUsdc, formatRate, formatUsdc, padCount } from "../lib/format";
 import { AgentRoster } from "./AgentRoster";
 import { EventLedger } from "./EventLedger";
@@ -34,16 +34,22 @@ function DeskStat({ label, value }: { label: string; value: ReactNode }) {
 
 export function DashboardPage() {
   const stats = useStats();
+  const simulated = useEventStream().mode === "demo";
   const [activityOpen, setActivityOpen] = useState(false);
 
   return (
     <div className="desk" data-surface="deep">
       <div className="desk-col">
         <header className="desk-head">
-          <span className="eyebrow">Terminal</span>
+          <div className="desk-eyebrow">
+            <span className="eyebrow">Dashboard</span>
+            {simulated ? <span className="desk-sim">Simulation</span> : null}
+          </div>
           <h1 className="h2 desk-title">Loan book</h1>
           <p className="desk-note">
-            Every credit line on Arc, priced per second, repaid by the rail.
+            {simulated
+              ? "A seeded simulation of the loan book, running entirely in this browser. Drop ?demo=1 from the URL to read Arc testnet instead."
+              : "Every credit line on Arc testnet, priced by the second, repaid out of the money each agent earns."}
           </p>
         </header>
 

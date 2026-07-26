@@ -1,18 +1,23 @@
 /*
- * Runtime configuration and mode selection. FROZEN: owned by the design lead.
+ * Runtime configuration and mode selection.
  *
- * Demo mode is not a fallback, it is a first-class mode. The rule:
- *   ?demo=1            -> demo, always
- *   ?demo=0            -> chain, always (will show a stalled stream if broken)
- *   VITE_STREAM_MODE   -> explicit override
- *   otherwise          -> demo when any required address is missing
+ * Chain is the default and the simulator is the exception. The rule:
+ *   ?demo=1            -> demo, and the dashboard says so on screen
+ *   VITE_STREAM_MODE   -> explicit override, left blank in the shipped env
+ *   otherwise          -> chain whenever the addresses are configured
+ *   no addresses       -> demo, because there is nothing to read
+ *
+ * The deployed .env carries the three live Arc testnet addresses, so a visitor
+ * who does not ask for the simulator never sees it.
  */
 
 import type { Address, StreamMode } from "./types";
 
-/** Arc Testnet. USDC is gas here. */
+/** Arc Testnet. */
 export const ARC_CHAIN_ID = 5042002;
-export const ARC_RPC_FALLBACK = "https://rpc.testnet.arc.network";
+export const ARC_RPC_PRIMARY = "https://rpc.testnet.arc.network";
+/** Second endpoint, used when the primary rate-limits or drops a request. */
+export const ARC_RPC_SECONDARY = "https://arc-testnet.drpc.org";
 export const USDC_FALLBACK = "0x3600000000000000000000000000000000000000" as Address;
 
 function readEnv(key: string): string {
@@ -38,7 +43,17 @@ export const ADDRESSES = {
   usdc: asAddress(readEnv("VITE_USDC_ADDRESS")) ?? USDC_FALLBACK,
 } as const;
 
-export const RPC_URL = readEnv("VITE_ARC_RPC_URL") || ARC_RPC_FALLBACK;
+export const RPC_URL = readEnv("VITE_ARC_RPC_URL") || ARC_RPC_PRIMARY;
+
+/**
+ * Every endpoint the reader may use, in order of preference. viem's fallback
+ * transport walks this list per request, so a rate-limited primary costs one
+ * retry rather than a blank dashboard.
+ */
+export const RPC_URLS: readonly string[] = [
+  RPC_URL,
+  readEnv("VITE_ARC_RPC_FALLBACK_URL") || ARC_RPC_SECONDARY,
+].filter((url, index, all) => url.length > 0 && all.indexOf(url) === index);
 
 /** True when the chain has everything the reader needs. */
 export const hasChainConfig = Boolean(ADDRESSES.vault && ADDRESSES.registry);

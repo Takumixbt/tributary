@@ -1,91 +1,126 @@
 /*
- * Threat model. Zone: src/pages/landing/**.
+ * The risk. Zone: src/pages/landing/**.
  *
- * The attack is stated before anyone has to ask for it, and then priced. A
- * page that names its own failure mode is trusted more than one that does not.
+ * The reference's security block, copied: a very slightly lifted surface, a
+ * two-column split, the head and the tags on the left, a stack of bordered
+ * cards on the right, each one an icon frame beside a short title and a
+ * paragraph.
+ *
+ * The attack is stated before anyone has to ask for it, and then priced. A page
+ * that names its own failure mode is trusted more than one that does not.
  */
 
+import type { ReactNode } from "react";
 import { Reveal } from "../../kinetic";
-import { SectionHead } from "./bits";
+import { Eyebrow } from "./bits";
 import "./landing.css";
 
-const PILLS = [
+const TAGS = [
   "No collateral",
-  "Portable identity",
-  "Small growing limits",
-  "Real-time throttle",
-  "Observable income",
+  "Small first loans",
+  "The score follows the agent",
+  "The income is visible",
+  "Cut off in seconds",
 ];
 
-interface Price {
-  index: string;
+interface Card {
   title: string;
   copy: string;
+  mark: "one" | "two" | "three" | "four";
 }
 
-const PRICES: Price[] = [
+const CARDS: Card[] = [
   {
-    index: "01",
-    title: "Limits start small",
-    copy: "A first line is worth less than the revenue the agent already routes through us. Walking away with it buys a few hours of compute. The limit only grows on repayment history, so the amount worth stealing arrives long after stealing it stopped being the better trade.",
+    mark: "one",
+    title: "A first loan is small",
+    copy: "It is worth less than the income the agent already sends through us. Running off with it buys a few hours of compute. Limits only grow with a repayment record, so by the time the money is worth taking, taking it is the worse deal.",
   },
   {
-    index: "02",
-    title: "Reputation is the collateral",
-    copy: "The score is anchored to a portable ERC-8004 identity that took real revenue to build. Defaulting burns it, and the next lender reads the same history. Agents that intend to keep selling are the ones that come to us.",
+    mark: "two",
+    title: "The score is the collateral",
+    copy: "It is attached to an identity the agent spent real income building, and the next lender reads the same history. Defaulting throws that away. Agents that plan to keep selling are the ones that come to us.",
   },
   {
-    index: "03",
-    title: "The throttle is immediate",
-    copy: "The underwriter compares Gateway inflows against router telemetry continuously. The moment income stops arriving where it was promised, the line throttles and further draws stop. On Arc that decision lands in the same second it is made.",
+    mark: "three",
+    title: "We can see the money stop",
+    copy: "We compare what an agent is being paid against what actually reaches the contract. The second those two stop matching, the line is cut and nothing more can be drawn.",
+  },
+  {
+    mark: "four",
+    title: "Nobody has to be trusted",
+    copy: "The split is written into the contract that receives the money. It is not a promise the agent makes, and it is not a job somebody has to remember to run.",
   },
 ];
+
+const MARKS: Record<Card["mark"], ReactNode> = {
+  one: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+      <rect x="3" y="14" width="4" height="7" />
+      <rect x="10" y="9" width="4" height="12" />
+      <rect x="17" y="4" width="4" height="17" />
+    </svg>
+  ),
+  two: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="3.5" />
+    </svg>
+  ),
+  three: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+      <path d="M2.5 12a10.5 8 0 0 1 19 0 10.5 8 0 0 1-19 0" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  four: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+      <rect x="4" y="10" width="16" height="10" />
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+    </svg>
+  ),
+};
 
 export function Security() {
   return (
-    <section className="sec" id="security">
+    <section className="sec risk" id="risk">
       <div className="col">
-        <SectionHead
-          eyebrow="Threat model"
-          title="Unsecured credit."
-          titleDim="Priced, not wished away."
-        />
+        <div className="risk-grid">
+          <Reveal rise={24}>
+            <Eyebrow>The risk</Eyebrow>
+            <h2 className="h2 sec-title">
+              Nothing is pledged.
+              <br />
+              <span className="dim">So we price the risk instead.</span>
+            </h2>
+            <p className="risk-lead">
+              Here is the obvious attack. An agent borrows, then sends its earnings somewhere else,
+              so nothing ever reaches the contract that was meant to repay us. There is no
+              collateral to seize and nobody to sue. We do not claim to prevent that. We make it a
+              bad trade, four ways.
+            </p>
+            <div className="tags">
+              {TAGS.map((tag) => (
+                <span className="tag" key={tag}>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </Reveal>
 
-        <Reveal className="pills" rise={8}>
-          {PILLS.map((pill) => (
-            <span className="pill" key={pill}>
-              {pill}
-            </span>
-          ))}
-        </Reveal>
-
-        <Reveal rise={16}>
-          <p className="threat-lead">
-            Here is the attack. A borrowing agent draws against its line and then points its x402
-            payouts at a different address, so nothing ever reaches the router that was supposed to
-            repay us. There is no collateral to seize and no court to call. We do not prevent that.
-            We price it, three ways.
-          </p>
-        </Reveal>
-
-        <div className="threat-grid">
-          {PRICES.map((price, index) => (
-            <Reveal key={price.index} className="threat-cell" delay={index * 100} rise={16}>
-              <span className="threat-index">{price.index}</span>
-              <h3 className="h3 threat-title">{price.title}</h3>
-              <p className="threat-copy">{price.copy}</p>
-            </Reveal>
-          ))}
+          <div className="risk-cards">
+            {CARDS.map((card, index) => (
+              <Reveal key={card.title} className="risk-card" delay={index * 100} rise={16}>
+                <span className="risk-mark" aria-hidden="true">
+                  {MARKS[card.mark]}
+                </span>
+                <div>
+                  <h3 className="risk-title">{card.title}</h3>
+                  <p className="risk-copy">{card.copy}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
-
-        <Reveal rise={8}>
-          <p className="threat-close">
-            This is how unsecured consumer credit has always worked: a small limit, a score that
-            follows you, and a lender who can see whether you are still being paid. The difference
-            is that an agent's income is fully observable, settles in seconds, and passes through a
-            contract we wrote.
-          </p>
-        </Reveal>
       </div>
     </section>
   );

@@ -24,6 +24,19 @@ body,
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* The nav is fixed, so an anchor has to stop short of it. */
+:target,
+[id] {
+  scroll-margin-top: calc(var(--topbar-h) + 24px);
 }
 
 body {
@@ -175,13 +188,13 @@ table {
   color: var(--ink);
 }
 
-/* The eyebrow as the reference sets it: rule, then label. */
+/* The eyebrow as the reference sets it: a 32px rule, then a mono text-sm label. */
 .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 12px;
   font-family: var(--font-mono);
-  font-size: var(--t-sm);
+  font-size: var(--t-ref-sm);
   letter-spacing: var(--tr-spec);
   color: var(--ink-dim);
 }
@@ -273,7 +286,10 @@ table {
 /* ---------------------------------------------------------------- controls */
 
 /* Two buttons in the whole product: a solid white one and a hairline one.
- * Square, mono, 56px tall, generous horizontal padding. */
+ * Both are pills, exactly as the reference draws its CTAs:
+ *   primary  bg-foreground text-background px-8 h-14 text-base rounded-full
+ *   ghost    border border-foreground/20   px-8 h-14 text-base rounded-full
+ * Sans, not mono: the reference sets its buttons in the body face at 16px. */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -281,9 +297,11 @@ table {
   gap: var(--s-2);
   height: 56px;
   padding-inline: var(--s-6);
-  font-family: var(--font-mono);
-  font-size: var(--t-md);
-  letter-spacing: var(--tr-spec);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: var(--w-body-strong);
+  letter-spacing: var(--tr-normal);
   border: 1px solid var(--hair-strong);
   color: var(--ink);
   background: transparent;
@@ -291,7 +309,8 @@ table {
   transition:
     background var(--dur-base) var(--ease-out),
     color var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out);
+    border-color var(--dur-base) var(--ease-out),
+    opacity var(--dur-base) var(--ease-out);
 }
 
 .btn:hover {
@@ -327,11 +346,11 @@ table {
   transform: translateX(4px);
 }
 
-/* Small square button in the nav. */
+/* The one nav-scale pill. Same shape, one step down. */
 .btn-sm {
-  height: 40px;
-  padding-inline: var(--s-4);
-  font-size: var(--t-xs);
+  height: 38px;
+  padding-inline: 20px;
+  font-size: var(--t-md);
 }
 
 /* ------------------------------------------------------------- scrollbars */

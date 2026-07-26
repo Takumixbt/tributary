@@ -1,19 +1,20 @@
 /*
- * The numbers that matter. Zone: src/pages/landing/**.
+ * The numbers. Zone: src/pages/landing/**.
  *
- * Four figures in a hairline grid. Each one counts up from zero the first time
- * it enters the viewport and then tracks the live stream, so the band is a
- * reading of the running economy rather than a poster.
+ * Four figures in a hairline grid, counting up once when they arrive, exactly
+ * as the reference does it.
+ *
+ * Every figure here is a real one, taken from the run of the loop that is on
+ * Arc testnet. Nothing on this page reads the demo simulator, and nothing on
+ * this page is aspirational. If a number cannot be opened in a block explorer
+ * it does not belong in this section.
  *
  * The count-up commits at most one render every 60ms for the 1.4s it lasts and
- * then stops. Nothing here runs a loop after that except the clock, which ticks
- * once a second.
+ * then stops. Nothing here runs a loop after that.
  */
 
 import { useEffect, useRef, useState } from "react";
 import { Odometer, Reveal, useTick } from "../../kinetic";
-import { useStats, useVaultState } from "../../data";
-import { formatUsdc, toUsdcNumber } from "../../lib/format";
 import { SectionHead } from "./bits";
 import "./landing.css";
 
@@ -49,14 +50,12 @@ function useSeen<T extends HTMLElement>() {
   return { ref, seen };
 }
 
-/** Zero to `target` over 1.4s once `active`, then the live value from then on. */
+/** Zero to `target` over 1.4s once `active`, then it holds the real figure. */
 function useCountUp(target: number, active: boolean): number {
   const [shown, setShown] = useState(0);
   const elapsed = useRef(0);
   const lastCommit = useRef(0);
   const done = useRef(false);
-  const targetRef = useRef(target);
-  targetRef.current = target;
 
   useTick((dt, now) => {
     if (!active || done.current) return;
@@ -66,127 +65,99 @@ function useCountUp(target: number, active: boolean): number {
     const eased = 1 - Math.pow(1 - t, 3);
     if (t >= 1) {
       done.current = true;
-      setShown(targetRef.current);
+      setShown(target);
       return;
     }
     if (now - lastCommit.current < COMMIT_MS) return;
     lastCommit.current = now;
-    setShown(targetRef.current * eased);
+    setShown(target * eased);
   });
 
   return done.current ? target : shown;
 }
 
-function Figure({
-  value,
-  decimals,
-  unit,
-  caption,
-  note,
-  label,
-  active,
-  delay,
-}: {
+interface Figure {
   value: number;
   decimals: number;
   unit?: string;
   caption: string;
   note: string;
   label: string;
-  active: boolean;
-  delay: number;
-}) {
-  const shown = useCountUp(value, active);
+}
+
+const FIGURES: Figure[] = [
+  {
+    value: 30,
+    decimals: 0,
+    caption: "Payments settled on Arc testnet",
+    note: "One run of the loop, start to finish",
+    label: "30 payments settled on Arc testnet",
+  },
+  {
+    value: 0.15,
+    decimals: 4,
+    unit: "USDC",
+    caption: "Borrowed against that history",
+    note: "Line opened at a score of 139, priced at 22.22% APR",
+    label: "0.15 USDC borrowed",
+  },
+  {
+    value: 0.0393,
+    decimals: 4,
+    unit: "USDC",
+    caption: "Came back on the very next payment",
+    note: "No reminder, no signature, no grace period",
+    label: "0.0393 USDC repaid automatically",
+  },
+  {
+    value: 268,
+    decimals: 0,
+    unit: "/ 1000",
+    caption: "Score once the cycle closed",
+    note: "Up from 139, and the rate fell to 19.64%",
+    label: "Score of 268 out of 1000 after the cycle",
+  },
+];
+
+function Cell({ figure, active, delay }: { figure: Figure; active: boolean; delay: number }) {
+  const shown = useCountUp(figure.value, active);
 
   return (
     <Reveal className="num-cell" delay={delay} rise={24}>
       <div className="num-figure">
-        <Odometer value={shown} decimals={decimals} label={label} />
-        {unit ? <span className="num-unit-lg">{unit}</span> : null}
+        <Odometer value={shown} decimals={figure.decimals} label={figure.label} />
+        {figure.unit ? <span className="num-unit-lg">{figure.unit}</span> : null}
       </div>
-      <p className="num-caption">{caption}</p>
-      <p className="num-note">{note}</p>
+      <p className="num-caption">{figure.caption}</p>
+      <p className="num-note">{figure.note}</p>
     </Reveal>
-  );
-}
-
-function Clock() {
-  const [now, setNow] = useState(() => new Date());
-  useTick(() => {
-    setNow((current) => {
-      const next = new Date();
-      return next.getSeconds() === current.getSeconds() ? current : next;
-    });
-  });
-
-  return (
-    <div className="nums-live">
-      <span className="nums-dot" aria-hidden="true" />
-      Live
-      <span className="nums-sep" aria-hidden="true">
-        |
-      </span>
-      <span>{now.toLocaleTimeString()}</span>
-    </div>
   );
 }
 
 export function Numbers() {
   const { ref, seen } = useSeen<HTMLDivElement>();
-  const vault = useVaultState();
-  const stats = useStats();
 
   return (
     <section className="sec sec-rule sec-rule-b" id="numbers">
       <div className="col" ref={ref}>
         <SectionHead
-          eyebrow="Live readings"
+          eyebrow="Already proven"
           title="The numbers"
-          titleDim="that matter."
-          aside={<Clock />}
+          titleDim="we can show you."
+          aside={<span className="spec">Arc testnet</span>}
         />
 
         <div className="nums-grid">
-          <Figure
-            value={toUsdcNumber(vault.totalAssets)}
-            decimals={2}
-            unit="USDC"
-            caption="Lender capital in the vault"
-            note={`${formatUsdc(vault.availableLiquidity)} USDC available to draw right now`}
-            label={`${formatUsdc(vault.totalAssets)} USDC of vault assets`}
-            active={seen}
-            delay={0}
-          />
-          <Figure
-            value={stats.paymentsTotal}
-            decimals={0}
-            caption="Nanopayments settled"
-            note="Every one of them underwriting data"
-            label={`${stats.paymentsTotal} nanopayments settled`}
-            active={seen}
-            delay={100}
-          />
-          <Figure
-            value={stats.avgScore}
-            decimals={0}
-            unit="/ 1000"
-            caption="Mean credit score across the roster"
-            note="Posted onchain by the underwriter, with reasons"
-            label={`Mean credit score ${stats.avgScore} of 1000`}
-            active={seen}
-            delay={200}
-          />
-          <Figure
-            value={20}
-            decimals={0}
-            unit="%"
-            caption="Of every payment, while debt is open"
-            note="Falls to zero the moment a line clears"
-            label="20 percent repayment share"
-            active={seen}
-            delay={300}
-          />
+          {FIGURES.map((figure, index) => (
+            <Cell key={figure.caption} figure={figure} active={seen} delay={index * 100} />
+          ))}
         </div>
+
+        <p className="nums-foot">
+          These are not projections. They are one credit line opening, drawing, repaying itself out
+          of the next payment, and being re-scored, on a public test network. The contracts that did
+          it are listed further down.
+        </p>
       </div>
     </section>
   );

@@ -1,9 +1,10 @@
 /*
- * Protocol. Zone: src/pages/landing/**.
+ * Contracts. Zone: src/pages/landing/**.
  *
- * Three addresses and one run of the loop. Both are checkable: the addresses
- * open on arcscan, and the run below them is the transaction sequence that
- * proved the thesis end to end on Arc testnet.
+ * The one section on this page where precise terms are allowed, and they are
+ * kept to the three deployed addresses and the sequence of calls that proved
+ * the loop. Both are checkable: the addresses open on arcscan, and the run
+ * below them is what actually happened on Arc testnet.
  */
 
 import { Reveal } from "../../kinetic";
@@ -18,10 +19,10 @@ interface ProofRow {
 }
 
 const PROOF: ProofRow[] = [
-  { step: "01", what: "Nanopayments settled through the router", value: "30 payments" },
+  { step: "01", what: "Payments settled through RevenueRouter", value: "30 payments" },
   { step: "02", what: "Line opened by the underwriter", value: "score 139 / 22.22% APR" },
   { step: "03", what: "Agent drew working capital", value: "0.150000 USDC" },
-  { step: "04", what: "Next flush repaid without anyone acting", value: "0.039300 USDC" },
+  { step: "04", what: "Next flush repaid with nobody acting", value: "0.039300 USDC" },
   { step: "05", what: "Re-score raised the limit and cut the rate", value: "score 268 / 19.64% APR" },
 ];
 
@@ -30,10 +31,10 @@ export function Protocol() {
     <section className="sec sec-rule" id="protocol">
       <div className="col">
         <SectionHead
-          eyebrow="Deployed"
+          eyebrow="Contracts"
           title="Live on Arc testnet."
-          titleDim="Read it yourself."
-          intro="Three contracts, no admin key in the repayment path, no backend deciding who gets credit. The addresses below are the ones the terminal reads."
+          titleDim="Go and read it."
+          intro="Three contracts. No admin key sits in the repayment path and no server decides who gets credit. These are the same addresses the dashboard reads."
         />
 
         <div className="proto-list">

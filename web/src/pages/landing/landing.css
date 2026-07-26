@@ -1,9 +1,19 @@
 /*
  * Landing page. Zone: src/pages/landing/**.
  *
- * Design direction v2, ztocks-derived: black page, white ink, hairlines at
- * white/10, zero radius, no shadows, one inverted white section, and motion
- * that reveals rather than performs. See web/DESIGN.md section 0.
+ * Every measurement in this file is the reference's measurement, translated out
+ * of Tailwind:
+ *
+ *   container      max-w-[1400px] mx-auto px-6 lg:px-12
+ *   section        py-24 lg:py-32
+ *   head gap       mb-16 lg:mb-24
+ *   feature row    py-12 lg:py-20, border-b border-foreground/10
+ *   card padding   p-6 / px-8 py-6 / p-8 lg:p-12
+ *   hairline       border-foreground/10, and the gap in a grid IS the border
+ *   buttons        rounded-full, h-14, px-8
+ *
+ * The dark sections and the one inverted section share all of it, so scrolling
+ * through the flip reads as one document with the lights turned on.
  */
 
 /* The nav is transparent over the hero, so the hero has to start underneath it
@@ -41,7 +51,7 @@
 /* Eyebrow, then a two-line headline whose second line drops to secondary ink.
  * That drop is the reference's one typographic trick and it carries the page. */
 .sec-head {
-  margin-bottom: clamp(56px, 6vw, 96px);
+  margin-bottom: var(--head-gap);
 }
 
 .sec-head-row {
@@ -89,7 +99,8 @@
 }
 
 /* The living graph, boxed and quiet, sitting off the right shoulder of the
- * headline exactly where the reference puts its canvas. */
+ * headline exactly where the reference puts its canvas. It carries no z-index
+ * of its own, so it can never rise above the copy or the nav. */
 .hero-visual {
   position: absolute;
   right: 0;
@@ -117,14 +128,17 @@
     repeating-linear-gradient(to bottom, var(--hair) 0 1px, transparent 1px 12.5%);
 }
 
+/* pt-36 lg:pt-44 */
 .hero-top {
-  padding-top: clamp(140px, 15vh, 184px);
+  padding-top: clamp(144px, 15vh, 176px);
 }
 
+/* mb-8 */
 .hero-eyebrow {
   margin-bottom: var(--s-6);
 }
 
+/* mb-14 */
 .hero-title {
   margin-bottom: clamp(40px, 5vw, 56px);
 }
@@ -133,23 +147,26 @@
   display: block;
 }
 
+/* grid lg:grid-cols-2 gap-12 lg:gap-24 */
 .hero-lede {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--s-9);
 }
 
+/* text-xl lg:text-2xl */
 .hero-lede p {
-  font-size: clamp(1.125rem, 0.9rem + 0.7vw, 1.5rem);
+  font-size: clamp(1.25rem, 1rem + 0.6vw, 1.5rem);
   line-height: 1.5;
   color: var(--ink-mid);
 }
 
+/* mt-28 lg:mt-36 */
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--s-4);
-  margin-top: clamp(72px, 8vw, 112px);
+  margin-top: clamp(96px, 10vw, 144px);
 }
 
 /* One word of the headline arrives letter by letter, with a soft block of
@@ -204,8 +221,8 @@
 }
 
 /* ------------------------------------------------------------ stat marquee
- * The only strip that moves in the entire product. Slow, linear, seamless,
- * and it stops when the pointer is on it.
+ * bottom-8, four real figures, gap-16 between them. It stops under the
+ * pointer, because a strip a reader cannot read is decoration.
  */
 
 .hero-strip {
@@ -220,17 +237,19 @@
   display: flex;
   align-items: baseline;
   gap: var(--s-4);
-  padding-right: var(--s-9);
+  padding-right: var(--s-8);
 }
 
+/* text-4xl lg:text-5xl */
 .strip-figure {
   font-family: var(--font-display);
-  font-size: clamp(1.75rem, 1rem + 2vw, 3rem);
+  font-size: clamp(2.25rem, 1.4rem + 2vw, 3rem);
   font-weight: var(--w-display);
   letter-spacing: var(--tr-display);
   line-height: 1;
   color: var(--ink-strong);
   font-variant-numeric: tabular-nums slashed-zero;
+  white-space: nowrap;
 }
 
 .strip-copy {
@@ -248,11 +267,14 @@
   color: var(--ink-faint);
 }
 
-/* ============================================================ capabilities */
+/* =========================================================== what it does
+ * py-12 lg:py-20, one hairline under each row, mono index in a shrink-0
+ * column, then a two-up grid of copy and mark.
+ */
 
 .cap-row {
   display: flex;
-  gap: clamp(28px, 4vw, 64px);
+  gap: clamp(32px, 4vw, 64px);
   padding-block: clamp(48px, 5vw, 80px);
   border-bottom: 1px solid var(--hair);
 }
@@ -261,7 +283,7 @@
   flex: none;
   width: 48px;
   font-family: var(--font-mono);
-  font-size: var(--t-md);
+  font-size: var(--t-ref-sm);
   color: var(--ink-dim);
   padding-top: 0.5em;
 }
@@ -270,7 +292,7 @@
   flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 220px;
-  gap: clamp(32px, 4vw, 64px);
+  gap: var(--s-6);
   align-items: center;
 }
 
@@ -283,13 +305,15 @@
   transform: translateX(8px);
 }
 
+/* text-lg */
 .cap-copy {
-  font-size: var(--t-lead);
-  line-height: 1.55;
+  font-size: 1.125rem;
+  line-height: 1.6;
   color: var(--ink-mid);
   max-width: 56ch;
 }
 
+/* w-48 h-40 */
 .cap-art {
   display: flex;
   justify-content: flex-end;
@@ -297,46 +321,39 @@
 }
 
 .cap-art svg {
-  width: 200px;
+  width: 192px;
   height: 160px;
-  opacity: 0.8;
 }
 
 /* ============================================================ how it works
- * The one inverted band on the page. White paper, black ink, a very faint
- * diagonal hatch, and four numbered steps.
+ * The one inverted band. bg-foreground text-background in the reference,
+ * bg-white text-black here, and nothing else changes: same container, same
+ * section padding, same head, same hairlines, same type scale.
  */
 
 .steps {
-  position: relative;
-  overflow: hidden;
   background: var(--paper);
   color: var(--ink);
 }
 
-.steps-hatch {
-  position: absolute;
-  inset: 0;
-  opacity: 0.05;
-  pointer-events: none;
-  background-image: repeating-linear-gradient(
-    -45deg,
-    transparent 0 40px,
-    currentColor 40px 41px
-  );
-}
-
+/* grid lg:grid-cols-2 gap-16 lg:gap-24 */
 .steps-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 clamp(40px, 5vw, 96px);
+  gap: clamp(64px, 6vw, 96px);
+  align-items: start;
 }
 
+.steps-list {
+  min-width: 0;
+}
+
+/* py-8, border-b */
 .step {
   display: flex;
   align-items: flex-start;
-  gap: var(--s-6);
-  padding-block: var(--s-7);
+  gap: var(--s-5);
+  padding-block: var(--s-6);
   border-bottom: 1px solid var(--hair);
 }
 
@@ -345,10 +362,10 @@
   font-size: 1.875rem;
   font-weight: var(--w-display);
   letter-spacing: var(--tr-display);
-  line-height: 1.1;
+  line-height: 1.2;
   color: var(--ink-faint);
   flex: none;
-  width: 44px;
+  width: 40px;
 }
 
 .step-title {
@@ -360,36 +377,94 @@
   line-height: var(--lh-body);
 }
 
-.step-note {
-  margin-top: var(--s-4);
+.steps-aside {
+  position: sticky;
+  top: calc(var(--topbar-h) + var(--s-8));
+  min-width: 0;
+}
+
+/* The bordered frame beside the steps, exactly as the reference draws it:
+ * a bar with three dots and a name, a mono body, a footed status line. */
+.frame {
+  border: 1px solid var(--hair);
+}
+
+.frame-bar,
+.frame-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: 14px var(--s-5);
+}
+
+.frame-bar {
+  justify-content: space-between;
+  border-bottom: 1px solid var(--hair);
+}
+
+.frame-foot {
+  border-top: 1px solid var(--hair);
+}
+
+.frame-dots {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.frame-dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--hair-strong);
+}
+
+.frame-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--ink-strong);
+}
+
+.frame-name {
   font-family: var(--font-mono);
   font-size: var(--t-xs);
   color: var(--ink-faint);
 }
 
-/* ================================================================= numbers */
-
-.nums-live {
-  display: flex;
-  align-items: center;
-  gap: var(--s-3);
+.frame-body {
+  padding: var(--s-6) var(--s-5);
   font-family: var(--font-mono);
-  font-size: var(--t-md);
+  font-size: var(--t-ref-sm);
+}
+
+.frame-line {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: var(--s-3);
+  align-items: baseline;
+  line-height: 2;
+}
+
+.frame-index {
+  color: var(--ink-ghost);
+  user-select: none;
+}
+
+.frame-label {
   color: var(--ink-mid);
+}
+
+.frame-value {
+  color: var(--ink-strong);
   font-variant-numeric: tabular-nums slashed-zero;
+  white-space: nowrap;
 }
 
-.nums-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--ink-strong);
-}
+/* ================================================================= numbers
+ * grid md:grid-cols-2 gap-px bg-foreground/10, cells p-8 lg:p-12. The gap is
+ * the border: the page background shows through it.
+ */
 
-.nums-sep {
-  color: var(--ink-faint);
-}
-
-/* Hairline grid: the gap is the border. */
 .nums-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -399,9 +474,10 @@
 
 .num-cell {
   background: var(--paper);
-  padding: clamp(28px, 3vw, 48px);
+  padding: clamp(32px, 3vw, 48px);
 }
 
+/* text-6xl lg:text-8xl */
 .num-figure {
   display: flex;
   align-items: baseline;
@@ -418,15 +494,16 @@
 }
 
 .num-unit-lg {
-  font-size: 0.4em;
+  font-size: 0.32em;
   color: var(--ink-mid);
-  margin-left: 0.24em;
+  margin-left: 0.3em;
   letter-spacing: var(--tr-normal);
 }
 
+/* text-lg */
 .num-caption {
   margin-top: var(--s-4);
-  font-size: var(--t-lead);
+  font-size: 1.125rem;
   color: var(--ink-mid);
 }
 
@@ -437,115 +514,156 @@
   color: var(--ink-faint);
 }
 
-/* =============================================================== ecosystem */
-
-.eco-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--hair);
+.nums-foot {
+  margin-top: var(--s-7);
+  color: var(--ink-mid);
+  line-height: var(--lh-body);
+  max-width: 76ch;
 }
 
-.eco-cell {
-  background: var(--paper);
-  padding: clamp(28px, 3vw, 44px);
+/* ================================================================= built on
+ * Two full-bleed marquee rows of bordered cards, px-8 py-6, travelling in
+ * opposite directions. Straight off the reference.
+ */
+
+.eco {
+  overflow: hidden;
+}
+
+.eco-rows {
   display: flex;
   flex-direction: column;
-  gap: var(--s-2);
-  transition: background var(--dur-base) var(--ease-out);
+  gap: var(--s-5);
 }
 
-.eco-cell:hover {
+.eco-card {
+  flex: none;
+  margin-right: var(--s-5);
+  padding: var(--s-5) var(--s-6);
+  border: 1px solid var(--hair);
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    background var(--dur-base) var(--ease-out);
+}
+
+.eco-card:hover {
+  border-color: var(--hair-strong);
   background: var(--paper-raised);
 }
 
 .eco-name {
-  font-family: var(--font-display);
-  font-size: 1.375rem;
-  font-weight: var(--w-display);
-  letter-spacing: var(--tr-tight);
+  font-size: var(--t-ref-lg);
+  font-weight: var(--w-body-strong);
   color: var(--ink-strong);
+  white-space: nowrap;
 }
 
 .eco-role {
-  font-family: var(--font-mono);
-  font-size: var(--t-xs);
-  letter-spacing: var(--tr-spec);
-  color: var(--ink-dim);
-}
-
-.eco-note {
-  margin-top: var(--s-2);
-  color: var(--ink-mid);
+  margin-top: 2px;
   font-size: var(--t-md);
-  line-height: 1.5;
+  color: var(--ink-mid);
+  white-space: nowrap;
 }
 
-/* ================================================================ security */
+/* ==================================================================== risk
+ * bg-foreground/[0.02], grid lg:grid-cols-2 gap-16 lg:gap-24, tags on the
+ * left, a stack of p-6 bordered cards on the right.
+ */
 
-.pills {
+.risk {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.risk-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(64px, 6vw, 96px);
+  align-items: start;
+}
+
+.risk-lead {
+  margin-top: var(--s-6);
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  color: var(--ink-mid);
+  max-width: 52ch;
+}
+
+.tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--s-2);
-  margin-bottom: clamp(40px, 4vw, 64px);
+  gap: var(--s-3);
+  margin-top: clamp(40px, 4vw, 48px);
 }
 
-.pill {
-  padding: 8px 14px;
+.tag {
+  padding: 8px 16px;
   border: 1px solid var(--hair);
   font-family: var(--font-mono);
-  font-size: var(--t-xs);
+  font-size: var(--t-md);
   color: var(--ink-mid);
 }
 
-.threat-lead {
-  font-size: var(--t-lead);
-  line-height: 1.5;
-  color: var(--ink);
-  max-width: 66ch;
-  margin-bottom: clamp(40px, 4vw, 64px);
-}
-
-.threat-grid {
+.risk-cards {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--hair);
+  gap: var(--s-5);
 }
 
-.threat-cell {
-  background: var(--paper);
-  padding: clamp(24px, 2.6vw, 40px);
+.risk-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-4);
+  padding: var(--s-5);
+  border: 1px solid var(--hair);
+  transition: border-color var(--dur-slow) var(--ease-out);
 }
 
-.threat-index {
-  font-family: var(--font-mono);
-  font-size: var(--t-xs);
-  color: var(--ink-faint);
-  display: block;
-  margin-bottom: var(--s-4);
+.risk-card:hover {
+  border-color: var(--hair-strong);
 }
 
-.threat-title {
-  margin-bottom: var(--s-3);
+.risk-mark {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--hair);
+  color: var(--ink);
+  transition:
+    background var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
 }
 
-.threat-copy {
+.risk-card:hover .risk-mark {
+  background: var(--ink-strong);
+  color: var(--paper);
+}
+
+.risk-mark svg {
+  width: 20px;
+  height: 20px;
+}
+
+.risk-title {
+  font-size: var(--t-ref-lg);
+  font-weight: var(--w-body-strong);
+  color: var(--ink-strong);
+  margin-bottom: var(--s-1);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.risk-card:hover .risk-title {
+  transform: translateX(4px);
+}
+
+.risk-copy {
   color: var(--ink-mid);
   line-height: var(--lh-body);
-  font-size: var(--t-md);
 }
 
-.threat-close {
-  margin-top: clamp(40px, 4vw, 64px);
-  padding-top: var(--s-6);
-  border-top: 1px solid var(--hair);
-  font-size: var(--t-lead);
-  color: var(--ink-mid);
-  max-width: 76ch;
-}
-
-/* ================================================================ protocol */
+/* ================================================================ contracts */
 
 .proto-list {
   display: flex;
@@ -640,22 +758,27 @@
   white-space: nowrap;
 }
 
-/* ===================================================================== cta */
+/* ===================================================================== cta
+ * One bordered box inside the normal container, px-8 lg:px-16 py-16 lg:py-24.
+ */
 
 .cta {
-  position: relative;
   border-top: 1px solid var(--hair);
-  padding-block: clamp(96px, 11vw, 176px);
 }
 
+.cta-box {
+  border: 1px solid var(--ink-strong);
+  padding: clamp(40px, 5vw, 64px) clamp(32px, 4vw, 64px);
+}
+
+/* text-4xl lg:text-7xl, leading-[0.95] */
 .cta-title {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 1rem + 5.5vw, 5.5rem);
+  font-size: clamp(2.25rem, 1rem + 4.5vw, 4.5rem);
   font-weight: var(--w-display);
   letter-spacing: var(--tr-display);
   line-height: 0.95;
   color: var(--ink-strong);
-  max-width: 18ch;
 }
 
 .cta-copy {
@@ -670,7 +793,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--s-4);
-  margin-top: clamp(40px, 4vw, 64px);
+  margin-top: clamp(40px, 4vw, 48px);
 }
 
 .cta-note {
@@ -678,28 +801,6 @@
   font-family: var(--font-mono);
   font-size: var(--t-sm);
   color: var(--ink-faint);
-}
-
-/* Engineering corners on the CTA band, as in the reference. */
-.cta-corner {
-  position: absolute;
-  width: 96px;
-  height: 96px;
-  pointer-events: none;
-}
-
-.cta-corner-tr {
-  top: 0;
-  right: 0;
-  border-bottom: 1px solid var(--hair);
-  border-left: 1px solid var(--hair);
-}
-
-.cta-corner-bl {
-  bottom: 0;
-  left: 0;
-  border-top: 1px solid var(--hair);
-  border-right: 1px solid var(--hair);
 }
 
 /* ============================================================= responsive */
@@ -711,11 +812,6 @@
 
   .cap-art {
     justify-content: flex-start;
-  }
-
-  .eco-grid,
-  .threat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hero-visual {
@@ -739,8 +835,13 @@
 
   .hero-lede,
   .steps-grid,
-  .nums-grid {
+  .nums-grid,
+  .risk-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .steps-aside {
+    position: static;
   }
 
   .proto-row {
@@ -754,11 +855,6 @@
 }
 
 @media (max-width: 620px) {
-  .eco-grid,
-  .threat-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .cap-row {
     flex-direction: column;
     gap: var(--s-4);
@@ -771,5 +867,11 @@
   .proof-value {
     grid-column: 2;
     text-align: left;
+  }
+
+  .proto-addr {
+    font-size: var(--t-xs);
+    white-space: normal;
+    word-break: break-all;
   }
 }

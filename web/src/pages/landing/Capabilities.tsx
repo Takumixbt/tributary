@@ -1,9 +1,9 @@
 /*
- * Protocol capabilities. Zone: src/pages/landing/**.
+ * What it does. Zone: src/pages/landing/**.
  *
- * Four numbered rows separated by hairlines. Mono index on the left, the claim
- * and its paragraph in the middle, a line drawing on the right. Each row
- * reveals once, staggered by 100ms, and the title leans forward on hover.
+ * The reference's feature rows, exactly: mono index on the left, the claim and
+ * its paragraph beside a small mark on the right, one hairline under each row,
+ * a 100ms stagger, and the title leaning forward on hover.
  */
 
 import type { ReactNode } from "react";
@@ -22,38 +22,38 @@ interface Capability {
 const CAPABILITIES: Capability[] = [
   {
     index: "01",
-    title: "Revenue underwriting",
-    copy: "Gateway history is the credit file. Every x402 call an agent settles is a line in an income statement nobody has to be trusted for: revenue velocity, payment count, debt service ratio, missed splits, and time since the first payment. Tributary underwrites that, not a balance sheet.",
+    title: "We read the income",
+    copy: "Every payment an agent earns arrives at an address anyone can look at. How much, how often, how steady, and whether it kept arriving. That history is the credit file. There is no balance sheet, no collateral and no application form, because there is nothing an agent could put up.",
     art: <RevenueArt />,
   },
   {
     index: "02",
-    title: "Rail-level repayment",
-    copy: "Every payment lands at the agent's RevenueRouter before it lands anywhere else. While a line is open the router sends 20% to the vault and forwards 80% to the agent. When the balance reaches zero the split turns off and the agent keeps every cent. Nobody has to remember a due date.",
+    title: "Repayment happens on the way in",
+    copy: "Money an agent earns passes through a small contract before it reaches the agent. While a loan is open, 20% of each payment goes to the lenders and 80% carries on to the agent. When the loan is paid off the split switches itself off and the agent keeps everything. Nobody has to remember a due date.",
     art: <SplitArt />,
   },
   {
     index: "03",
-    title: "Autonomous underwriter",
-    copy: "The underwriter runs unattended and posts each score onchain with the sentence that justified it. A clean cycle raises the limit and cuts the APR. Router telemetry that stops matching Gateway inflows throttles the line in real time, in the same second it is noticed.",
+    title: "The score updates itself",
+    copy: "A program reviews each agent's income and posts a score, along with the reason it gave. Pay a loan back and the limit goes up and the rate comes down. If the money stops arriving where the agent said it would, the line is cut the same second we notice.",
     art: <UnderwriterArt />,
   },
   {
     index: "04",
-    title: "Real-yield vault",
-    copy: "Lenders deposit USDC and hold shares. Interest accrues per second on outstanding principal and lands in the share price. There is no emission, no incentive token and nothing rehypothecated. The yield is the interest agents actually paid, and nothing else.",
+    title: "Lenders earn what agents pay",
+    copy: "Put USDC in, hold a share of the pool. Interest builds on the money that is out on loan and shows up in what a share is worth. There are no token rewards and nothing is lent out twice. The yield is the interest agents actually paid, and nothing else.",
     art: <VaultArt />,
   },
 ];
 
 export function Capabilities() {
   return (
-    <section className="sec" id="capabilities">
+    <section className="sec" id="what-it-does">
       <div className="col">
         <SectionHead
-          eyebrow="Protocol capabilities"
-          title="Revenue governs access."
-          titleDim="The rail governs repayment."
+          eyebrow="What it does"
+          title="Income decides who borrows."
+          titleDim="The contract decides who gets repaid."
         />
 
         <div>
@@ -66,7 +66,9 @@ export function Capabilities() {
                     <h3 className="h3 cap-title">{capability.title}</h3>
                     <p className="cap-copy">{capability.copy}</p>
                   </div>
-                  <div className="cap-art">{capability.art}</div>
+                  <div className="cap-art" aria-hidden="true">
+                    {capability.art}
+                  </div>
                 </div>
               </div>
             </Reveal>

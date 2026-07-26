@@ -26,6 +26,25 @@
   margin-bottom: var(--s-7);
 }
 
+.desk-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+}
+
+/* Shown only under ?demo=1. The page must never let a simulated economy pass
+ * for a real one, so the label sits beside the section name, not in a footnote. */
+.desk-sim {
+  padding: 4px 10px;
+  border: 1px solid var(--hair-strong);
+  font-family: var(--font-mono);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-caps);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
 .desk-title {
   margin-top: var(--s-4);
 }

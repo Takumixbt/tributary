@@ -1,8 +1,13 @@
 /*
- * App shell: the sticky nav, the main column, the footer. Integrator zone.
+ * App shell: the fixed nav, the main column, the footer. Integrator zone.
  *
  * There is no rail and no banner. The one moving strip in this product is the
  * marquee at the bottom edge of the hero.
+ *
+ * Layering contract: .shell isolates, .nav is the highest layer inside it, and
+ * everything the page paints lives under .shell-body, which has no z-index of
+ * its own. A canvas, a marquee or a count-up can therefore never rise above the
+ * bar no matter what stacking context it creates for itself.
  */
 
 .shell {
@@ -33,20 +38,25 @@
 
 /* --------------------------------------------------------------------- nav */
 
+/* Wordmark left, a few quiet anchors, one pill on the right. Nothing else.
+ * Transparent over the hero, then it takes a blurred backing once the page has
+ * moved more than a nav's height. */
 .nav {
   position: fixed;
   inset: 0 0 auto 0;
   z-index: var(--z-topbar);
+  isolation: isolate;
   background: transparent;
   border-bottom: 1px solid transparent;
   transition:
-    background var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out);
+    background var(--dur-slow) var(--ease-out),
+    border-color var(--dur-slow) var(--ease-out);
 }
 
 .nav[data-scrolled] {
   background: rgba(0, 0, 0, 0.72);
   backdrop-filter: blur(16px) saturate(0);
+  -webkit-backdrop-filter: blur(16px) saturate(0);
   border-bottom-color: var(--hair);
 }
 
@@ -65,7 +75,6 @@
 .nav-brand {
   display: inline-flex;
   align-items: baseline;
-  gap: var(--s-2);
 }
 
 .nav-word {
@@ -74,13 +83,6 @@
   font-weight: 600;
   letter-spacing: var(--tr-display);
   color: var(--ink-strong);
-}
-
-.nav-word-tag {
-  font-family: var(--font-mono);
-  font-size: var(--t-3xs);
-  letter-spacing: var(--tr-caps);
-  color: var(--ink-dim);
 }
 
 .nav-links {
@@ -107,13 +109,19 @@
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: var(--s-3);
 }
 
 /* --------------------------------------------------------------------- main */
 
+/* Everything the page paints lives in here, and this element traps it. Its own
+ * z-index of 0 means no descendant, whatever layer it claims for itself, can
+ * ever paint above the nav: the marquee, the graph canvases, the count-ups and
+ * the footer all sort against each other inside this context and the whole
+ * context sits below --z-topbar. */
 .shell-body {
   position: relative;
+  z-index: 0;
+  isolation: isolate;
   padding-top: var(--shell-top);
 }
 
@@ -156,19 +164,21 @@
   padding-inline: var(--pad-x);
 }
 
+/* grid grid-cols-2 md:grid-cols-6, brand spanning two, then four link columns,
+ * py-16 lg:py-24. Straight off the reference. */
 .foot-cols {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
-  gap: var(--s-8) var(--s-6);
-  padding-block: clamp(56px, 6vw, 96px);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--s-6) var(--s-6);
+  padding-block: clamp(64px, 6vw, 96px);
 }
 
 .foot-brand {
+  grid-column: span 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--s-5);
-  max-width: 42ch;
+  max-width: 34ch;
 }
 
 .foot-word {
@@ -177,11 +187,13 @@
   font-weight: 600;
   letter-spacing: var(--tr-display);
   color: var(--ink-strong);
+  margin-bottom: var(--s-5);
 }
 
 .foot-blurb {
   color: var(--ink-mid);
   line-height: var(--lh-body);
+  margin-bottom: var(--s-6);
 }
 
 .foot-social {
@@ -193,17 +205,15 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--s-3);
+  gap: var(--s-4);
   min-width: 0;
 }
 
 .foot-head {
-  font-family: var(--font-mono);
-  font-size: var(--t-3xs);
-  letter-spacing: var(--tr-caps);
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-bottom: var(--s-1);
+  font-size: var(--t-md);
+  font-weight: var(--w-body-strong);
+  color: var(--ink-strong);
+  margin-bottom: var(--s-2);
 }
 
 .foot-link,
@@ -223,17 +233,35 @@
   font-variant-numeric: tabular-nums slashed-zero;
 }
 
+/* py-8, one hairline, small print both ends. */
 .foot-base {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--s-5);
   flex-wrap: wrap;
-  padding-block: var(--s-5);
+  padding-block: var(--s-6);
   border-top: 1px solid var(--hair);
+  font-size: var(--t-md);
+  color: var(--ink-mid);
+}
+
+.foot-base-right {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+}
+
+.foot-base-mono {
   font-family: var(--font-mono);
   font-size: var(--t-xs);
-  color: var(--ink-faint);
+  letter-spacing: var(--tr-spec);
+  color: var(--ink-mid);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+a.foot-base-mono:hover {
+  color: var(--ink-strong);
 }
 
 /* --------------------------------------------------------------------- 404 */
@@ -286,15 +314,26 @@
 
   .foot-cols {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-8) var(--s-6);
+  }
+
+  .foot-brand {
+    grid-column: span 2;
+    max-width: 46ch;
   }
 }
 
 @media (max-width: 620px) {
-  .nav-link-out {
-    display: none;
-  }
-
   .foot-cols {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .foot-brand {
+    grid-column: span 1;
+  }
+
+  .foot-base {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

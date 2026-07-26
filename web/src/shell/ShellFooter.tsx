@@ -1,21 +1,19 @@
 /*
  * The colophon. One footer, every route.
  *
- * Hairline top rule, four columns, and a mono bottom line that says which
- * stream is running. The page states what it is: a demo stream says so, a chain
- * stream says so, and neither of them pretends.
+ * The reference's structure, unchanged: a hairline top rule, a brand column
+ * spanning two of six with a short line and its social links, four link
+ * columns, then a bottom bar with small print at both ends. No stream status,
+ * no mode banner, no cleverness.
  */
 
 import { Link } from "react-router-dom";
-import { useEventStream, useStreamHealth } from "../data";
-import { ARC_CHAIN_ID } from "../lib/env";
 import { DEPLOYED, explorerAddress } from "../lib/deployment";
 import { shortAddress } from "../lib/format";
 
-export function ShellFooter() {
-  const stream = useEventStream();
-  const { status } = useStreamHealth();
+const YEAR = 2026;
 
+export function ShellFooter() {
   return (
     <footer className="foot">
       <div className="foot-inner">
@@ -23,9 +21,8 @@ export function ShellFooter() {
           <div className="foot-brand">
             <span className="foot-word">Tributary</span>
             <p className="foot-blurb">
-              Credit infrastructure for the AI agent economy. Agents earn over x402, the
-              underwriter scores the revenue, the vault lends against it, and the rail takes the
-              repayment on the way past.
+              Credit for AI agents. They earn in small payments, we lend against that income, and
+              every payment they earn pays part of it back.
             </p>
             <div className="foot-social">
               <a
@@ -36,19 +33,24 @@ export function ShellFooter() {
               >
                 GitHub
               </a>
-              <a className="foot-link" href="https://testnet.arcscan.app" target="_blank" rel="noreferrer">
+              <a
+                className="foot-link"
+                href="https://testnet.arcscan.app"
+                target="_blank"
+                rel="noreferrer"
+              >
                 Explorer
               </a>
             </div>
           </div>
 
           <div className="foot-col">
-            <span className="foot-head">Product</span>
+            <h3 className="foot-head">Product</h3>
             <Link className="foot-link" to="/app">
-              Terminal
+              Dashboard
             </Link>
-            <a className="foot-link" href="/#capabilities">
-              Capabilities
+            <a className="foot-link" href="/#what-it-does">
+              What it does
             </a>
             <a className="foot-link" href="/#how-it-works">
               How it works
@@ -59,7 +61,7 @@ export function ShellFooter() {
           </div>
 
           <div className="foot-col">
-            <span className="foot-head">Protocol</span>
+            <h3 className="foot-head">Protocol</h3>
             {DEPLOYED.map((contract) => (
               <a
                 key={contract.key}
@@ -74,20 +76,70 @@ export function ShellFooter() {
           </div>
 
           <div className="foot-col">
-            <span className="foot-head">Network</span>
-            <span className="foot-line">Arc testnet</span>
-            <span className="foot-line foot-mono">Chain {ARC_CHAIN_ID}</span>
-            <span className="foot-line">USDC is gas</span>
-            <span className="foot-line">Circle Gateway settlement</span>
+            <h3 className="foot-head">Network</h3>
+            <a
+              className="foot-link"
+              href="https://testnet.arcscan.app"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Arc testnet
+            </a>
+            <a
+              className="foot-link"
+              href="https://www.circle.com/usdc"
+              target="_blank"
+              rel="noreferrer"
+            >
+              USDC
+            </a>
+            <a
+              className="foot-link"
+              href="https://www.circle.com/gateway"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Circle Gateway
+            </a>
+          </div>
+
+          <div className="foot-col">
+            <h3 className="foot-head">Build</h3>
+            <a
+              className="foot-link"
+              href="https://github.com/Takumixbt/tributary"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Source
+            </a>
+            <a
+              className="foot-link"
+              href="https://github.com/Takumixbt/tributary/tree/main/contracts"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Contracts
+            </a>
+            <a
+              className="foot-link"
+              href="https://github.com/Takumixbt/tributary#readme"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Readme
+            </a>
           </div>
         </div>
 
         <div className="foot-base">
-          <span>Tributary. Built for the Arc Programmable Money hackathon.</span>
-          <span>
-            {stream.mode === "demo" ? "Simulated stream" : "Onchain stream"} / {stream.source} /{" "}
-            {status}
-          </span>
+          <span>{YEAR} Tributary. Credit for agents that already get paid.</span>
+          <div className="foot-base-right">
+            <Link className="foot-base-mono" to="/app">
+              Launch App &rarr;
+            </Link>
+            <span className="foot-base-mono">Arc testnet</span>
+          </div>
         </div>
       </div>
     </footer>

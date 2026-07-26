@@ -1,110 +1,288 @@
 /*
- * Capability diagrams. Zone: src/pages/landing/**.
+ * Section diagrams. Zone: src/pages/landing/**.
  *
- * Four pieces of line art, one per capability, drawn in currentColor at 1px so
- * they read as engineering marks rather than illustration. They are static on
- * purpose: the reference animates its diagrams, and this design spends its
- * whole motion budget on the hero.
+ * These are the reference's four marks, restyled with our content: a 200x160
+ * viewBox, currentColor, 1 to 1.5px strokes, mono captions at 8 to 10px, and a
+ * single slow SMIL loop each. Same markup shape, same restraint, so the rows
+ * read as the same component the reference uses.
+ *
+ * Every number that appears inside them is a real one.
  */
 
 const BOX = "0 0 200 160";
 
-/** 01. Payments accumulating into a file the underwriter reads. */
+/** 01. Payments arriving, one bar each, becoming the file we underwrite. */
 export function RevenueArt() {
+  const bars = [18, 34, 26, 52, 44, 68, 60, 86, 78, 104];
   return (
-    <svg viewBox={BOX} fill="none" stroke="currentColor" aria-hidden="true">
-      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => (
+    <svg viewBox={BOX} aria-hidden="true">
+      {bars.map((height, i) => (
         <rect
           key={i}
-          x={14 + i * 6}
-          y={120 - (8 + ((i * 37) % 60))}
-          width="3"
-          height={8 + ((i * 37) % 60)}
-          strokeWidth="1"
-          opacity={0.35 + (i % 4) * 0.12}
-        />
-      ))}
-      <line x1="10" y1="120" x2="190" y2="120" strokeWidth="1" opacity="0.4" />
-      <rect x="110" y="34" width="72" height="66" strokeWidth="1" />
-      <line x1="120" y1="52" x2="172" y2="52" strokeWidth="1" opacity="0.45" />
-      <line x1="120" y1="64" x2="164" y2="64" strokeWidth="1" opacity="0.45" />
-      <line x1="120" y1="76" x2="172" y2="76" strokeWidth="1" opacity="0.45" />
-      <line x1="120" y1="88" x2="150" y2="88" strokeWidth="1" opacity="0.45" />
-      <line x1="96" y1="112" x2="110" y2="90" strokeWidth="1" opacity="0.5" />
-    </svg>
-  );
-}
-
-/** 02. One payment arriving at a router and leaving as two. */
-export function SplitArt() {
-  return (
-    <svg viewBox={BOX} fill="none" stroke="currentColor" aria-hidden="true">
-      <line x1="8" y1="80" x2="86" y2="80" strokeWidth="1" />
-      <circle cx="8" cy="80" r="3" fill="currentColor" stroke="none" />
-      <rect x="86" y="66" width="28" height="28" strokeWidth="1" transform="rotate(45 100 80)" />
-      <line x1="114" y1="80" x2="150" y2="40" strokeWidth="1" />
-      <line x1="114" y1="80" x2="150" y2="120" strokeWidth="1" />
-      <circle cx="158" cy="36" r="6" strokeWidth="1" />
-      <circle cx="158" cy="124" r="10" strokeWidth="1" />
-      <text x="168" y="40" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none" opacity="0.7">
-        20
-      </text>
-      <text x="174" y="128" fontSize="9" fontFamily="monospace" fill="currentColor" stroke="none" opacity="0.7">
-        80
-      </text>
-    </svg>
-  );
-}
-
-/** 03. A watcher over a scored roster. */
-export function UnderwriterArt() {
-  return (
-    <svg viewBox={BOX} fill="none" stroke="currentColor" aria-hidden="true">
-      <line x1="100" y1="14" x2="100" y2="46" strokeWidth="1" />
-      <line x1="84" y1="30" x2="116" y2="30" strokeWidth="1" />
-      <circle cx="100" cy="30" r="14" strokeWidth="1" opacity="0.5" />
-      {[0, 1, 2].map((i) => (
-        <g key={i}>
-          <line x1="100" y1="46" x2={46 + i * 54} y2={78} strokeWidth="1" opacity="0.4" />
-          <rect x={26 + i * 54} y="80" width="40" height="46" strokeWidth="1" />
-          <line
-            x1={30 + i * 54}
-            y1="118"
-            x2={30 + i * 54 + [30, 20, 34][i]}
-            y2="118"
-            strokeWidth="2"
+          x={18 + i * 17}
+          y={128 - height}
+          width="9"
+          height={height}
+          fill="currentColor"
+          opacity={0.16 + i * 0.06}
+        >
+          <animate
+            attributeName="height"
+            values={`0;${height}`}
+            dur="1s"
+            begin={`${i * 0.08}s`}
+            fill="freeze"
           />
+          <animate
+            attributeName="y"
+            values={`128;${128 - height}`}
+            dur="1s"
+            begin={`${i * 0.08}s`}
+            fill="freeze"
+          />
+        </rect>
+      ))}
+      <line x1="12" y1="128" x2="188" y2="128" stroke="currentColor" strokeWidth="1" opacity="0.3" />
+      <text
+        x="12"
+        y="146"
+        fontSize="8"
+        fontFamily="monospace"
+        fill="currentColor"
+        opacity="0.6"
+      >
+        PAYMENTS IN
+      </text>
+      <text
+        x="188"
+        y="146"
+        textAnchor="end"
+        fontSize="8"
+        fontFamily="monospace"
+        fill="currentColor"
+        opacity="0.6"
+      >
+        CREDIT FILE
+      </text>
+    </svg>
+  );
+}
+
+/** 02. One payment in, two payments out, split inside the contract. */
+export function SplitArt() {
+  const boxes = [
+    { x: 12, label: "PAID" },
+    { x: 74, label: "SPLIT" },
+    { x: 136, label: "LOAN" },
+  ];
+  return (
+    <svg viewBox={BOX} aria-hidden="true">
+      {boxes.map((box, i) => (
+        <g key={box.label}>
+          <rect
+            x={box.x}
+            y="52"
+            width="52"
+            height="52"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          >
+            <animate
+              attributeName="opacity"
+              values="0.4;1;0.4"
+              dur="3s"
+              begin={`${i}s`}
+              repeatCount="indefinite"
+            />
+          </rect>
           <text
-            x={30 + i * 54}
-            y="98"
-            fontSize="10"
+            x={box.x + 26}
+            y="82"
+            textAnchor="middle"
+            fontSize="8"
             fontFamily="monospace"
             fill="currentColor"
-            stroke="none"
             opacity="0.7"
           >
-            {["742", "268", "911"][i]}
+            {box.label}
           </text>
+          {i < boxes.length - 1 ? (
+            <line
+              x1={box.x + 52}
+              y1="78"
+              x2={box.x + 62}
+              y2="78"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeDasharray="3 2"
+            >
+              <animate attributeName="stroke-dashoffset" values="0;-5" dur="0.6s" repeatCount="indefinite" />
+            </line>
+          ) : null}
         </g>
       ))}
+      <text
+        x="100"
+        y="30"
+        textAnchor="middle"
+        fontSize="9"
+        fontFamily="monospace"
+        fill="currentColor"
+        opacity="0.5"
+      >
+        20 to the loan
+      </text>
+      <text
+        x="100"
+        y="132"
+        textAnchor="middle"
+        fontSize="9"
+        fontFamily="monospace"
+        fill="currentColor"
+        opacity="0.5"
+      >
+        80 to the agent
+      </text>
+      <line x1="40" y1="120" x2="160" y2="120" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
     </svg>
   );
 }
 
-/** 04. Deposits into a vault, share price stepping up. */
-export function VaultArt() {
+/** 03. The score under continuous review. 268 is the real posted score. */
+export function UnderwriterArt() {
+  const satellites = [
+    { cx: 150, cy: 80, begin: "0s" },
+    { cx: 100, cy: 130, begin: "0.5s" },
+    { cx: 50, cy: 80, begin: "1s" },
+    { cx: 100, cy: 30, begin: "1.5s" },
+  ];
   return (
-    <svg viewBox={BOX} fill="none" stroke="currentColor" aria-hidden="true">
-      <circle cx="62" cy="80" r="34" strokeWidth="1" />
-      <circle cx="62" cy="80" r="22" strokeWidth="1" opacity="0.45" />
-      {[0, 1, 2, 3].map((i) => (
-        <rect key={i} x="10" y={44 + i * 22} width="6" height="6" strokeWidth="1" opacity="0.6" />
+    <svg viewBox={BOX} aria-hidden="true">
+      <circle
+        cx="100"
+        cy="80"
+        r="50"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeDasharray="4 4"
+      >
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          from="0 100 80"
+          to="360 100 80"
+          dur="20s"
+          repeatCount="indefinite"
+        />
+      </circle>
+      <circle cx="100" cy="80" r="30" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.4">
+        <animateTransform
+          attributeName="transform"
+          type="rotate"
+          from="360 100 80"
+          to="0 100 80"
+          dur="12s"
+          repeatCount="indefinite"
+        />
+      </circle>
+      {satellites.map((dot) => (
+        <circle
+          key={dot.begin}
+          cx={dot.cx}
+          cy={dot.cy}
+          r="5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
+          <animate
+            attributeName="opacity"
+            values="1;0.3;1"
+            dur="2s"
+            begin={dot.begin}
+            repeatCount="indefinite"
+          />
+        </circle>
       ))}
-      <line x1="20" y1="80" x2="28" y2="80" strokeWidth="1" opacity="0.5" />
-      <polyline points="112,116 130,104 148,96 166,78 184,58" strokeWidth="1" />
-      <circle cx="184" cy="58" r="2.5" fill="currentColor" stroke="none" />
-      <line x1="108" y1="126" x2="190" y2="126" strokeWidth="1" opacity="0.35" />
-      <line x1="108" y1="126" x2="108" y2="48" strokeWidth="1" opacity="0.35" />
+      <text
+        x="100"
+        y="84"
+        textAnchor="middle"
+        fontSize="16"
+        fontFamily="monospace"
+        fill="currentColor"
+        opacity="0.85"
+      >
+        268
+      </text>
+    </svg>
+  );
+}
+
+/** 04. Where a lender's deposit sits, and what comes back. */
+export function VaultArt() {
+  const rows = [
+    { label: "DEPOSIT", y: 24, width: 140, begin: "0s" },
+    { label: "ON LOAN", y: 56, width: 96, begin: "0.3s" },
+    { label: "INTEREST", y: 88, width: 44, begin: "0.6s" },
+  ];
+  return (
+    <svg viewBox={BOX} aria-hidden="true">
+      {rows.map((row) => (
+        <g key={row.label}>
+          <rect
+            x="18"
+            y={row.y}
+            width="140"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+            opacity="0.3"
+          />
+          <rect x="18" y={row.y} width="0" height="24" fill="currentColor" opacity="0.15">
+            <animate
+              attributeName="width"
+              values={`0;${row.width}`}
+              dur="1.5s"
+              begin={row.begin}
+              fill="freeze"
+            />
+          </rect>
+          <text
+            x="26"
+            y={row.y + 16}
+            fontSize="9"
+            fontFamily="monospace"
+            fill="currentColor"
+            opacity="0.8"
+          >
+            {row.label}
+          </text>
+          <circle cx="172" cy={row.y + 12} r="3" fill="currentColor" opacity="0.6">
+            <animate
+              attributeName="opacity"
+              values="0.6;1;0.6"
+              dur="1.5s"
+              begin={row.begin}
+              repeatCount="indefinite"
+            />
+          </circle>
+        </g>
+      ))}
+      <line x1="18" y1="126" x2="182" y2="126" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
+      <text
+        x="18"
+        y="144"
+        fontSize="8"
+        fontFamily="monospace"
+        fill="currentColor"
+        opacity="0.6"
+      >
+        NO TOKEN REWARDS
+      </text>
     </svg>
   );
 }

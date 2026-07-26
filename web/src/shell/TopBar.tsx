@@ -1,20 +1,22 @@
 /*
  * Site nav.
  *
- * Transparent over the hero, then it takes a backing once the page has moved
- * more than a nav's height. Logo left, section anchors in the middle, one mono
- * action on the right. Nothing here reads the payment stream, so the bar never
- * re-renders while money moves.
+ * Wordmark left, a few quiet anchors, one pill on the right. Nothing else: no
+ * tag beside the logo, no second action, no decoration.
+ *
+ * It is transparent over the hero and takes a blurred backing once the page has
+ * moved more than a nav's height. It is the highest layer in the shell, so the
+ * marquee, the graph canvases and every count-up pass underneath it. Nothing
+ * here reads the payment stream, so the bar never re-renders while money moves.
  */
 
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 
 const SECTIONS = [
-  { href: "#capabilities", label: "Capabilities" },
-  { href: "#how-it-works", label: "How it works" },
-  { href: "#numbers", label: "Numbers" },
-  { href: "#protocol", label: "Protocol" },
+  { href: "/#how-it-works", label: "How it works" },
+  { href: "/#numbers", label: "Numbers" },
+  { href: "/#protocol", label: "Contracts" },
 ];
 
 export function TopBar() {
@@ -33,7 +35,6 @@ export function TopBar() {
       <div className="nav-inner">
         <Link to="/" className="nav-brand" aria-label="Tributary home">
           <span className="nav-word">Tributary</span>
-          <span className="nav-word-tag">CREDIT</span>
         </Link>
 
         {onApp ? null : (
@@ -47,20 +48,12 @@ export function TopBar() {
         )}
 
         <div className="nav-actions">
-          <a
-            className="nav-link nav-link-out"
-            href="https://github.com/Takumixbt/tributary"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Source
-          </a>
           {onApp ? (
-            <NavLink to="/" className="btn btn-sm">
+            <NavLink to="/" className="btn btn-primary btn-sm">
               Back to site
             </NavLink>
           ) : (
-            <NavLink to="/app" className="btn btn-sm">
+            <NavLink to="/app" className="btn btn-primary btn-sm">
               Launch App
             </NavLink>
           )}

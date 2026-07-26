@@ -10,16 +10,26 @@
  * none: it accumulates buckets as it polls.
  */
 
-import { createPublicClient, http, type PublicClient } from "viem";
+import { createPublicClient, fallback, http, type PublicClient } from "viem";
 import { arcTestnet } from "viem/chains";
-import { RPC_URL } from "../../lib/env";
+import { RPC_URLS } from "../../lib/env";
 import { emptySeries } from "../../lib/stream";
 import type { Address, AgentHealth, AgentState, LineStatus, Micro, VaultState } from "../../lib/types";
 import { registryAbi, routerAbi, vaultAbi } from "./abi";
 
+/*
+ * A fallback over every configured endpoint. Building the roster fires one read
+ * per agent plus a line read and two router reads each, and the public Arc
+ * testnet RPC rate-limits that burst: without a second endpoint a single
+ * dropped agentList call left the whole roster empty. viem walks the list per
+ * request, so the failure costs a retry instead of the page.
+ */
 export const publicClient: PublicClient = createPublicClient({
   chain: arcTestnet,
-  transport: http(RPC_URL, { batch: true, retryCount: 2 }),
+  transport: fallback(
+    RPC_URLS.map((url) => http(url, { batch: true, retryCount: 2 })),
+    { rank: false },
+  ),
 });
 
 const MICRO = 1_000_000n;

@@ -30,29 +30,35 @@ everything about the front end." Treat it as art direction, not inspiration.
 
 **Color.** Pure monochrome, unchanged from v1 and still absolute: black page,
 white ink, every value R = G = B. Hairlines are white at 10% (`--hair`). No
-shadows. No gradients behind content. `--radius` is `0px` and nothing in this
-product is rounded, including buttons.
+shadows. No gradients behind content. `--radius` is `0px`: panels, cells,
+frames and tags are square. Buttons are the one exception and they are pills
+(`--radius-pill`), because the reference's CTAs are `rounded-full` and matching
+it exactly matters more than the blanket rule.
 
 **One inversion.** Exactly one section on the landing page runs
-`data-surface="paper"`: how-it-works. White page, black ink, a diagonal hatch at
-5%. A second inversion would make the page look striped.
+`data-surface="paper"`: how-it-works. White page, black ink, and nothing else
+changes. Same container, same section padding, same head, same type scale, same
+hairlines. No texture, no overlay, no entrance treatment: the band has to read
+as the same document with the lights on, not as a second website. A second
+inversion would make the page look striped.
 
 **Motion.** Calm and sparse. The complete inventory:
 
 1. Sections reveal once on scroll: `opacity 0 -> 1` plus an 8 to 24px rise, over
    800ms (`--dur-reveal`) or 1000ms (`--dur-reveal-long`), staggered by 100ms
    inside a group. `Reveal` is the only component that does this.
-2. One horizontal marquee, at the bottom edge of the hero, carrying five facts.
-   Slow, linear, seamless, pauses under the pointer. It is the only element in
-   the entire product that moves on its own.
+2. Marquees. One at the bottom edge of the hero carrying four real facts, and
+   two counter-travelling rows in the built-on section, exactly as the reference
+   builds its integrations block. Slow, linear, seamless, and they pause under
+   the pointer.
 3. One letter-by-letter `char-in` on one word of the hero headline. It plays
    once, on load.
 4. Four count-up figures in the numbers band. They ramp from zero over 1.4s the
-   first time they enter the viewport, then track the live stream.
-5. A clock in the numbers band, ticking once a second.
-6. The hero graph: the same simulation engine as before, boxed, at its `ambient`
+   first time they enter the viewport and then hold. The figures are fixed and
+   real: this band does not read the stream.
+5. The hero graph: the same simulation engine as before, boxed, at its `ambient`
    preset. Slow drift, pulses only when a real payment lands.
-7. Hover affordances: a title that leans 8px, a row that takes a 5% wash, an
+6. Hover affordances: a title that leans 8px, a row that takes a 5% wash, an
    arrow that shifts 4px.
 
 Nothing else moves. Nothing blinks, scrambles, shimmers, oscillates its font
@@ -62,7 +68,10 @@ plainly.
 
 **Layout.** `--page-max` is 1400px and the nav uses the same column, so the
 logo and the first character of every headline sit on one vertical line.
-Sections are `--section-y` tall (80 to 128px of padding, top and bottom).
+Sections are `--section-y` tall (96 to 128px of padding, top and bottom, which
+is the reference's `py-24 lg:py-32`). Section heads clear `--head-gap`
+(`mb-16 lg:mb-24`). Dark and inverted sections use the identical values, so
+scrolling through the flip never changes the rhythm.
 Hairline grids are built the same way everywhere: `gap: 1px` on a container with
 `background: var(--hair)`, children painting `--paper`.
 
@@ -72,32 +81,51 @@ mono label in sentence case. Centered sections take a rule on both sides.
 **Headlines.** Two lines. The second line drops to `--ink-mid`. That single
 device carries the whole page and it is used in every section head.
 
-**Buttons.** Two of them. `.btn` is a 56px square hairline button in mono;
-`.btn-primary` fills it solid white with black text. The reference rounds its
-buttons; this product does not, because zero radius is the stronger rule and it
-is applied without exception.
+**Buttons.** Two of them, both pills, both in the body face at 16px, matching
+the reference exactly. `.btn` is a 56px hairline pill; `.btn-primary` fills it
+solid white with black text. `.btn-sm` is the nav-scale version at 38px.
+
+**Copy.** Plain language everywhere except the contracts section. No jargon, no
+protocol names in a headline, no adjectives standing in for facts. The pitch in
+one breath: agents earn money in tiny payments for the work they do, Tributary
+turns that income into a credit score and lends against it, and every payment
+they earn pays a slice of the loan back, so lenders get repaid without trusting
+anyone.
+
+**Numbers.** Every figure on the landing page is real and can be opened in a
+block explorer. The landing page never reads the demo simulator. The complete
+allowed set: 30 payments settled, a line opened at score 139 and 22.22% APR,
+0.150000 USDC drawn, 0.039300 USDC repaid on the next flush, a re-score to 268
+at 19.64% APR, the three deployed addresses, the 0.000001 USDC minimum, and the
+20% repayment share. Nothing else.
 
 ### Page structure, landing
 
 | Section | What it is |
 | --- | --- |
-| Hero | `min-height: 145vh`, hairline field, boxed graph off the right shoulder, eyebrow, three-line claim with the animated word, one paragraph, two CTAs, marquee pinned to the bottom edge |
-| Capabilities | Eyebrow, two-line headline, four numbered rows separated by hairlines, each with a mono index, a title, a paragraph and a static line drawing |
-| How it works | The inverted band. Four numbered steps in two columns |
-| Numbers | Live clock in the head, four count-up figures in a 2x2 hairline grid |
-| Ecosystem | Centered head, six integrations in a 3-up hairline grid |
-| Security | The threat model: pills, the attack stated plainly, three prices, the consumer-credit analogy |
-| Protocol | Three deployed addresses in mono linking to arcscan, then the proven cycle as a quiet evidence table |
-| CTA | One large line, one primary button, one mono note |
-| Footer | Hairline top rule, four columns, mono base line naming the stream |
+| Hero | `min-height: 145vh`, hairline field, boxed graph off the right shoulder, eyebrow, two-line claim with the animated word, one paragraph, two pill CTAs, marquee of four real facts pinned to the bottom edge |
+| What it does | Eyebrow, two-line headline, four numbered rows separated by hairlines, each with a mono index, a title, a paragraph and a small mark |
+| How it works | The inverted band. Four steps down the left, the proven cycle in a bordered frame down the right |
+| Numbers | Four real figures in a 2x2 hairline grid, counted up once |
+| Built on | Centred head, two counter-travelling marquee rows of bordered cards |
+| Risk | Two columns: the attack stated plainly with tags on the left, four bordered cards pricing it on the right |
+| Contracts | Three deployed addresses in mono linking to arcscan, then the proven cycle as a quiet evidence table. The one section where precise terms are allowed |
+| CTA | One bordered box, a two-line headline, two pill buttons, one mono note |
+| Footer | Hairline top rule, a brand column spanning two of six, four link columns, a bottom bar of small print |
 
 ### Page structure, terminal
 
 `/app` keeps its information architecture and wears this skin: Figtree
 headings, Geist Mono data, hairline gaps, generous padding, sentence-case
 labels. The full event ledger sits behind an `Activity` disclosure, closed by
-default. The underwriter feed is three rows. There is no persistent ledger rail
-and no mode banner: the footer states which stream is running.
+default. The underwriter feed is three rows.
+
+It reads Arc testnet by default. The three deployed addresses live in `web/.env`
+(gitignored, mirrored in `.env.example`), so `hasChainConfig` is true and the
+stream is the chain reader. The seeded simulator runs only behind `?demo=1`, and
+when it does the dashboard header carries a `Simulation` tag beside the eyebrow
+and says so in its own standfirst. A simulated economy must never be able to
+pass for a real one.
 
 ---
 
@@ -106,35 +134,48 @@ and no mode banner: the footer states which stream is running.
 **Name:** Tributary. Always capitalised, never "the Tributary", never an
 acronym.
 
-**Positioning line:** "Credit for the agent economy."
+**Positioning line:** "Credit for AI agents."
 
-**What we are:** credit infrastructure for AI agents that earn through x402
-nanopayments on Arc. Revenue history becomes a credit score. A vault lends
-against it. Every payment the agent earns splits at its RevenueRouter until the
-debt clears.
+**What we are:** AI agents get paid tiny amounts for the work they do, thousands
+of times a day. Tributary turns that income into a credit score and lends
+against it. Every payment an agent earns pays a slice of the loan back on the
+way in, so lenders get repaid without anyone having to be trusted.
 
 **The thesis in four words:** earn, score, lend, repay.
 
 ### Voice
 
-Confident, concrete, technical, unhurried. Short declaratives. We are a company
+Confident, concrete, plain, unhurried. Short declaratives. We are a company
 that has already shipped this, describing what it does. Numbers instead of
 adjectives. Name the failure modes before anyone asks.
 
+Every line on the landing page has to survive being read by someone who has
+never heard of any of this. If a sentence needs a glossary, rewrite it. Precise
+terms are allowed in the contracts section and on the dashboard, in small doses,
+and nowhere else.
+
 Write like this:
 
-- "Repayment is plumbing, not a promise."
-- "Interest accrues per second and lands in the share price."
+- "Income decides who borrows. The contract decides who gets repaid."
+- "Interest builds on the money that is out on loan, and shows up in what a
+  share is worth."
 - "An agent can walk away. We price that."
 
 Not like this:
 
 - "Revolutionary AI-powered credit protocol."
-- "Seamlessly unlock liquidity for the agent economy."
+- "Rail-enforced nanopayment credit for the agentic economy."
 
 ### Copy rules
 
 - **No em dashes anywhere.** Use a period, a colon, or a comma. This is absolute.
+- **Banned from marketing copy**, in headlines, body and marquees alike:
+  "rail-enforced", "x402", "nanopayment rail", "ERC-8004", "sub-second finality",
+  "USDC-denominated gas", "USDC is gas", "programmable money", "agentic economy",
+  "cryptographically verifiable", and any second use of a plumbing metaphor.
+- **No invented figures.** If a number cannot be opened in a block explorer it
+  does not go on the landing page. Simulated counters belong on `/app` behind
+  `?demo=1`, labelled.
 - No exclamation marks. No rhetorical questions. No "simply", "just", "easily",
   "seamless", "revolutionary", "unlock", "empower", "leverage" as a verb.
 - No emoji, in the UI or in code.
@@ -143,7 +184,9 @@ Not like this:
 - Sentence case everywhere, including headlines. Uppercase is reserved for
   marquee tags, stat labels and underwriter action words.
 - Numbers: always digits, always tabular.
-- Money: "USDC" as a suffix or column header, never a `$` sign.
+- Money: "USDC" as a suffix or column header, never a `$` sign. The one
+  exception is the hero marquee's `$0.000001`, where the glyph is what makes the
+  size of the number land at a glance.
 - Time: relative on live surfaces ("4s ago"), absolute mono on the ledger
   ("14:22:09.481").
 
@@ -152,7 +195,7 @@ Not like this:
 | Use | Not |
 | --- | --- |
 | agent | bot, worker, AI |
-| nanopayment | micropayment, microtransaction |
+| payment (marketing) / nanopayment (code, dashboard) | micropayment, microtransaction |
 | credit line | loan, debt facility |
 | draw | borrow, take out |
 | split | distribution, allocation |
