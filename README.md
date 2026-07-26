@@ -92,7 +92,14 @@ UNDERWRITER_ADDRESS=0x... forge script script/Deploy.s.sol \
 | `AgentRegistry` | [`0x897e3607b3dc5229ed4052ed09af7f6a70ec6c22`](https://testnet.arcscan.app/address/0x897e3607b3dc5229ed4052ed09af7f6a70ec6c22) |
 | Demo agent's `RevenueRouter` | [`0xF81EEE56be9Fd9d487A847f35CF4dfe563Eb778d`](https://testnet.arcscan.app/address/0xF81EEE56be9Fd9d487A847f35CF4dfe563Eb778d) |
 
-Proven end to end on testnet: a buyer agent paid the seller agent five $0.02 x402 nanopayments gaslessly through Circle Gateway, the seller served paid responses, and the vault holds live lender liquidity.
+The full credit loop is proven on testnet with real transactions:
+
+1. A buyer agent paid the seller agent 30 gasless $0.02 x402 nanopayments through Circle Gateway.
+2. Gateway batch-settled the earnings; the keeper withdrew them into the agent's RevenueRouter.
+3. The underwriter agent scored the agent 139 from its revenue telemetry and autonomously opened a 0.1965 USDC line at 22.22% APR ([open tx](https://testnet.arcscan.app/tx/0x8e975b21f2d9b1c682d12c618e6106753f10411cd59ed30baa6d1bdecebe4159)).
+4. The agent drew 0.15 USDC of lender capital.
+5. The next revenue flush auto-split at the rail: 0.0393 USDC repaid the vault, 0.1572 USDC reached the agent ([split tx](https://testnet.arcscan.app/tx/0xd669027896e9e68ebae426bd015cb477d5bae94cb8e15eb8152ca0d53d59a70c)).
+6. The underwriter re-scored to 268, raised the limit to 0.2947 USDC and cut the rate to 19.64%. Debt is amortizing with every payment the agent earns.
 
 ## Status
 

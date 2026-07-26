@@ -1,4 +1,4 @@
-import { createPublicClient, createWalletClient, http, type Address, type Hex } from "viem";
+import { createPublicClient, createWalletClient, fallback, http, type Address, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { arcTestnet } from "viem/chains";
 
@@ -21,13 +21,25 @@ export const VAULT = (process.env.VAULT_ADDRESS ?? "") as Address;
 export const REGISTRY = (process.env.REGISTRY_ADDRESS ?? "") as Address;
 export const ROUTER = (process.env.ROUTER_ADDRESS ?? "") as Address;
 
-export const publicClient = createPublicClient({ chain: arcTestnet, transport: http(RPC_URL) });
+// The official public RPC rate-limits aggressively: batch calls, retry with
+// backoff, and fail over to dRPC's public endpoint when it throttles.
+const transport = () =>
+  fallback([
+    http(RPC_URL, { batch: true, retryCount: 3, retryDelay: 1200 }),
+    http("https://arc-testnet.drpc.org", { batch: true, retryCount: 3, retryDelay: 1200 }),
+  ]);
+
+export const publicClient = createPublicClient({
+  chain: arcTestnet,
+  transport: transport(),
+  batch: { multicall: true },
+});
 
 export function walletFor(envKey: string) {
   const account = privateKeyToAccount(env(envKey) as Hex);
   return {
     account,
-    client: createWalletClient({ account, chain: arcTestnet, transport: http(RPC_URL) }),
+    client: createWalletClient({ account, chain: arcTestnet, transport: transport() }),
   };
 }
 

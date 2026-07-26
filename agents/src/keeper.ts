@@ -22,10 +22,12 @@ const balances = await client.getBalances();
 const available = balances.gateway.available;
 console.log(`Agent ${client.account.address} Gateway earnings: ${balances.gateway.formattedAvailable} USDC`);
 
-if (available >= BigInt(Math.round(minUsdc * 1e6))) {
-  const amount = formatUnits(available, 6);
+// Gateway charges the withdrawal fee on top of the amount, so leave headroom
+const FEE_BUFFER = 5_000n; // 0.005 USDC
+if (available >= BigInt(Math.round(minUsdc * 1e6)) + FEE_BUFFER) {
+  const amount = formatUnits(available - FEE_BUFFER, 6);
   console.log(`Withdrawing ${amount} USDC from Gateway to router ${router}...`);
-  const w = await client.withdraw(amount, { recipient: router, maxFee: "0.5" });
+  const w = await client.withdraw(amount, { recipient: router, maxFee: "0.005" });
   console.log(`Withdrawal landed, tx: ${w.mintTxHash}`);
 } else {
   console.log(`Below ${minUsdc} USDC threshold, skipping withdrawal.`);
