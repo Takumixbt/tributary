@@ -84,6 +84,16 @@ UNDERWRITER_ADDRESS=0x... forge script script/Deploy.s.sol \
   --rpc-url https://rpc.testnet.arc.network --broadcast
 ```
 
+## Live on Arc Testnet
+
+| Contract | Address |
+| --- | --- |
+| `TributaryVault` | [`0xe13572efdfea23fe04f7cc81f98c083254a44ba8`](https://testnet.arcscan.app/address/0xe13572efdfea23fe04f7cc81f98c083254a44ba8) |
+| `AgentRegistry` | [`0x897e3607b3dc5229ed4052ed09af7f6a70ec6c22`](https://testnet.arcscan.app/address/0x897e3607b3dc5229ed4052ed09af7f6a70ec6c22) |
+| Demo agent's `RevenueRouter` | [`0xF81EEE56be9Fd9d487A847f35CF4dfe563Eb778d`](https://testnet.arcscan.app/address/0xF81EEE56be9Fd9d487A847f35CF4dfe563Eb778d) |
+
+Proven end to end on testnet: a buyer agent paid the seller agent five $0.02 x402 nanopayments gaslessly through Circle Gateway, the seller served paid responses, and the vault holds live lender liquidity.
+
 ## Status
 
-Built for the Arc Programmable Money hackathon (Encode Club, 2026). Contracts and test suite working; agents and dashboard in progress. Testnet addresses will be listed here after deployment.
+Built for the Arc Programmable Money hackathon (Encode Club, 2026). Contracts deployed and tested, agent loop proven on testnet, dashboard in progress.

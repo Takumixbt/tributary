@@ -26,7 +26,7 @@ const gateway = createGatewayMiddleware({
 });
 
 // Lightweight real checks against Ethereum mainnet for the queried token.
-const eth = createPublicClient({ chain: mainnet, transport: http("https://eth.llamarpc.com") });
+const eth = createPublicClient({ chain: mainnet, transport: http("https://ethereum-rpc.publicnode.com") });
 const EIP1967_IMPL_SLOT = "0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc" as const;
 
 async function riskSnapshot(token: Address) {
