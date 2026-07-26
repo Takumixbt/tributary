@@ -1,0 +1,8 @@
+{
+  "name": "tributary",
+  "private": true,
+  "description": "Credit infrastructure for the agent economy on Arc",
+  "engines": {
+    "node": ">=22.6"
+  }
+}
