@@ -1,0 +1,17 @@
+# secrets
+.env
+.env.*
+*.key
+
+# node
+node_modules/
+dist/
+
+# foundry
+contracts/cache/
+contracts/out/
+contracts/broadcast/**/dry-run/
+
+# misc
+.DS_Store
+*.log
