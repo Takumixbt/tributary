@@ -1,0 +1,234 @@
+/*
+ * Tributary design tokens. Single source of truth.
+ *
+ * Rule zero: STRICT MONOCHROME. Every color in this file has R = G = B.
+ * If you are about to write a value where the channels differ, stop.
+ * Contrast, weight, texture and motion carry all expression.
+ */
+
+:root {
+  /* ------------------------------------------------------------ neutral ramp
+   * The only colors that exist. Reference these from semantic aliases,
+   * never directly in component CSS.
+   */
+  --n-000: #000000;
+  --n-050: #050505;
+  --n-075: #0a0a0a;
+  --n-100: #101010;
+  --n-150: #161616;
+  --n-200: #1c1c1c;
+  --n-300: #2b2b2b;
+  --n-400: #414141;
+  --n-500: #5c5c5c;
+  --n-600: #7d7d7d;
+  --n-700: #a3a3a3;
+  --n-800: #c9c9c9;
+  --n-900: #e8e8e8;
+  --n-950: #f4f4f4;
+  --n-1000: #ffffff;
+
+  /* ------------------------------------------------------------- semantics
+   * Default surface: terminal dark. Inverted sections override these
+   * five aliases only (see [data-surface="paper"] below).
+   */
+  --paper: var(--n-050);
+  --paper-raised: var(--n-100);
+  --paper-sunken: var(--n-000);
+  --ink: var(--n-950);
+  --ink-strong: var(--n-1000);
+  --ink-mid: var(--n-700);
+  --ink-dim: var(--n-600);
+  --ink-faint: var(--n-400);
+  --ink-ghost: var(--n-300);
+
+  /* Hairlines are alpha, not solid, so they read correctly over canvas art.
+   * White at 10% is the reference's one border value; soft and strong exist
+   * only for the two places that need a step either side of it. */
+  --hair: rgba(255, 255, 255, 0.1);
+  --hair-soft: rgba(255, 255, 255, 0.05);
+  --hair-strong: rgba(255, 255, 255, 0.2);
+  --hair-live: rgba(255, 255, 255, 0.7);
+  --scrim: rgba(5, 5, 5, 0.72);
+  --scrim-heavy: rgba(5, 5, 5, 0.9);
+  /* Diagonal hatch ink, for barber poles and status texture. */
+  --hatch: rgba(255, 255, 255, 0.11);
+
+  /* Canvas layers read these through lib/paint.ts, kept in sync by hand. */
+  --grid-alpha: 0.06;
+  --phosphor-decay: 0.12;
+
+  /* ------------------------------------------------------------------ type
+   * Two families. Figtree carries everything from body copy to the 7rem
+   * display headline; Geist Mono carries data, eyebrows and labels. The
+   * aliases below are kept so zone CSS written against the old vocabulary
+   * still resolves, but there are only two typefaces in this product.
+   */
+  --font-display: "Figtree Variable", Figtree, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Figtree Variable", Figtree, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Geist Mono Variable", "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-spec: var(--font-mono);
+
+  /* Mono / spec sizes are fixed px on purpose: data density must not breathe. */
+  --t-3xs: 10px;
+  --t-2xs: 11px;
+  --t-xs: 12px;
+  --t-sm: 13px;
+  --t-md: 14px;
+  --t-lg: 15px;
+
+  /* Body scale. Generous: this design breathes rather than compresses. */
+  --t-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --t-lead: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
+  --t-h3: clamp(1.5rem, 1.2rem + 1.1vw, 2.25rem);
+  --t-h2: clamp(2.25rem, 1.4rem + 3vw, 3.75rem);
+  --t-h1: clamp(2.5rem, 1.4rem + 4vw, 4.5rem);
+  /* The hero. Matches the reference exactly: clamp(2.5rem, 7vw, 7rem). */
+  --t-display: clamp(2.5rem, 7vw, 7rem);
+  /* Stat figures in the numbers band. */
+  --t-mega: clamp(3.25rem, 2rem + 5vw, 6rem);
+
+  --lh-tight: 0.9;
+  --lh-snug: 1.05;
+  --lh-body: 1.6;
+  --lh-mono: 1.45;
+
+  --tr-display: -0.03em;
+  --tr-tight: -0.02em;
+  --tr-normal: 0em;
+  --tr-spec: 0.06em;
+  --tr-caps: 0.12em;
+
+  --w-body: 400;
+  --w-body-strong: 500;
+  --w-display: 500;
+  --w-display-bold: 600;
+
+  --measure: 62ch;
+  --measure-tight: 46ch;
+
+  /* --------------------------------------------------------------- spacing */
+  --s-0: 0px;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+  --s-11: 192px;
+  --s-12: 256px;
+
+  /* ------------------------------------------------------------------ grid */
+  --page-max: 1400px;
+  --pad-x: clamp(24px, 3.4vw, 48px);
+  --gutter: 1px; /* hairline gaps: the page background IS the border */
+  --rail-w: 0px;
+  --topbar-h: 64px;
+  --banner-h: 0px;
+  --panel-pad: clamp(20px, 1.6vw, 32px);
+  --radius: 0px; /* nothing is rounded. anywhere. */
+  --tick: 6px; /* corner tick length on spec frames */
+  /* Vertical rhythm of a landing section. py-24 / py-32 in the reference. */
+  --section-y: clamp(80px, 8vw, 128px);
+
+  /* ---------------------------------------------------------------- motion */
+  --dur-instant: 90ms;
+  --dur-fast: 160ms;
+  --dur-base: 260ms;
+  --dur-slow: 480ms;
+  --dur-flash: 800ms; /* white baseline flash decay on new ledger rows */
+  --dur-camera: 900ms;
+  --dur-settle: 1200ms;
+  /* Scroll reveal. Long and soft: sections arrive, they do not pop. */
+  --dur-reveal: 800ms;
+  --dur-reveal-long: 1000ms;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.28, 0.64, 1);
+  --ease-step: steps(6, end);
+
+  /* Read by JS through lib/motion.ts. 0 means: data still updates, travel does not. */
+  --motion-scale: 1;
+
+  /* ----------------------------------------------------------------- depth */
+  --z-graph-back: 0;
+  --z-content: 10;
+  --z-graph-front: 20;
+  /* The colophon sits above the front graph layer. Everywhere else a pulse may
+   * pass over a panel, but the line that names the contracts stays readable. */
+  --z-colophon: 25;
+  --z-rail: 30;
+  --z-topbar: 40;
+  --z-overlay: 50;
+}
+
+/* Inverted editorial surface. Overrides semantics only, never the ramp. */
+[data-surface="paper"] {
+  --paper: var(--n-1000);
+  --paper-raised: var(--n-950);
+  --paper-sunken: var(--n-900);
+  --ink: var(--n-100);
+  --ink-strong: var(--n-000);
+  --ink-mid: var(--n-400);
+  --ink-dim: var(--n-500);
+  --ink-faint: var(--n-700);
+  --ink-ghost: var(--n-800);
+  --hair: rgba(0, 0, 0, 0.14);
+  --hair-soft: rgba(0, 0, 0, 0.07);
+  --hair-strong: rgba(0, 0, 0, 0.28);
+  --hair-live: rgba(0, 0, 0, 0.75);
+  --scrim: rgba(255, 255, 255, 0.78);
+  --scrim-heavy: rgba(255, 255, 255, 0.94);
+  --hatch: rgba(0, 0, 0, 0.16);
+  color-scheme: light;
+}
+
+/* Slightly lifted dark surface for dense panels sitting over the graph. */
+[data-surface="deep"] {
+  --paper: var(--n-000);
+  --paper-raised: var(--n-075);
+  --scrim: rgba(0, 0, 0, 0.82);
+}
+
+/* Reduced motion, two ways in. The media query is the real signal. data-motion="0"
+ * is stamped on the root by MotionProvider for ?motion=0, so the QA path and the
+ * user preference collapse exactly the same tokens. Keep the two blocks identical. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-scale: 0;
+    --dur-instant: 1ms;
+    --dur-fast: 1ms;
+    --dur-base: 1ms;
+    --dur-slow: 1ms;
+    --dur-camera: 1ms;
+    --dur-settle: 1ms;
+    --dur-reveal: 1ms;
+    --dur-reveal-long: 1ms;
+    /* The flash still decays: it is how a new row announces itself. */
+    --dur-flash: 400ms;
+  }
+}
+
+:root[data-motion="0"] {
+  --motion-scale: 0;
+  --dur-instant: 1ms;
+  --dur-fast: 1ms;
+  --dur-base: 1ms;
+  --dur-slow: 1ms;
+  --dur-camera: 1ms;
+  --dur-settle: 1ms;
+  --dur-reveal: 1ms;
+  --dur-reveal-long: 1ms;
+  --dur-flash: 400ms;
+}
+
+/* Laptop is the design target. Below it, density steps down once. */
+@media (max-width: 1180px) {
+  :root {
+    --panel-pad: 18px;
+  }
+}

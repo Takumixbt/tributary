@@ -1,0 +1,502 @@
+/* Zone: src/pages/landing/**.
+ *
+ * The page is a spec sheet laid over a running simulation. Sections sit on
+ * --scrim rather than an opaque surface so the graph stays visible through the
+ * whole scroll, and no section uses a backdrop filter: the three the shell owns
+ * are the budget for the entire app.
+ */
+
+.landing {
+  position: relative;
+}
+
+/* ------------------------------------------------------------------- hero */
+
+.hero {
+  position: relative;
+  min-height: calc(100vh - var(--topbar-h) - var(--banner-h));
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: var(--s-9) 0 0;
+}
+
+/* Procedural texture layer. Behind the claim, never over it. */
+.hero-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Specific enough to win against .dither in kinetic.css regardless of import order. */
+.hero-field .hero-dither {
+  position: absolute;
+  inset: -14% -6%;
+  width: auto;
+  height: auto;
+  opacity: 0.34;
+}
+
+.hero-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--pad-x);
+}
+
+/* The measure is set in px, not ch. This wrapper inherits the body font, so a ch
+ * cap here would be measured in 17px Inter and squeeze the 132px display claim
+ * into a two-character column. The claim's own line length is governed by the
+ * display size against this width. */
+.hero-claim {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-5);
+  width: 100%;
+  max-width: 1180px;
+  text-align: center;
+}
+
+.hero-display {
+  font-size: var(--t-display);
+  margin: 0;
+}
+
+.hero-lead {
+  max-width: 52ch;
+  text-align: center;
+}
+
+/* One metric strip, hairline framed, flush to the bottom of the viewport. */
+.hero-metrics {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hair);
+  border-top: 1px solid var(--hair);
+}
+
+.hero-metric {
+  position: relative;
+  background: var(--scrim);
+  padding: var(--s-4) var(--s-4) var(--s-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  min-width: 0;
+}
+
+.hero-metric:first-child {
+  padding-left: var(--pad-x);
+}
+
+.hero-metric:last-child {
+  padding-right: var(--pad-x);
+}
+
+.hero-metric-value {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 1rem + 1.6vw, 2.25rem);
+  font-variant-numeric: tabular-nums slashed-zero;
+  line-height: 1;
+  color: var(--ink-strong);
+}
+
+.hero-metric-note {
+  font-family: var(--font-mono);
+  font-size: var(--t-2xs);
+  line-height: 1.3;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* -------------------------------------------------------------- manifesto */
+
+.manifesto-band {
+  padding: var(--s-10) var(--pad-x);
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  background: var(--paper);
+}
+
+.manifesto-band .manifesto {
+  font-size: clamp(1.75rem, 1.1rem + 2.6vw, 3.25rem);
+  max-width: 30ch;
+}
+
+/* ------------------------------------------------- numbered spec sections */
+
+.sec {
+  position: relative;
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  gap: var(--s-7);
+  padding: var(--s-10) var(--pad-x);
+  border-bottom: 1px solid var(--hair);
+  background: var(--scrim);
+}
+
+.sec-index {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  position: sticky;
+  top: calc(var(--topbar-h) + var(--banner-h) + var(--s-6));
+  align-self: start;
+  height: max-content;
+}
+
+.sec-num {
+  font-family: var(--font-spec);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tr-spec);
+  color: var(--ink);
+}
+
+.sec-body {
+  display: grid;
+  grid-template-columns: minmax(0, 27rem) minmax(0, 1fr);
+  gap: var(--s-7) var(--s-8);
+  align-items: start;
+}
+
+.sec-body.is-stack {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.sec-prose {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  max-width: var(--measure);
+}
+
+.sec-note {
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  line-height: var(--lh-mono);
+  color: var(--ink-dim);
+  max-width: var(--measure);
+}
+
+/* ------------------------------------------------------------ data insets */
+
+.inset {
+  position: relative;
+  display: grid;
+  gap: 1px;
+  background: var(--hair);
+  border: 1px solid var(--hair);
+}
+
+.inset-cell {
+  position: relative;
+  background: var(--paper);
+  padding: var(--s-4);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.inset-quad {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.inset-value {
+  font-family: var(--font-mono);
+  font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.4rem);
+  font-variant-numeric: tabular-nums slashed-zero;
+  line-height: 1;
+  color: var(--ink-strong);
+}
+
+.inset-value-lg {
+  font-size: clamp(2rem, 1.4rem + 2vw, 3.25rem);
+}
+
+.inset-sub {
+  font-family: var(--font-mono);
+  font-size: var(--t-2xs);
+  color: var(--ink-dim);
+}
+
+.inset-reason {
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--ink-mid);
+}
+
+.inset-span {
+  grid-column: 1 / -1;
+}
+
+.waiting {
+  font-family: var(--font-mono);
+  font-size: var(--t-2xs);
+  color: var(--ink-faint);
+}
+
+/* Tape rows inside an inset: the shared grammar from global.css, narrower and a
+ * shade quieter because it sits inside prose rather than in the terminal. The
+ * descendant selectors win on specificity, so stylesheet order cannot matter. */
+.inset .tape {
+  --tape-cols: 5.5rem minmax(0, 1fr) auto;
+  --tape-rule: var(--hair-soft);
+  --tape-actor-ink: var(--ink-mid);
+  display: flex;
+  flex-direction: column;
+}
+
+.inset .tape-amount {
+  color: var(--ink-strong);
+}
+
+/* ------------------------------------------------------------ split proof
+ * The editorial version of the split: 30px tall, hatched, legible from across a
+ * room. The terminal's compact `.split-*` row is a different component and keeps
+ * that name; this one is `.proof-*` so the two can never overwrite each other.
+ */
+
+.proof-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.proof-bar {
+  position: relative;
+  height: 30px;
+  background: var(--paper-sunken);
+  overflow: hidden;
+}
+
+.proof-vault {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: repeating-linear-gradient(45deg, var(--ink) 0 1px, transparent 1px 4px);
+  transition: width var(--dur-base) var(--ease-in-out);
+}
+
+.proof-agent {
+  position: absolute;
+  inset: 0 0 0 auto;
+  background: repeating-linear-gradient(45deg, var(--hair-soft) 0 1px, transparent 1px 4px);
+  transition: width var(--dur-base) var(--ease-in-out);
+}
+
+.proof-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--ink-strong);
+  transition: left var(--dur-base) var(--ease-in-out);
+}
+
+.proof-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-3);
+}
+
+.proof-leg {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.proof-leg.is-agent {
+  text-align: right;
+}
+
+.proof-leg-value {
+  font-family: var(--font-mono);
+  font-size: var(--t-md);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------- why arc */
+
+.claims {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hair);
+  border: 1px solid var(--hair);
+}
+
+.claim {
+  background: var(--paper);
+  padding: var(--s-5) var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+.claim-body {
+  font-size: var(--t-sm);
+  line-height: 1.55;
+  color: var(--ink-mid);
+}
+
+/* ---------------------------------------------------------- threat model */
+
+.threat-band {
+  background: var(--paper);
+}
+
+.threat-prices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hair);
+  border: 1px solid var(--hair);
+}
+
+.threat-price {
+  background: var(--paper);
+  padding: var(--s-5) var(--s-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+.threat-price-num {
+  font-family: var(--font-spec);
+  font-size: var(--t-2xs);
+  letter-spacing: var(--tr-spec);
+  color: var(--ink-dim);
+}
+
+.threat-close {
+  padding-top: var(--s-2);
+}
+
+/* -------------------------------------------------------------------- cta */
+
+.cta {
+  position: relative;
+  padding: var(--s-11) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-5);
+  text-align: center;
+  background: var(--scrim);
+}
+
+.cta-readout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--s-2) var(--s-5);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--ink-mid);
+}
+
+.cta-readout-label {
+  color: var(--ink-dim);
+  margin-right: var(--s-2);
+}
+
+/* ----------------------------------------------------------- status strip */
+
+.strip {
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  background: var(--paper-sunken);
+  padding-block: 7px;
+}
+
+.strip-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  padding-inline: var(--s-5);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--ink-mid);
+  white-space: nowrap;
+}
+
+.strip-item .spec {
+  color: var(--ink-faint);
+}
+
+.strip-tick {
+  color: var(--ink-ghost);
+}
+
+/* ------------------------------------------------------------ responsive */
+
+@media (max-width: 1180px) {
+  .sec-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .claims,
+  .threat-prices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .sec {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-5);
+    padding-block: var(--s-8);
+  }
+
+  .sec-index {
+    position: static;
+  }
+
+  .hero-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-metric:nth-child(odd) {
+    padding-left: var(--pad-x);
+  }
+
+  .hero-metric:nth-child(even) {
+    padding-right: var(--pad-x);
+  }
+
+  .claims,
+  .threat-prices {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding-top: var(--s-7);
+  }
+
+  .hero-claim {
+    max-width: none;
+  }
+
+  .inset-quad {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cta {
+    padding-block: var(--s-9);
+  }
+}

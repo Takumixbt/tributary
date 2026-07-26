@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The split. One payment arrives, a thin slice leaves for the vault and the
+       rest forwards on to the agent. Stroke weights are the 20/80 ratio. -->
+  <rect width="32" height="32" fill="#000000" />
+  <g fill="none" stroke="#ffffff" stroke-linecap="square">
+    <path d="M3 16H14" stroke-width="3.4" />
+    <path d="M14 16L28.5 6.5" stroke-width="1.4" />
+    <path d="M14 16L28.5 25.5" stroke-width="2.8" />
+  </g>
+</svg>

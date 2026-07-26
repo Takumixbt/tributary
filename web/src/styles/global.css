@@ -1,0 +1,484 @@
+/*
+ * Tributary global stylesheet: reset, primitives, and the small set of shared
+ * utility classes every zone is allowed to use.
+ *
+ * Zone CSS lives inside the zone (src/dashboard/dashboard.css, etc.) and is
+ * imported by that zone's own components. Nothing outside src/styles/ may
+ * redefine a token or restyle a utility class defined here.
+ */
+
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--t-body);
+  font-weight: var(--w-body);
+  line-height: var(--lh-body);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/*
+ * Nothing in this product is tinted. Media is desaturated at the element level:
+ * a filter on body or #root would make them containing blocks and quietly break
+ * position: fixed for the graph canvases and the top bar.
+ */
+img,
+video {
+  filter: saturate(0);
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+:focus-visible {
+  outline: 1px solid var(--ink-strong);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--ink-strong);
+  color: var(--paper);
+}
+
+/* ------------------------------------------------------------- typography */
+
+/* The hero claim. Figtree at 7rem, leading 0.9, tight tracking, sentence case. */
+.display {
+  font-family: var(--font-display);
+  font-size: var(--t-display);
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-display);
+  line-height: var(--lh-tight);
+  color: var(--ink-strong);
+}
+
+.h1 {
+  font-family: var(--font-display);
+  font-size: var(--t-h1);
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-display);
+  line-height: var(--lh-snug);
+  color: var(--ink-strong);
+}
+
+/* Section headline. Two lines, the second one dropped to secondary ink. */
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--t-h2);
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-display);
+  line-height: var(--lh-snug);
+  color: var(--ink-strong);
+}
+
+.h3 {
+  font-family: var(--font-display);
+  font-size: var(--t-h3);
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-tight);
+  line-height: 1.15;
+  color: var(--ink-strong);
+}
+
+.lead {
+  font-size: var(--t-lead);
+  line-height: 1.55;
+  color: var(--ink-mid);
+  max-width: var(--measure);
+}
+
+.body {
+  max-width: var(--measure);
+  color: var(--ink-mid);
+  line-height: var(--lh-body);
+}
+
+/* Eyebrow. Mono, sentence case, preceded by a 32px hairline dash. */
+.spec {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-weight: 400;
+  letter-spacing: var(--tr-spec);
+  line-height: 1.3;
+  color: var(--ink-dim);
+}
+
+.spec-strong {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tr-spec);
+  color: var(--ink);
+}
+
+/* The eyebrow as the reference sets it: rule, then label. */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  letter-spacing: var(--tr-spec);
+  color: var(--ink-dim);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 32px;
+  height: 1px;
+  background: var(--hair-strong);
+}
+
+.eyebrow[data-center]::after {
+  content: "";
+  width: 32px;
+  height: 1px;
+  background: var(--hair-strong);
+}
+
+/* Every address, amount, timestamp and table cell. */
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  line-height: var(--lh-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: "zero" 1, "ss01" 1;
+}
+
+/* Any element that renders a number. Non negotiable on live values. */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+  font-feature-settings: "zero" 1;
+  letter-spacing: 0;
+}
+
+/* Sub-cent tail of a nanopayment amount: present but quiet. */
+.num-tail {
+  opacity: 0.4;
+}
+
+.num-unit {
+  color: var(--ink-dim);
+  font-size: 0.8em;
+  margin-left: 0.35em;
+}
+
+/* ------------------------------------------------------------------ layout */
+
+.page {
+  position: relative;
+  z-index: var(--z-content);
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding-inline: var(--pad-x);
+}
+
+/* 12 columns, hairline gaps: the background shows through as the border. */
+.grid12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--gutter);
+  background: var(--hair);
+}
+
+.grid12 > * {
+  background: var(--paper);
+  min-width: 0;
+}
+
+/* A panel: no borders, no shadows, no radius. Padding and a label. */
+.panel {
+  position: relative;
+  background: var(--paper);
+  padding: var(--panel-pad);
+  min-width: 0;
+}
+
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+
+/* Engineering frame with corner ticks. Use on narrative sections, not panels. */
+.frame {
+  position: relative;
+  border: 1px solid var(--hair);
+}
+
+.frame::before,
+.frame::after {
+  content: "";
+  position: absolute;
+  width: var(--tick);
+  height: var(--tick);
+  border: 1px solid var(--hair-strong);
+  pointer-events: none;
+}
+
+.frame::before {
+  top: -1px;
+  left: -1px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.frame::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.rule {
+  height: 1px;
+  background: var(--hair);
+  border: 0;
+  margin: 0;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------- tape
+ * One tape grammar for the whole app: the ledger rail, the event ledger and the
+ * inline proof tapes on the landing page are the same instrument at different
+ * widths. Defined once here so a row cannot look like two different products,
+ * and so `tape-flash` exists exactly once as a keyframe name.
+ *
+ * Variants override the three variables, never the rules.
+ */
+
+.tape {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+/* A new row arrives with a live baseline that decays to a hairline. That decay
+ * is how a row announces itself, so it survives the reduced-motion path.
+ *
+ * The variables carry fallbacks rather than defaults on `.tape`, so `tape-flash`
+ * lands on the right hairline for whatever surface it runs on, and any row that
+ * borrows the keyframe without being inside a `.tape` still decays correctly.
+ */
+.tape-row {
+  display: grid;
+  grid-template-columns: var(--tape-cols, 78px minmax(0, 1fr) auto);
+  gap: var(--s-3);
+  align-items: baseline;
+  padding: 5px 0;
+  border-top: 1px solid var(--tape-rule, var(--hair));
+  animation: tape-flash var(--dur-flash) var(--ease-out) both;
+}
+
+@keyframes tape-flash {
+  from {
+    border-top-color: var(--hair-live);
+  }
+  to {
+    border-top-color: var(--tape-rule, var(--hair));
+  }
+}
+
+.tape-time {
+  color: var(--ink-faint);
+}
+
+.tape-actor {
+  color: var(--tape-actor-ink, var(--ink));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tape-kind {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  color: var(--ink-dim);
+  margin-right: 6px;
+}
+
+.tape-amount {
+  color: var(--ink);
+  text-align: right;
+}
+
+.tape-empty {
+  padding: var(--s-4) 0;
+  color: var(--ink-faint);
+}
+
+/* ---------------------------------------------------------------- controls */
+
+/* Two buttons in the whole product: a solid white one and a hairline one.
+ * Square, mono, 56px tall, generous horizontal padding. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  height: 56px;
+  padding-inline: var(--s-6);
+  font-family: var(--font-mono);
+  font-size: var(--t-md);
+  letter-spacing: var(--tr-spec);
+  border: 1px solid var(--hair-strong);
+  color: var(--ink);
+  background: transparent;
+  white-space: nowrap;
+  transition:
+    background var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+
+.btn:hover {
+  border-color: var(--ink-strong);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink-strong);
+}
+
+[data-surface="paper"] .btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.btn-primary {
+  background: var(--ink-strong);
+  border-color: var(--ink-strong);
+  color: var(--paper);
+}
+
+.btn-primary:hover {
+  background: var(--ink-strong);
+  border-color: var(--ink-strong);
+  color: var(--paper);
+  opacity: 0.9;
+}
+
+/* The arrow that leans forward on hover, as in the reference. */
+.btn-arrow {
+  display: inline-block;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.btn:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Small square button in the nav. */
+.btn-sm {
+  height: 40px;
+  padding-inline: var(--s-4);
+  font-size: var(--t-xs);
+}
+
+/* ------------------------------------------------------------- scrollbars */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--n-400) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--n-400);
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}

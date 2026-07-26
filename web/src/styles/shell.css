@@ -1,0 +1,300 @@
+/*
+ * App shell: the sticky nav, the main column, the footer. Integrator zone.
+ *
+ * There is no rail and no banner. The one moving strip in this product is the
+ * marquee at the bottom edge of the hero.
+ */
+
+.shell {
+  --shell-top: var(--topbar-h);
+  min-height: 100%;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Keyboard first stop. Invisible until it has focus, then it is a real control. */
+.skip {
+  position: fixed;
+  top: -100px;
+  left: var(--pad-x);
+  z-index: var(--z-overlay);
+  padding: 10px 14px;
+  background: var(--paper);
+  border: 1px solid var(--ink-strong);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tr-spec);
+  color: var(--ink-strong);
+}
+
+.skip:focus-visible {
+  top: calc(var(--shell-top) + var(--s-2));
+}
+
+/* --------------------------------------------------------------------- nav */
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: var(--z-topbar);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    background var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+
+.nav[data-scrolled] {
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(16px) saturate(0);
+  border-bottom-color: var(--hair);
+}
+
+.nav-inner {
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  height: var(--topbar-h);
+  padding-inline: var(--pad-x);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-5);
+}
+
+.nav-brand {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.nav-word {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: var(--tr-display);
+  color: var(--ink-strong);
+}
+
+.nav-word-tag {
+  font-family: var(--font-mono);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-caps);
+  color: var(--ink-dim);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-link {
+  padding: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-mid);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+
+.nav-link:hover {
+  color: var(--ink-strong);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+/* --------------------------------------------------------------------- main */
+
+.shell-body {
+  position: relative;
+  padding-top: var(--shell-top);
+}
+
+.shell-main {
+  min-width: 0;
+}
+
+/* --------------------------------------------------------- route hand-off */
+
+.route {
+  position: relative;
+  z-index: var(--z-content);
+  animation: route-in var(--dur-reveal) var(--ease-out) both;
+}
+
+@keyframes route-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------------------ footer */
+
+.foot {
+  position: relative;
+  z-index: var(--z-colophon);
+  border-top: 1px solid var(--hair);
+  background: var(--paper);
+}
+
+.foot-inner {
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding-inline: var(--pad-x);
+}
+
+.foot-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+  gap: var(--s-8) var(--s-6);
+  padding-block: clamp(56px, 6vw, 96px);
+}
+
+.foot-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-5);
+  max-width: 42ch;
+}
+
+.foot-word {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: var(--tr-display);
+  color: var(--ink-strong);
+}
+
+.foot-blurb {
+  color: var(--ink-mid);
+  line-height: var(--lh-body);
+}
+
+.foot-social {
+  display: flex;
+  gap: var(--s-5);
+}
+
+.foot-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+.foot-head {
+  font-family: var(--font-mono);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-caps);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: var(--s-1);
+}
+
+.foot-link,
+.foot-line {
+  font-size: var(--t-md);
+  color: var(--ink-mid);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.foot-link:hover {
+  color: var(--ink-strong);
+}
+
+.foot-mono {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+.foot-base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-5);
+  flex-wrap: wrap;
+  padding-block: var(--s-5);
+  border-top: 1px solid var(--hair);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+
+/* --------------------------------------------------------------------- 404 */
+
+.notfound {
+  min-height: calc(100vh - var(--shell-top) - 320px);
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: clamp(80px, 10vw, 160px) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-5);
+}
+
+.notfound-lead {
+  max-width: 46ch;
+}
+
+.notfound-readout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) var(--s-6);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--ink-mid);
+}
+
+.notfound-label {
+  font-family: var(--font-mono);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-caps);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-right: var(--s-2);
+}
+
+.notfound-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  margin-top: var(--s-3);
+}
+
+@media (max-width: 1024px) {
+  .nav-links {
+    display: none;
+  }
+
+  .foot-cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .nav-link-out {
+    display: none;
+  }
+
+  .foot-cols {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,73 @@
+/* Zone: src/graph/**. */
+
+.graph-layer {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.graph-layer-back {
+  z-index: var(--z-graph-back);
+}
+
+/* Above the content so pulses arrive on top of panels, never interactive.
+ *
+ * The blend mode is not decoration and is not conditional. This layer is cleared
+ * with translucent black every frame for the phosphor trail, so it always holds
+ * near-opaque black ink. Composited normally it would sit over the page as a
+ * black sheet and dim the entire product. Screen makes that black transparent
+ * and lets only the light ink through, on every motion path.
+ */
+.graph-layer-front {
+  z-index: var(--z-graph-front);
+  mix-blend-mode: screen;
+}
+
+/* ---------------------------------------------------------- contained variant
+ * Same engine, boxed. Used where a framed instance is genuinely wanted; the
+ * page-wide stage above is the default.
+ */
+
+.graph-box {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--paper-sunken);
+}
+
+.graph-box-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Same reason as the full-bleed front layer: it clears to black, so it screens. */
+.graph-box-front {
+  mix-blend-mode: screen;
+}
+
+/* -------------------------------------------------------------------- debug
+ * ?debug=1 only. Frame timing, node and pulse counts, camera, stream status.
+ */
+
+.graph-debug {
+  position: fixed;
+  right: var(--s-3);
+  bottom: var(--s-3);
+  z-index: var(--z-overlay);
+  padding: 5px 8px;
+  background: var(--scrim-heavy);
+  border: 1px solid var(--hair);
+  color: var(--ink-mid);
+  font-size: var(--t-3xs);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.graph-debug-inline {
+  position: absolute;
+  right: var(--s-2);
+  bottom: var(--s-2);
+}

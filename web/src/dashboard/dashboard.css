@@ -1,0 +1,952 @@
+/*
+ * Zone: src/dashboard/**.
+ *
+ * A trading desk. Twelve columns, 1px gaps, and the gap is the border: the grid
+ * paints a hairline and its children paint a scrim, so the graph running behind
+ * the page stays visible through every seam. No cards, no shadows, no radius.
+ * Density is the aesthetic here; whitespace lives on the landing page.
+ */
+
+.desk {
+  min-height: calc(100vh - var(--topbar-h) - var(--banner-h));
+  background: transparent;
+}
+
+.desk-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  padding: var(--s-5) var(--pad-x);
+  border-bottom: 1px solid var(--hair);
+  background: var(--scrim);
+}
+
+.desk-head-note {
+  color: var(--ink-faint);
+  max-width: 46ch;
+}
+
+.desk-head-stats {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-6);
+  margin-left: auto;
+}
+
+.desk-head-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.desk-head-stat .num,
+.desk-head-stat .odometer {
+  font-size: var(--t-lg);
+  color: var(--ink-strong);
+}
+
+/* --------------------------------------------------------------------- grid */
+
+.desk-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-rows: min-content;
+  gap: 1px;
+  background: var(--hair);
+}
+
+.desk-cell {
+  position: relative;
+  background: var(--scrim);
+  min-width: 0;
+  padding: var(--panel-pad);
+}
+
+.desk-vault {
+  grid-column: span 5;
+}
+
+.desk-featured {
+  grid-column: span 4;
+}
+
+.desk-ticker {
+  grid-column: span 3;
+}
+
+.desk-roster {
+  grid-column: span 9;
+}
+
+.desk-underwriter {
+  grid-column: span 3;
+}
+
+.desk-ledger {
+  grid-column: span 12;
+}
+
+/* Spans are chosen so every row sums to exactly 12 in DOM order. A row that does
+ * not fill leaves the grid's own hairline showing as a void, and auto-placement
+ * will not backfill it. */
+@media (max-width: 1440px) {
+  .desk-vault {
+    grid-column: span 6;
+  }
+  .desk-featured {
+    grid-column: span 6;
+  }
+  .desk-ticker {
+    grid-column: span 4;
+  }
+  .desk-roster {
+    grid-column: span 8;
+  }
+  .desk-underwriter {
+    grid-column: span 12;
+  }
+}
+
+/* Full width, so the decisions read as a band of sentences rather than a column.
+ * The reason text still stops at a comfortable measure. */
+@media (max-width: 1440px) and (min-width: 901px) {
+  .desk-underwriter .uw-reason,
+  .desk-underwriter .uw-list {
+    max-width: 96ch;
+  }
+}
+
+@media (max-width: 900px) {
+  .desk-grid > .desk-cell {
+    grid-column: span 12;
+  }
+  .desk-head-stats {
+    margin-left: 0;
+    width: 100%;
+    gap: var(--s-5);
+    flex-wrap: wrap;
+  }
+}
+
+/* ------------------------------------------------------------- panel chrome */
+
+.p-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding-bottom: var(--s-2);
+  margin-bottom: var(--s-4);
+  border-bottom: 1px solid var(--hair);
+}
+
+.p-title {
+  font-family: var(--font-spec);
+  font-size: var(--t-xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.p-note {
+  font-family: var(--font-spec);
+  font-size: var(--t-2xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+/* Structure plus a waiting line. Never a spinner, never a blank panel. */
+.empty {
+  padding: var(--s-4) 0;
+  font-family: var(--font-spec);
+  font-size: var(--t-2xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.amount {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- stat tile */
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.stat-label {
+  font-family: var(--font-spec);
+  font-size: var(--t-2xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: var(--t-md);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.stat-note {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.stat[data-align="right"] {
+  align-items: flex-end;
+}
+
+/* --------------------------------------------------------------- vault panel */
+
+.vault-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-4);
+  margin-bottom: var(--s-4);
+}
+
+.vault-hero-value {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  min-width: 0;
+}
+
+.vault-total {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 1.2rem + 2.4vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--ink-strong);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+.vault-spark {
+  opacity: 0.72;
+}
+
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4) var(--s-5);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--hair);
+}
+
+.vault-util {
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--hair);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.vault-util-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.vault-position {
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--hair);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+
+/* ------------------------------------------------------------ featured agent */
+
+.fa-top {
+  display: flex;
+  gap: var(--s-5);
+  align-items: flex-start;
+}
+
+.fa-id {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  min-width: 0;
+  flex: 1;
+}
+
+.fa-label {
+  font-family: var(--font-display);
+  font-size: var(--t-h3);
+  font-weight: var(--w-display);
+  letter-spacing: var(--tr-tight);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--ink-strong);
+}
+
+.fa-service {
+  font-family: var(--font-spec);
+  font-size: var(--t-2xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.fa-meta {
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+
+.fa-terms {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--hair);
+}
+
+.fa-debt {
+  margin-top: var(--s-4);
+}
+
+.fa-reason {
+  margin-top: var(--s-4);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--hair);
+}
+
+.fa-reason-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: 6px;
+}
+
+.fa-reason-text {
+  font-size: var(--t-md);
+  line-height: 1.5;
+  color: var(--ink-mid);
+  max-width: 52ch;
+}
+
+/* ---------------------------------------------------------------- score dial */
+
+.dial {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.dial-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.dial-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.dial-score {
+  font-family: var(--font-mono);
+  font-size: 30px;
+  line-height: 1;
+  color: var(--ink-strong);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+.dial-caption,
+.dial-delta {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.dial-delta {
+  color: var(--ink-mid);
+}
+
+/* ---------------------------------------------------------------- the roster */
+
+.roster-scroll {
+  overflow-x: auto;
+}
+
+.roster {
+  min-width: 640px;
+}
+
+.roster-head,
+.roster-row {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr) 78px 82px 82px 82px 100px 52px 82px;
+  align-items: center;
+  gap: var(--s-3);
+  text-align: left;
+}
+
+.roster-head {
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--hair);
+}
+
+.roster-head span {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.roster-row {
+  width: 100%;
+  padding: 9px 0;
+  border-top: 1px solid var(--hair-soft);
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--ink);
+  text-align: left;
+  transition: background var(--dur-instant) var(--ease-out);
+}
+
+.roster-row:first-child {
+  border-top: 0;
+}
+
+.roster-row:hover {
+  background: var(--hair-soft);
+}
+
+.roster-row[aria-pressed="true"] {
+  background: var(--hair);
+}
+
+.roster-row[aria-pressed="true"] .roster-label {
+  color: var(--ink-strong);
+}
+
+/* Throttled: a dashed rule above the row. State is form, never hue. */
+.roster-row[data-health="throttled"] {
+  border-top: 1px dashed var(--hair-strong);
+  color: var(--ink-mid);
+}
+
+/* Delinquent: outline treatment, a bang in the label, and a slow blink. */
+.roster-row[data-health="delinquent"] {
+  border-top: 1px solid var(--hair-strong);
+  color: var(--ink-mid);
+}
+
+.roster-label {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.roster-bang {
+  font-family: var(--font-spec);
+  font-size: var(--t-2xs);
+  color: var(--ink-strong);
+  animation: bang-blink 2s steps(2, end) infinite;
+}
+
+@keyframes bang-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roster-bang {
+    animation: none;
+  }
+}
+
+:root[data-motion="0"] .roster-bang {
+  animation: none;
+}
+
+.roster-service {
+  color: var(--ink-dim);
+  font-size: var(--t-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roster-score {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.roster-health {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.roster-dim {
+  color: var(--ink-dim);
+}
+
+/* Segmented score meter: ten steps of 100, monochrome, instantly scannable. */
+.meter {
+  display: flex;
+  gap: 1px;
+  height: 9px;
+  align-items: stretch;
+}
+
+.meter span {
+  width: 2px;
+  background: var(--ink-ghost);
+}
+
+.meter span[data-on="1"] {
+  background: var(--ink);
+}
+
+@media (max-width: 1440px) {
+  .roster-head,
+  .roster-row {
+    grid-template-columns: 104px minmax(0, 1fr) 78px 82px 82px 100px 52px 82px;
+  }
+  .roster-drawn {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .roster-head,
+  .roster-row {
+    grid-template-columns: 104px minmax(0, 1fr) 78px 82px 82px 82px;
+  }
+  .roster-spark,
+  .roster-rate,
+  .roster-health {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------- split ticker */
+
+.split-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.split-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--hair-live);
+  animation: tape-flash var(--dur-flash) var(--ease-out) both;
+}
+
+.split-meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+}
+
+.split-agent {
+  color: var(--ink);
+}
+
+.split-total {
+  margin-left: auto;
+  color: var(--ink-strong);
+}
+
+.split-bar {
+  position: relative;
+  height: 10px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--hair-strong) 0 1px,
+    transparent 1px 5px
+  );
+}
+
+.split-vault {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--split);
+  background: var(--ink);
+  animation: split-open var(--dur-slow) var(--ease-out) both;
+}
+
+.split-divider {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  left: var(--split);
+  width: 1px;
+  background: var(--ink-strong);
+  opacity: 0.45;
+  animation: split-mark var(--dur-slow) var(--ease-out) both;
+}
+
+@keyframes split-open {
+  from {
+    width: 0;
+  }
+}
+
+@keyframes split-mark {
+  from {
+    left: 0;
+    opacity: 1;
+  }
+}
+
+.split-legs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px var(--s-3);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+}
+
+.split-leg {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.split-leg-label {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+.split-leg[data-side="vault"] .amount {
+  color: var(--ink-strong);
+}
+
+.split-leg[data-side="agent"] .amount {
+  color: var(--ink-mid);
+}
+
+.split-pass {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-mid);
+}
+
+/* ----------------------------------------------------------- underwriter feed */
+
+.uw-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.uw-row {
+  padding: var(--s-3) 0;
+  border-top: 1px solid var(--hair-live);
+  animation: tape-flash var(--dur-flash) var(--ease-out) both;
+}
+
+.uw-row:first-child {
+  border-top-color: var(--hair-live);
+}
+
+.uw-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+  margin-bottom: 5px;
+}
+
+.uw-action {
+  font-family: var(--font-spec);
+  font-size: var(--t-2xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-strong);
+}
+
+.uw-agent {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink);
+}
+
+.uw-time {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: var(--t-2xs);
+  color: var(--ink-faint);
+}
+
+.uw-score {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--ink-mid);
+  margin-bottom: 5px;
+}
+
+.uw-score-now {
+  color: var(--ink-strong);
+}
+
+.uw-delta {
+  font-size: var(--t-2xs);
+  color: var(--ink-dim);
+}
+
+.uw-reason {
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--ink-mid);
+}
+
+/* --------------------------------------------------------------- event ledger */
+
+.led-head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--s-2);
+  margin-bottom: var(--s-2);
+  border-bottom: 1px solid var(--hair);
+}
+
+.led-filters {
+  display: flex;
+  gap: 1px;
+  margin-left: auto;
+  background: var(--hair);
+}
+
+.led-filter {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  padding: 5px 9px;
+  color: var(--ink-dim);
+  background: var(--paper-raised);
+  transition:
+    color var(--dur-instant) var(--ease-out),
+    background var(--dur-instant) var(--ease-out);
+}
+
+.led-filter:hover {
+  color: var(--ink-strong);
+}
+
+.led-filter[aria-pressed="true"] {
+  background: var(--ink-strong);
+  color: var(--n-000);
+}
+
+.led-scroll {
+  overflow-x: auto;
+}
+
+.led-head-row,
+.led-row {
+  display: grid;
+  grid-template-columns: 96px 56px 104px minmax(0, 1fr) 116px 62px;
+  align-items: baseline;
+  gap: var(--s-3);
+}
+
+.led-head-row {
+  padding-bottom: 5px;
+  border-bottom: 1px solid var(--hair);
+}
+
+.led-head-row span {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.led-body {
+  min-width: 720px;
+}
+
+.led-row {
+  padding: 5px 0;
+  border-top: 1px solid var(--hair-live);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums slashed-zero;
+  animation: tape-flash var(--dur-flash) var(--ease-out) both;
+}
+
+.led-time {
+  color: var(--ink-faint);
+}
+
+.led-kind {
+  font-family: var(--font-spec);
+  font-size: var(--t-3xs);
+  letter-spacing: var(--tr-spec);
+  color: var(--ink-dim);
+}
+
+.led-actor {
+  color: var(--ink);
+}
+
+.led-detail {
+  color: var(--ink-mid);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.led-right,
+.led-amount {
+  text-align: right;
+  color: var(--ink-strong);
+}
+
+.led-seq {
+  text-align: right;
+  color: var(--ink-faint);
+}
+
+.led-row[data-kind="payment"] .led-amount {
+  color: var(--ink);
+}
+
+.led-row[data-kind="cleared"] .led-kind,
+.led-row[data-kind="score"] .led-kind,
+.led-row[data-kind="draw"] .led-kind {
+  color: var(--ink-strong);
+}
+
+/* ------------------------------------------------------------ the ledger tape
+ * Append-only. A new row arrives with a pure-white baseline that decays to a
+ * hairline over 800ms. This is the heartbeat of the whole product, and it runs
+ * on every route. Rows are keyed by event id, so only genuinely new rows flash.
+ *
+ * The grammar itself lives in styles/global.css and the terminal's values are its
+ * defaults, so the rail, the ledger and the landing tapes cannot drift apart.
+ */
+
+/* -------------------------------------------------------------- ledger rail */
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--hair);
+}
+
+.rail-rate {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-variant-numeric: tabular-nums slashed-zero;
+  color: var(--ink-strong);
+}
+
+.rail-body {
+  flex: 1;
+  overflow: hidden;
+  padding: 0 var(--s-4) var(--s-4);
+}
+
+/*
+ * Below 1180px the shell rotates the rail into a 96px bottom ticker. The tape
+ * flows top to bottom then wraps into the next column, so the newest row stays
+ * where the eye already is.
+ */
+@media (max-width: 1180px) {
+  .rail {
+    flex-direction: row;
+  }
+
+  .rail-head {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4px;
+    min-width: 132px;
+    border-bottom: 0;
+    border-right: 1px solid var(--hair);
+  }
+
+  .rail-body {
+    padding: var(--s-2) var(--s-4);
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(4, min-content);
+    grid-auto-columns: minmax(190px, 1fr);
+    gap: 0 var(--s-5);
+    align-content: start;
+  }
+
+  .rail-body .tape-row {
+    grid-template-columns: 66px 1fr auto;
+  }
+}
