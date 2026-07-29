@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens. The palette is pure black and white: paper background,
+ * ink foreground, grayscale in between. Everything else (scale, radius,
+ * rhythm) follows the reference layout system.
+ */
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #000000;
+  --color-card: #ffffff;
+  --color-card-foreground: #000000;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #000000;
+  --color-primary: #000000;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: oklch(96% 0 0);
+  --color-secondary-foreground: #000000;
+  --color-muted: oklch(94% 0 0);
+  --color-muted-foreground: oklch(45% 0 0);
+  --color-accent: oklch(92% 0 0);
+  --color-accent-foreground: #000000;
+  --color-border: oklch(88% 0 0);
+  --color-input: oklch(92% 0 0);
+  --color-ring: #000000;
+
+  --font-sans: "Figtree Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Figtree Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, monospace;
+
+  --radius: 0.25rem;
+}
+
+/*
+ * Deliberately unlayered so these win over the legacy stylesheets that still
+ * serve the terminal. Remove those and this can move into @layer base.
+ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numerals hold their column everywhere they carry data. */
+.font-mono {
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+::selection {
+  background: var(--color-foreground);
+  color: var(--color-background);
+}
+
+@layer utilities {
+  .marquee {
+    will-change: transform;
+    animation: marquee 30s linear infinite;
+  }
+
+  .marquee-reverse {
+    will-change: transform;
+    animation: marquee-reverse 25s linear infinite;
+  }
+
+  .animate-char-in {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(60%);
+    animation: char-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes char-in {
+  0% {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(60%);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* The bar under the active step in the process band. */
+@keyframes step-progress {
+  0% {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee,
+  .marquee-reverse {
+    animation: none;
+  }
+
+  .animate-char-in {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    animation: none;
+  }
+}

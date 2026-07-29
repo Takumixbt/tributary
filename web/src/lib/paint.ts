@@ -23,9 +23,13 @@ export const PAINT = {
   white: "#ffffff",
 } as const;
 
-/** Grayscale with alpha. `ink(1, 0.4)` -> `"rgba(255,255,255,0.4)"`. */
+/**
+ * Grayscale with alpha, on paper. `level` is emphasis, not luminance: 1 is the
+ * strongest mark and renders black, 0 is the faintest and renders white. The
+ * page is white, so ink darkens as it gets louder.
+ */
 export function ink(level: number, alpha = 1): string {
-  const v = Math.round(Math.max(0, Math.min(1, level)) * 255);
+  const v = Math.round((1 - Math.max(0, Math.min(1, level))) * 255);
   return `rgba(${v},${v},${v},${Math.max(0, Math.min(1, alpha))})`;
 }
 
@@ -74,8 +78,8 @@ export function fitCanvas(
 }
 
 /**
- * Phosphor persistence: paint translucent black instead of clearing, so pulses
- * leave decaying trails. Heavy traffic then literally glows brighter.
+ * Ink persistence: paint translucent paper instead of clearing, so pulses leave
+ * decaying trails behind them. Heavy traffic then reads as darker ink.
  */
 export function phosphorClear(
   ctx: CanvasRenderingContext2D,
@@ -84,7 +88,7 @@ export function phosphorClear(
   decay = CANVAS.phosphorDecay,
 ): void {
   ctx.globalCompositeOperation = "source-over";
-  ctx.fillStyle = `rgba(0,0,0,${decay})`;
+  ctx.fillStyle = `rgba(255,255,255,${decay})`;
   ctx.fillRect(0, 0, width, height);
 }
 

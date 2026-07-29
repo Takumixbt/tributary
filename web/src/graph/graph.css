@@ -8,7 +8,7 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  background: var(--paper-sunken);
+  background: transparent;
 }
 
 .graph-box-layer {
@@ -17,12 +17,15 @@
   pointer-events: none;
 }
 
-/* The layer is cleared with translucent black every frame for the phosphor
- * trail, so it always holds near-opaque black ink. Composited normally it would
- * sit over the page as a black sheet. Screen makes that black transparent and
- * lets only the light ink through. */
+/* The layer is cleared with translucent white every frame for the ink trail, so
+ * it always holds a near-opaque white sheet. Multiply drops that white out and
+ * lets only the dark ink land on the page. */
 .graph-box-front {
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
+}
+
+.graph-box-back {
+  mix-blend-mode: multiply;
 }
 
 /* -------------------------------------------------------------------- debug

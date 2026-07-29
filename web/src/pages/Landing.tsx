@@ -4,12 +4,12 @@
  * Reading order, top to bottom:
  *
  *   Hero          tall opening frame, living graph, the claim, the stat strip
- *   Capabilities  four numbered rows: read, repay, score, lend
- *   How it works  the one inverted band, four steps and the proven cycle
- *   Numbers       the four real figures, counted up once
- *   Ecosystem     what it runs on, two marquee rows
- *   Security      the attack, and the four things that price it
- *   Protocol      the deployed addresses and the proven cycle in full
+ *   Features      four numbered rows: read, repay, score, lend
+ *   How it works  the one inverted band
+ *   Stats         the real figures, counted up once
+ *   Ecosystem     what it runs on
+ *   Security      the attack, and what prices it
+ *   Protocol      the deployed addresses and the proven cycle
  *   CTA           one line and one button
  *
  * Two rules hold across all of it. Every figure on this page is real and can be
@@ -18,29 +18,26 @@
  * precise terms confined to the contracts section.
  */
 
-import "./landing/landing.css";
-import { Hero } from "./landing/Hero";
-import { Capabilities } from "./landing/Capabilities";
-import { HowItWorks } from "./landing/HowItWorks";
-import { Numbers } from "./landing/Numbers";
-import { Ecosystem } from "./landing/Ecosystem";
-import { Security } from "./landing/Security";
-import { Protocol } from "./landing/Protocol";
-import { CtaBand } from "./landing/CtaBand";
+import { Hero } from "../site/Hero";
+import { Features } from "../site/Features";
+import { HowItWorks } from "../site/HowItWorks";
+import { Stats } from "../site/Stats";
+import { Ecosystem } from "../site/Ecosystem";
+import { Security } from "../site/Security";
+import { Protocol } from "../site/Protocol";
+import { Cta } from "../site/Cta";
 
-export function Landing() {
+export default function Landing() {
   return (
-    <div className="landing">
+    <main className="relative min-h-screen overflow-x-hidden">
       <Hero />
-      <Capabilities />
+      <Features />
       <HowItWorks />
-      <Numbers />
+      <Stats />
       <Ecosystem />
       <Security />
       <Protocol />
-      <CtaBand />
-    </div>
+      <Cta />
+    </main>
   );
 }
-
-export default Landing;

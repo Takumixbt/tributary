@@ -16,6 +16,7 @@ import "@fontsource-variable/geist-mono/index.css";
 
 import "./styles/global.css";
 import "./styles/shell.css";
+import "./styles/theme.css";
 
 import { createRoot } from "react-dom/client";
 import App from "./App";

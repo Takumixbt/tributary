@@ -28,9 +28,8 @@ import { DashboardPage } from "./dashboard";
 import Landing from "./pages/Landing";
 import ErrorBoundary from "./shell/ErrorBoundary";
 import NotFound from "./shell/NotFound";
-import RouteFrame from "./shell/RouteFrame";
-import ShellFooter from "./shell/ShellFooter";
-import TopBar from "./shell/TopBar";
+import { Nav } from "./site/Nav";
+import { Footer } from "./site/Footer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,26 +53,20 @@ export function App() {
                 <BrowserRouter
                   future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
                 >
-                  <div className="shell">
-                    <a className="skip" href="#main">
-                      Skip to content
-                    </a>
-                    <TopBar />
-                    <div className="shell-body">
-                      <main className="shell-main" id="main">
-                        <RouteFrame>
-                          <ErrorBoundary>
-                            <Routes>
-                              <Route path="/" element={<Landing />} />
-                              <Route path="/app" element={<DashboardPage />} />
-                              <Route path="*" element={<NotFound />} />
-                            </Routes>
-                          </ErrorBoundary>
-                        </RouteFrame>
-                        <ShellFooter />
-                      </main>
-                    </div>
+                  <a className="skip" href="#main">
+                    Skip to content
+                  </a>
+                  <Nav />
+                  <div id="main">
+                    <ErrorBoundary>
+                      <Routes>
+                        <Route path="/" element={<Landing />} />
+                        <Route path="/app" element={<DashboardPage />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </ErrorBoundary>
                   </div>
+                  <Footer />
                 </BrowserRouter>
               </GraphCameraProvider>
             </GraphAnchorProvider>

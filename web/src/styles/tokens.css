@@ -28,30 +28,31 @@
   --n-1000: #ffffff;
 
   /* ------------------------------------------------------------- semantics
-   * Default surface: terminal dark. Inverted sections override these
-   * five aliases only (see [data-surface="paper"] below).
+   * Default surface: paper. The page is white and the ink is black, matching
+   * the site shell. The one inverted band flips these aliases the other way
+   * (see [data-surface="ink"] below).
    */
-  --paper: var(--n-050);
-  --paper-raised: var(--n-100);
-  --paper-sunken: var(--n-000);
-  --ink: var(--n-950);
-  --ink-strong: var(--n-1000);
-  --ink-mid: var(--n-700);
-  --ink-dim: var(--n-600);
-  --ink-faint: var(--n-400);
-  --ink-ghost: var(--n-300);
+  --paper: var(--n-1000);
+  --paper-raised: var(--n-950);
+  --paper-sunken: var(--n-900);
+  --ink: var(--n-000);
+  --ink-strong: var(--n-000);
+  --ink-mid: var(--n-400);
+  --ink-dim: var(--n-500);
+  --ink-faint: var(--n-700);
+  --ink-ghost: var(--n-800);
 
   /* Hairlines are alpha, not solid, so they read correctly over canvas art.
-   * White at 10% is the reference's one border value; soft and strong exist
+   * Black at 10% is the reference's one border value; soft and strong exist
    * only for the two places that need a step either side of it. */
-  --hair: rgba(255, 255, 255, 0.1);
-  --hair-soft: rgba(255, 255, 255, 0.05);
-  --hair-strong: rgba(255, 255, 255, 0.2);
-  --hair-live: rgba(255, 255, 255, 0.7);
-  --scrim: rgba(5, 5, 5, 0.72);
-  --scrim-heavy: rgba(5, 5, 5, 0.9);
-  /* Diagonal hatch ink, for barber poles and status texture. */
-  --hatch: rgba(255, 255, 255, 0.11);
+  --hair: rgba(0, 0, 0, 0.1);
+  --hair-soft: rgba(0, 0, 0, 0.05);
+  --hair-strong: rgba(0, 0, 0, 0.2);
+  --hair-live: rgba(0, 0, 0, 0.7);
+  --scrim: rgba(255, 255, 255, 0.72);
+  --scrim-heavy: rgba(255, 255, 255, 0.94);
+  /* Diagonal hatch ink, for status texture. */
+  --hatch: rgba(0, 0, 0, 0.11);
 
   /* Canvas layers read these through lib/paint.ts, kept in sync by hand. */
   --grid-alpha: 0.06;
@@ -187,32 +188,32 @@
   --z-overlay: 1000;
 }
 
-/* Inverted editorial surface. Overrides semantics only, never the ramp. */
-[data-surface="paper"] {
-  --paper: var(--n-1000);
-  --paper-raised: var(--n-950);
-  --paper-sunken: var(--n-900);
-  --ink: var(--n-100);
-  --ink-strong: var(--n-000);
-  --ink-mid: var(--n-400);
-  --ink-dim: var(--n-500);
-  --ink-faint: var(--n-700);
-  --ink-ghost: var(--n-800);
-  --hair: rgba(0, 0, 0, 0.14);
-  --hair-soft: rgba(0, 0, 0, 0.07);
-  --hair-strong: rgba(0, 0, 0, 0.28);
-  --hair-live: rgba(0, 0, 0, 0.75);
-  --scrim: rgba(255, 255, 255, 0.78);
-  --scrim-heavy: rgba(255, 255, 255, 0.94);
-  --hatch: rgba(0, 0, 0, 0.16);
-  color-scheme: light;
+/* Inverted band. Overrides semantics only, never the ramp. */
+[data-surface="ink"] {
+  --paper: var(--n-000);
+  --paper-raised: var(--n-100);
+  --paper-sunken: var(--n-000);
+  --ink: var(--n-1000);
+  --ink-strong: var(--n-1000);
+  --ink-mid: var(--n-700);
+  --ink-dim: var(--n-600);
+  --ink-faint: var(--n-400);
+  --ink-ghost: var(--n-300);
+  --hair: rgba(255, 255, 255, 0.14);
+  --hair-soft: rgba(255, 255, 255, 0.07);
+  --hair-strong: rgba(255, 255, 255, 0.28);
+  --hair-live: rgba(255, 255, 255, 0.75);
+  --scrim: rgba(0, 0, 0, 0.78);
+  --scrim-heavy: rgba(0, 0, 0, 0.94);
+  --hatch: rgba(255, 255, 255, 0.16);
+  color-scheme: dark;
 }
 
-/* Slightly lifted dark surface for dense panels sitting over the graph. */
+/* Slightly sunken paper for dense panels. */
 [data-surface="deep"] {
-  --paper: var(--n-000);
-  --paper-raised: var(--n-075);
-  --scrim: rgba(0, 0, 0, 0.82);
+  --paper: var(--n-1000);
+  --paper-raised: var(--n-950);
+  --scrim: rgba(255, 255, 255, 0.82);
 }
 
 /* Reduced motion, two ways in. The media query is the real signal. data-motion="0"
