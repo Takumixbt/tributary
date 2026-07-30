@@ -1,3 +1,4 @@
+@layer legacy {
 /*
  * Zone: src/dashboard/**.
  *
@@ -882,4 +883,6 @@
   .score {
     align-items: flex-start;
   }
+}
+
 }

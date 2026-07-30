@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { NetworkGraph } from "../graph";
+import { GlyphGlobe } from "./GlyphGlobe";
 
 const ANIMATED_WORD = "credit";
 
@@ -38,7 +38,7 @@ function GridField() {
 
 function StatRun() {
   return (
-    <div className="flex gap-16">
+    <div className="flex gap-16 shrink-0">
       {MARQUEE_STATS.map((stat) => (
         <div key={stat.tag} className="flex items-baseline gap-4">
           <span className="text-4xl lg:text-5xl font-display">{stat.figure}</span>
@@ -64,8 +64,8 @@ export function Hero() {
 
   return (
     <section className="relative min-h-[145vh] flex flex-col overflow-hidden">
-      <div className="absolute right-0 top-1/3 -translate-y-1/2 w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] opacity-40 pointer-events-none">
-        <NetworkGraph mode="ambient" height="100%" />
+      <div className="absolute right-0 top-1/3 -translate-y-1/2 w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] pointer-events-none">
+        <GlyphGlobe />
       </div>
 
       <GridField />
@@ -99,7 +99,6 @@ export function Hero() {
                     </span>
                   ))}
                 </span>
-                <span className="absolute -bottom-2 left-0 right-0 h-3 bg-foreground/10" />
               </span>
             </span>
           </h1>
@@ -118,7 +117,7 @@ export function Hero() {
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 mt-28 lg:mt-36 w-full">
         <div
-          className={`flex flex-col sm:flex-row items-start gap-4 transition-all duration-700 delay-300 ${settle}`}
+          className={`flex flex-col sm:flex-row items-center justify-center gap-4 transition-all duration-700 delay-300 ${settle}`}
         >
           <Link
             to="/app"

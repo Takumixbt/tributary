@@ -27,10 +27,16 @@ export function Nav() {
 
   return (
     <>
-      <header className="fixed z-50 transition-all duration-500 top-0 left-0 right-0">
+      <header
+        className={`fixed z-50 transition-all duration-500 top-0 left-0 right-0 ${
+          scrolled ? "pt-4 px-4" : "pt-0 px-0"
+        }`}
+      >
         <nav
-          className={`mx-auto transition-all duration-500 max-w-[1400px] ${
-            scrolled ? "bg-background/80 backdrop-blur-md" : "bg-transparent"
+          className={`mx-auto transition-all duration-500 ${
+            scrolled
+              ? "max-w-[1200px] rounded-full bg-background/85 backdrop-blur-md border border-foreground/10"
+              : "max-w-[1400px] bg-transparent border border-transparent"
           }`}
         >
           <div
@@ -62,7 +68,7 @@ export function Nav() {
             <div className="hidden md:flex items-center gap-3">
               <Link
                 to="/app"
-                className="font-mono border border-foreground/20 hover:border-foreground/60 hover:bg-foreground/5 transition-all duration-300 px-4 py-2 text-xs"
+                className="font-mono border border-foreground/20 hover:border-foreground/60 hover:bg-foreground/5 transition-all duration-300 px-4 py-2 text-xs rounded-full"
               >
                 Launch App
               </Link>

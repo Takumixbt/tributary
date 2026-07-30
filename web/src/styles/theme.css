@@ -37,6 +37,11 @@
  */
 html {
   scroll-behavior: smooth;
+  /* The page is paper. Set it on the root too so the browser canvas outside the
+   * body, and any overscroll, is white rather than the user agent default. */
+  background-color: var(--color-background);
+  color-scheme: light;
+  height: auto;
 }
 
 body {
@@ -45,6 +50,14 @@ body {
   font-family: var(--font-sans);
   font-size: 18px;
   -webkit-font-smoothing: antialiased;
+  height: auto;
+  min-height: 100%;
+}
+
+#root {
+  height: auto;
+  min-height: 100%;
+  background-color: var(--color-background);
 }
 
 /* Numerals hold their column everywhere they carry data. */

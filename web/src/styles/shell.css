@@ -1,3 +1,4 @@
+@layer legacy {
 /*
  * App shell: the fixed nav, the main column, the footer. Integrator zone.
  *
@@ -336,4 +337,6 @@ a.foot-base-mono:hover {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
 }

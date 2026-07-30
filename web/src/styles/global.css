@@ -1,3 +1,4 @@
+@layer legacy {
 /*
  * Tributary global stylesheet: reset, primitives, and the small set of shared
  * utility classes every zone is allowed to use.
@@ -371,4 +372,6 @@ table {
 
 *::-webkit-scrollbar-track {
   background: transparent;
+}
+
 }
