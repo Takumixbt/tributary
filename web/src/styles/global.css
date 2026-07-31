@@ -1,4 +1,3 @@
-@layer legacy {
 /*
  * Tributary global stylesheet: reset, primitives, and the small set of shared
  * utility classes every zone is allowed to use.
@@ -6,10 +5,18 @@
  * Zone CSS lives inside the zone (src/dashboard/dashboard.css, etc.) and is
  * imported by that zone's own components. Nothing outside src/styles/ may
  * redefine a token or restyle a utility class defined here.
+ *
+ * An @import has to come before any rule, so the tokens are pulled in above the
+ * layer block rather than inside it.
  */
 
 @import "./tokens.css";
 
+/* Cascade order: Tailwind's reset must not strip the terminal's own layout,
+ * and utilities must still beat it. */
+@layer theme, base, legacy, components, utilities;
+
+@layer legacy {
 *,
 *::before,
 *::after {

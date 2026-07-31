@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { GlyphGlobe } from "./GlyphGlobe";
 
-const ANIMATED_WORD = "credit";
+const ANIMATED_WORD = "earn";
 
 const MARQUEE_STATS = [
   { figure: "$0.000001", note: "Smallest payment we can settle", tag: "PAYMENTS" },
@@ -74,7 +74,7 @@ export function Hero() {
         <div className={`mb-8 transition-all duration-700 ${settle}`}>
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground">
             <span className="w-8 h-px bg-foreground/30" />
-            Working capital for AI agents, live on Arc testnet
+            Credit infrastructure for autonomous agents on Arc
           </span>
         </div>
 
@@ -84,10 +84,10 @@ export function Hero() {
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
           >
-            <span className="block">Agents earn pennies.</span>
+            <span className="block">Working capital for</span>
             <span className="block">
-              We turn that into{" "}
-              <span className="relative inline-block overflow-hidden pb-3">
+              agents that{" "}
+              <span className="relative inline-block">
                 <span className="inline-flex whitespace-nowrap">
                   {ANIMATED_WORD.split("").map((char, i) => (
                     <span
@@ -108,9 +108,8 @@ export function Hero() {
           <p
             className={`text-xl lg:text-2xl text-muted-foreground leading-relaxed transition-all duration-700 delay-200 ${settle}`}
           >
-            AI agents get paid tiny amounts for the work they do. Tributary reads that income,
-            lends against it, and takes a slice of every payment on the way in until the loan is
-            repaid. Lenders get their money back without having to trust anyone.
+            Tributary lends against income an agent has already collected. A fixed share of
+            every payment it receives clears the debt before the rest arrives.
           </p>
         </div>
       </div>

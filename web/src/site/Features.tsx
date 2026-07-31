@@ -2,152 +2,185 @@ import type { ReactNode } from "react";
 
 import { reveal, useReveal } from "./useReveal";
 
-/** Income arriving as a stream of small marks, gathering into one ledger line. */
+/**
+ * A ledger tape: each payment as a measured bar on a baseline, with the span
+ * bracketed the way a drawing dimensions a part.
+ */
 function IncomeDiagram() {
+  const bars = [14, 22, 9, 27, 18, 31, 12, 24, 20, 35, 16, 28];
   return (
     <svg viewBox="0 0 200 160" className="w-full h-full">
-      <line x1="20" y1="130" x2="180" y2="130" stroke="currentColor" strokeWidth="1" opacity="0.3" />
-      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-        <circle key={i} cx={28 + i * 24} cy="130" r="3" fill="currentColor">
+      <line x1="16" y1="112" x2="184" y2="112" stroke="currentColor" strokeWidth="1" opacity="0.45" />
+      {bars.map((h, i) => (
+        <line
+          key={i}
+          x1={22 + i * 14}
+          y1="112"
+          x2={22 + i * 14}
+          y2={112 - h}
+          stroke="currentColor"
+          strokeWidth="1.5"
+          opacity="0.75"
+        >
           <animate
-            attributeName="cy"
-            values="40;130"
-            dur="2.4s"
-            begin={`${i * 0.3}s`}
-            repeatCount="indefinite"
+            attributeName="y2"
+            values={`112;${112 - h}`}
+            dur="0.5s"
+            begin={`${i * 0.12}s`}
+            fill="freeze"
           />
-          <animate
-            attributeName="opacity"
-            values="0;1;1;0.2"
-            dur="2.4s"
-            begin={`${i * 0.3}s`}
-            repeatCount="indefinite"
-          />
-        </circle>
+        </line>
       ))}
-      <rect x="20" y="136" width="160" height="14" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-      <text x="100" y="146" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.6">
-        INCOME HISTORY
+      {/* dimension bracket under the run */}
+      <path d="M16 124 L16 130 L184 130 L184 124" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+      <text x="100" y="146" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.55">
+        RECORDED INCOME
       </text>
-      <text x="100" y="26" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.5">
-        PAYMENTS
+      <text x="16" y="28" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.45">
+        USDC
       </text>
     </svg>
   );
 }
 
-/** One payment arriving and splitting into two, the smaller share turning back. */
+/**
+ * A junction drawn to scale: one line in, two out, and the stroke weight of
+ * each branch is its share of the money.
+ */
 function SplitDiagram() {
   return (
     <svg viewBox="0 0 200 160" className="w-full h-full">
-      <line x1="10" y1="80" x2="95" y2="80" stroke="currentColor" strokeWidth="1" opacity="0.35" />
-      <line x1="105" y1="80" x2="190" y2="42" stroke="currentColor" strokeWidth="1" opacity="0.35" />
-      <line x1="105" y1="80" x2="190" y2="118" stroke="currentColor" strokeWidth="1" opacity="0.35" />
-      <rect x="88" y="66" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="1.5" />
-      <circle r="4" fill="currentColor">
-        <animateMotion path="M10,80 L88,80" dur="1.8s" repeatCount="indefinite" />
+      <line x1="8" y1="80" x2="84" y2="80" stroke="currentColor" strokeWidth="2.4" opacity="0.75" />
+      <rect x="84" y="64" width="32" height="32" fill="none" stroke="currentColor" strokeWidth="1.5" />
+      <line x1="100" y1="64" x2="100" y2="56" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+      {/* 80 percent carries on, drawn heavy */}
+      <path d="M116 74 L192 50" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.75" />
+      {/* 20 percent turns down to the lenders, drawn light */}
+      <path d="M116 88 L192 118" fill="none" stroke="currentColor" strokeWidth="0.75" opacity="0.6" />
+      <circle r="3" fill="currentColor">
+        <animateMotion path="M8,80 L84,80" dur="2.2s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;0.45" />
       </circle>
-      <circle r="3.6" fill="currentColor">
-        <animateMotion path="M116,76 L190,42" dur="1.8s" begin="0.9s" repeatCount="indefinite" />
+      <circle r="2.6" fill="currentColor" opacity="0">
+        <animateMotion path="M116,74 L192,50" dur="2.2s" begin="0.99s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0;1;1;0" dur="2.2s" begin="0.99s" repeatCount="indefinite" />
       </circle>
-      <circle r="2" fill="currentColor">
-        <animateMotion path="M116,84 L190,118" dur="1.8s" begin="0.9s" repeatCount="indefinite" />
+      <circle r="1.6" fill="currentColor" opacity="0">
+        <animateMotion path="M116,88 L192,118" dur="2.2s" begin="0.99s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0;1;1;0" dur="2.2s" begin="0.99s" repeatCount="indefinite" />
       </circle>
-      <text x="196" y="38" textAnchor="end" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.6">
-        AGENT 80%
+      <text x="192" y="40" textAnchor="end" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.55">
+        AGENT 80
       </text>
-      <text x="196" y="132" textAnchor="end" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.6">
-        LENDERS 20%
+      <text x="192" y="132" textAnchor="end" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.55">
+        LENDERS 20
+      </text>
+      <text x="8" y="66" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.45">
+        PAYMENT
       </text>
     </svg>
   );
 }
 
-/** A score arc filling, with a limit stepping up behind it. */
+/**
+ * The underwriter's read: observations plotted against time, the fitted line
+ * drawing itself through them, and the limit that follows from it.
+ */
 function ScoreDiagram() {
+  const points = [
+    [24, 106],
+    [40, 100],
+    [56, 103],
+    [72, 92],
+    [88, 86],
+    [104, 88],
+    [120, 74],
+    [136, 66],
+    [152, 62],
+    [168, 52],
+  ];
   return (
     <svg viewBox="0 0 200 160" className="w-full h-full">
-      <path
-        d="M40 120 A 60 60 0 0 1 160 120"
-        fill="none"
+      {/* axes */}
+      <line x1="16" y1="120" x2="184" y2="120" stroke="currentColor" strokeWidth="1" opacity="0.45" />
+      <line x1="16" y1="24" x2="16" y2="120" stroke="currentColor" strokeWidth="1" opacity="0.45" />
+      {/* the limit the score earns */}
+      <line
+        x1="16"
+        y1="44"
+        x2="184"
+        y2="44"
         stroke="currentColor"
         strokeWidth="1"
-        opacity="0.25"
+        strokeDasharray="3 4"
+        opacity="0.35"
       />
       <path
-        d="M40 120 A 60 60 0 0 1 160 120"
+        d="M24 108 L168 54"
         fill="none"
         stroke="currentColor"
-        strokeWidth="2.5"
-        strokeDasharray="188"
-        strokeDashoffset="188"
+        strokeWidth="1.5"
+        strokeDasharray="160"
+        strokeDashoffset="160"
       >
-        <animate
-          attributeName="stroke-dashoffset"
-          values="188;138;188"
-          dur="6s"
-          repeatCount="indefinite"
-        />
+        <animate attributeName="stroke-dashoffset" values="160;0" dur="1.6s" fill="freeze" />
       </path>
-      {[0, 1, 2, 3].map((i) => (
-        <rect
-          key={i}
-          x={52 + i * 26}
-          y={132}
-          width="18"
-          height="8"
-          fill="currentColor"
-          opacity="0.15"
-        >
+      {points.map(([x, y], i) => (
+        <circle key={i} cx={x} cy={y} r="2" fill="currentColor" opacity="0">
           <animate
             attributeName="opacity"
-            values="0.15;0.7;0.15"
-            dur="6s"
-            begin={`${i * 0.5}s`}
-            repeatCount="indefinite"
+            values="0;0.8"
+            dur="0.3s"
+            begin={`${i * 0.14}s`}
+            fill="freeze"
           />
-        </rect>
+        </circle>
       ))}
-      <text x="100" y="108" textAnchor="middle" fontSize="14" fontFamily="monospace" fill="currentColor">
-        268
+      <text x="184" y="38" textAnchor="end" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.5">
+        LIMIT
       </text>
-      <text x="100" y="154" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.6">
-        SCORE AND LIMIT
+      <text x="100" y="146" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.55">
+        SCORE OVER TIME
       </text>
     </svg>
   );
 }
 
-/** Deposits stacking, a thin line of interest lifting the top edge. */
+/**
+ * What a lender holds: a share price that only steps up, each step the interest
+ * from one repayment landing.
+ */
 function VaultDiagram() {
+  const steps = "M16 116 L44 116 L44 106 L72 106 L72 98 L100 98 L100 84 L128 84 L128 72 L156 72 L156 58 L184 58";
   return (
     <svg viewBox="0 0 200 160" className="w-full h-full">
-      <rect x="46" y="46" width="108" height="86" fill="none" stroke="currentColor" strokeWidth="1.5" />
-      {[0, 1, 2].map((i) => (
-        <rect
-          key={i}
-          x="46"
-          y={112 - i * 22}
-          width="108"
-          height="20"
-          fill="currentColor"
-          opacity="0.12"
-        >
-          <animate
-            attributeName="opacity"
-            values="0.05;0.2;0.05"
-            dur="4s"
-            begin={`${i * 0.8}s`}
-            repeatCount="indefinite"
-          />
-        </rect>
-      ))}
-      <line x1="46" y1="46" x2="154" y2="46" stroke="currentColor" strokeWidth="2">
-        <animate attributeName="y1" values="52;44;52" dur="4s" repeatCount="indefinite" />
-        <animate attributeName="y2" values="52;44;52" dur="4s" repeatCount="indefinite" />
-      </line>
-      <text x="100" y="152" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.6">
+      <line x1="16" y1="124" x2="184" y2="124" stroke="currentColor" strokeWidth="1" opacity="0.45" />
+      <line x1="16" y1="24" x2="16" y2="124" stroke="currentColor" strokeWidth="1" opacity="0.45" />
+      {/* par, so the rise above it is legible */}
+      <line
+        x1="16"
+        y1="116"
+        x2="184"
+        y2="116"
+        stroke="currentColor"
+        strokeWidth="1"
+        strokeDasharray="3 4"
+        opacity="0.3"
+      />
+      <path
+        d={steps}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeDasharray="320"
+        strokeDashoffset="320"
+      >
+        <animate attributeName="stroke-dashoffset" values="320;0" dur="2.4s" fill="freeze" />
+      </path>
+      <text x="16" y="36" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.45">
         SHARE PRICE
+      </text>
+      <text x="184" y="140" textAnchor="end" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.55">
+        INTEREST PAID
       </text>
     </svg>
   );

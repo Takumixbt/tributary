@@ -4,18 +4,14 @@ const ROW_ONE = [
   { name: "Arc", role: "Settlement network" },
   { name: "USDC", role: "Unit of account" },
   { name: "Circle Gateway", role: "Payment settlement" },
-  { name: "x402", role: "Payment standard" },
-  { name: "ERC-8004", role: "Agent identity" },
-  { name: "Arcscan", role: "Explorer" },
+  { name: "Nanopayments", role: "Sub-cent transfers" },
 ];
 
 const ROW_TWO = [
-  { name: "Foundry", role: "Contracts and tests" },
-  { name: "Solidity", role: "Vault and router" },
-  { name: "viem", role: "Chain reads" },
-  { name: "wagmi", role: "Wallet" },
-  { name: "React", role: "Interface" },
-  { name: "TypeScript", role: "Agents" },
+  { name: "x402", role: "Payment standard" },
+  { name: "CCTP", role: "Crosschain transfer" },
+  { name: "ERC-8004", role: "Agent identity" },
+  { name: "Arcscan", role: "Explorer" },
 ];
 
 function Card({ name, role }: { name: string; role: string }) {
