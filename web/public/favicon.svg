@@ -1,10 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <!-- The split. One payment arrives, a thin slice leaves for the vault and the
-       rest forwards on to the agent. Stroke weights are the 20/80 ratio. -->
-  <rect width="32" height="32" fill="#000000" />
-  <g fill="none" stroke="#ffffff" stroke-linecap="square">
-    <path d="M3 16H14" stroke-width="3.4" />
-    <path d="M14 16L28.5 6.5" stroke-width="1.4" />
-    <path d="M14 16L28.5 25.5" stroke-width="2.8" />
-  </g>
+  <!-- A confluence: two streams of income joining one channel. -->
+  <style>
+    .mark {
+      fill: none;
+      stroke: #000000;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    @media (prefers-color-scheme: dark) {
+      .mark { stroke: #ffffff; }
+    }
+  </style>
+  <path class="mark" d="M7 5 C7 14, 16 14, 16 20" />
+  <path class="mark" d="M25 5 C25 14, 16 14, 16 20" />
+  <path class="mark" d="M16 20 L16 28" />
 </svg>

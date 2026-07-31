@@ -7,31 +7,53 @@ import { reveal, useReveal } from "./useReveal";
  * bracketed the way a drawing dimensions a part.
  */
 function IncomeDiagram() {
+  // Two identical runs, translated by exactly one run width, so the tape never
+  // seams as it scrolls.
   const bars = [14, 22, 9, 27, 18, 31, 12, 24, 20, 35, 16, 28];
+  const step = 14;
+  const runWidth = bars.length * step;
+
+  const run = (offset: number) =>
+    bars.map((h, i) => (
+      <line
+        key={`${offset}-${i}`}
+        x1={offset + i * step}
+        y1="112"
+        x2={offset + i * step}
+        y2={112 - h}
+        stroke="currentColor"
+        strokeWidth="1.5"
+        opacity="0.7"
+      />
+    ));
+
   return (
     <svg viewBox="0 0 200 160" className="w-full h-full">
-      <line x1="16" y1="112" x2="184" y2="112" stroke="currentColor" strokeWidth="1" opacity="0.45" />
-      {bars.map((h, i) => (
-        <line
-          key={i}
-          x1={22 + i * 14}
-          y1="112"
-          x2={22 + i * 14}
-          y2={112 - h}
-          stroke="currentColor"
-          strokeWidth="1.5"
-          opacity="0.75"
-        >
-          <animate
-            attributeName="y2"
-            values={`112;${112 - h}`}
-            dur="0.5s"
-            begin={`${i * 0.12}s`}
-            fill="freeze"
+      <defs>
+        <clipPath id="tape-clip">
+          <rect x="16" y="20" width="168" height="94" />
+        </clipPath>
+      </defs>
+
+      <g clipPath="url(#tape-clip)">
+        <g>
+          <animateTransform
+            attributeName="transform"
+            type="translate"
+            values={`0 0;-${runWidth} 0`}
+            dur="9s"
+            repeatCount="indefinite"
           />
-        </line>
-      ))}
-      {/* dimension bracket under the run */}
+          {run(20)}
+          {run(20 + runWidth)}
+        </g>
+      </g>
+
+      <line x1="16" y1="112" x2="184" y2="112" stroke="currentColor" strokeWidth="1" opacity="0.45" />
+      {/* the reading head: income is recorded as it arrives */}
+      <line x1="150" y1="24" x2="150" y2="112" stroke="currentColor" strokeWidth="1" opacity="0.25">
+        <animate attributeName="opacity" values="0.1;0.35;0.1" dur="2.6s" repeatCount="indefinite" />
+      </line>
       <path d="M16 124 L16 130 L184 130 L184 124" fill="none" stroke="currentColor" strokeWidth="1" opacity="0.4" />
       <text x="100" y="146" textAnchor="middle" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.55">
         RECORDED INCOME
@@ -57,17 +79,74 @@ function SplitDiagram() {
       <path d="M116 74 L192 50" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.75" />
       {/* 20 percent turns down to the lenders, drawn light */}
       <path d="M116 88 L192 118" fill="none" stroke="currentColor" strokeWidth="0.75" opacity="0.6" />
-      <circle r="3" fill="currentColor">
-        <animateMotion path="M8,80 L84,80" dur="2.2s" repeatCount="indefinite" keyPoints="0;1" keyTimes="0;0.45" />
-      </circle>
-      <circle r="2.6" fill="currentColor" opacity="0">
-        <animateMotion path="M116,74 L192,50" dur="2.2s" begin="0.99s" repeatCount="indefinite" />
-        <animate attributeName="opacity" values="0;1;1;0" dur="2.2s" begin="0.99s" repeatCount="indefinite" />
-      </circle>
-      <circle r="1.6" fill="currentColor" opacity="0">
-        <animateMotion path="M116,88 L192,118" dur="2.2s" begin="0.99s" repeatCount="indefinite" />
-        <animate attributeName="opacity" values="0;1;1;0" dur="2.2s" begin="0.99s" repeatCount="indefinite" />
-      </circle>
+      {/* A steady stream of payments, each one forking at the junction. Three
+          in flight at a time so the line is never empty. */}
+      {[0, 1, 2].map((n) => {
+        const begin = `${n * 0.8}s`;
+        return (
+          <g key={n}>
+            <circle r="3" fill="currentColor" opacity="0">
+              <animateMotion path="M8,80 L84,80" dur="2.4s" begin={begin} repeatCount="indefinite" />
+              <animate
+                attributeName="opacity"
+                values="0;1;1;0;0"
+                keyTimes="0;0.06;0.4;0.42;1"
+                dur="2.4s"
+                begin={begin}
+                repeatCount="indefinite"
+              />
+            </circle>
+            <circle r="2.6" fill="currentColor" opacity="0">
+              <animateMotion
+                path="M116,74 L192,50"
+                dur="2.4s"
+                begin={begin}
+                repeatCount="indefinite"
+                keyPoints="0;0;1"
+                keyTimes="0;0.42;0.9"
+                calcMode="linear"
+              />
+              <animate
+                attributeName="opacity"
+                values="0;0;1;1;0"
+                keyTimes="0;0.42;0.48;0.84;0.9"
+                dur="2.4s"
+                begin={begin}
+                repeatCount="indefinite"
+              />
+            </circle>
+            <circle r="1.6" fill="currentColor" opacity="0">
+              <animateMotion
+                path="M116,88 L192,118"
+                dur="2.4s"
+                begin={begin}
+                repeatCount="indefinite"
+                keyPoints="0;0;1"
+                keyTimes="0;0.42;0.9"
+                calcMode="linear"
+              />
+              <animate
+                attributeName="opacity"
+                values="0;0;1;1;0"
+                keyTimes="0;0.42;0.48;0.84;0.9"
+                dur="2.4s"
+                begin={begin}
+                repeatCount="indefinite"
+              />
+            </circle>
+          </g>
+        );
+      })}
+      {/* the junction registers each arrival */}
+      <rect x="84" y="64" width="32" height="32" fill="currentColor" opacity="0">
+        <animate
+          attributeName="opacity"
+          values="0;0.14;0"
+          keyTimes="0;0.44;0.6"
+          dur="2.4s"
+          repeatCount="indefinite"
+        />
+      </rect>
       <text x="192" y="40" textAnchor="end" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.55">
         AGENT 80
       </text>
@@ -114,27 +193,42 @@ function ScoreDiagram() {
         strokeDasharray="3 4"
         opacity="0.35"
       />
+      {/* The read sweeps the history on a loop: the fit is drawn as it passes,
+          and each observation lights up when the sweep reaches it. */}
       <path
         d="M24 108 L168 54"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.5"
         strokeDasharray="160"
-        strokeDashoffset="160"
       >
-        <animate attributeName="stroke-dashoffset" values="160;0" dur="1.6s" fill="freeze" />
+        <animate
+          attributeName="stroke-dashoffset"
+          values="160;0;0;160"
+          keyTimes="0;0.55;0.9;1"
+          dur="6s"
+          repeatCount="indefinite"
+        />
       </path>
-      {points.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r="2" fill="currentColor" opacity="0">
-          <animate
-            attributeName="opacity"
-            values="0;0.8"
-            dur="0.3s"
-            begin={`${i * 0.14}s`}
-            fill="freeze"
-          />
-        </circle>
-      ))}
+      {points.map(([x, y], i) => {
+        const at = 0.06 + (i / (points.length - 1)) * 0.49;
+        return (
+          <circle key={i} cx={x} cy={y} r="2" fill="currentColor" opacity="0">
+            <animate
+              attributeName="opacity"
+              values="0;0;0.85;0.85;0"
+              keyTimes={`0;${at.toFixed(3)};${(at + 0.02).toFixed(3)};0.92;1`}
+              dur="6s"
+              repeatCount="indefinite"
+            />
+          </circle>
+        );
+      })}
+      <line x1="24" y1="24" x2="24" y2="120" stroke="currentColor" strokeWidth="1" opacity="0.3">
+        <animate attributeName="x1" values="24;168;168;24" keyTimes="0;0.55;0.9;1" dur="6s" repeatCount="indefinite" />
+        <animate attributeName="x2" values="24;168;168;24" keyTimes="0;0.55;0.9;1" dur="6s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.3;0.3;0;0" keyTimes="0;0.55;0.7;1" dur="6s" repeatCount="indefinite" />
+      </line>
       <text x="184" y="38" textAnchor="end" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.5">
         LIMIT
       </text>
@@ -166,16 +260,28 @@ function VaultDiagram() {
         strokeDasharray="3 4"
         opacity="0.3"
       />
-      <path
-        d={steps}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.75"
-        strokeDasharray="320"
-        strokeDashoffset="320"
-      >
-        <animate attributeName="stroke-dashoffset" values="320;0" dur="2.4s" fill="freeze" />
+      {/* The line redraws on a loop, with a head marking the newest repayment. */}
+      <path id="share-steps" d={steps} fill="none" stroke="currentColor" strokeWidth="1.75" strokeDasharray="320">
+        <animate
+          attributeName="stroke-dashoffset"
+          values="320;0;0;320"
+          keyTimes="0;0.6;0.92;1"
+          dur="6.5s"
+          repeatCount="indefinite"
+        />
       </path>
+      <circle r="2.6" fill="currentColor" opacity="0">
+        <animateMotion dur="6.5s" repeatCount="indefinite" keyPoints="0;1;1;0" keyTimes="0;0.6;0.92;1">
+          <mpath href="#share-steps" />
+        </animateMotion>
+        <animate
+          attributeName="opacity"
+          values="0;0.9;0.9;0;0"
+          keyTimes="0;0.05;0.6;0.94;1"
+          dur="6.5s"
+          repeatCount="indefinite"
+        />
+      </circle>
       <text x="16" y="36" fontSize="8" fontFamily="monospace" fill="currentColor" opacity="0.45">
         SHARE PRICE
       </text>

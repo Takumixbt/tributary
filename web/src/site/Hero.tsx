@@ -6,10 +6,11 @@ import { GlyphGlobe } from "./GlyphGlobe";
 const ANIMATED_WORD = "earn";
 
 const MARQUEE_STATS = [
-  { figure: "$0.000001", note: "Smallest payment we can settle", tag: "PAYMENTS" },
-  { figure: "20%", note: "Of every payment repays the loan", tag: "REPAYMENT" },
-  { figure: "139 to 268", note: "Credit score across one cycle", tag: "PROVEN" },
-  { figure: "Live", note: "Running on Arc testnet", tag: "STATUS" },
+  { figure: "$0.000001", note: "Smallest payment settled", tag: "PAYMENTS" },
+  { figure: "20%", note: "Of each payment clears the loan", tag: "REPAYMENT" },
+  { figure: "268", note: "Credit score, up from 139", tag: "UNDERWRITING" },
+  { figure: "Sub-second", note: "Settlement on Arc", tag: "SPEED" },
+  { figure: "Live", note: "Deployed on testnet", tag: "STATUS" },
 ];
 
 function GridField() {
@@ -148,8 +149,10 @@ export function Hero() {
         </div>
       </div>
 
+      {/* In flow and pushed to the bottom, so a short window can never let it
+          collide with the buttons above it. */}
       <div
-        className={`absolute bottom-8 left-0 right-0 transition-all duration-700 delay-500 ${
+        className={`relative z-10 mt-auto pt-24 pb-10 transition-all duration-700 delay-500 ${
           mounted ? "opacity-100" : "opacity-0"
         }`}
       >

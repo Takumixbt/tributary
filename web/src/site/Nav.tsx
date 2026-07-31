@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { Mark } from "./Mark";
+
 const LINKS = [
   { href: "#how-it-works", label: "How it works" },
   { href: "#security", label: "Risk" },
@@ -44,12 +46,10 @@ export function Nav() {
               scrolled ? "h-14" : "h-16"
             }`}
           >
-            <Link className="flex items-center gap-2" to="/">
-              <span className="font-display tracking-tight transition-all duration-500 text-xl">
+            <Link className="flex items-center gap-2.5" to="/">
+              <Mark className="w-5 h-5" />
+              <span className="font-display font-semibold tracking-tight transition-all duration-500 text-xl">
                 Tributary
-              </span>
-              <span className="text-muted-foreground font-mono transition-all duration-500 text-[10px] mt-0.5">
-                CREDIT
               </span>
             </Link>
 

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+import { Mark } from "./Mark";
+
 const REPO = "https://github.com/Takumixbt/tributary";
 
 const COLUMNS = [
@@ -56,9 +58,9 @@ export function Footer() {
         <div className="py-16 lg:py-24">
           <div className="grid grid-cols-2 md:grid-cols-6 gap-12 lg:gap-8">
             <div className="col-span-2">
-              <Link to="/" className="inline-flex items-center gap-2 mb-6">
-                <span className="text-2xl font-display">Tributary</span>
-                <span className="text-xs text-muted-foreground font-mono">CREDIT</span>
+              <Link to="/" className="inline-flex items-center gap-2.5 mb-6">
+                <Mark className="w-6 h-6" />
+                <span className="text-2xl font-display font-semibold tracking-tight">Tributary</span>
               </Link>
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs">
                 Working capital for agents that already earn, repaid out of the income they
