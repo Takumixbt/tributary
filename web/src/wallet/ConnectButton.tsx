@@ -51,14 +51,32 @@ export function ConnectButton({ compact = false }: { compact?: boolean }) {
     );
   }
 
+  // One wallet installed is the common case, and making someone pick it from a
+  // list of one is the part that feels like boilerplate. Connect straight away
+  // and keep the panel for the account itself.
+  const onlyConnector = wallet.connectors.length === 1 ? wallet.connectors[0] : undefined;
+
+  const handleClick = () => {
+    if (wallet.isConnected || !onlyConnector) {
+      setOpen(true);
+      return;
+    }
+    wallet.connect({ connector: onlyConnector });
+  };
+
   return (
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
-        className={`${base} border-foreground/20 hover:border-foreground/60 hover:bg-foreground/5`}
+        onClick={handleClick}
+        disabled={wallet.connecting}
+        className={`${base} border-foreground/20 hover:border-foreground/60 hover:bg-foreground/5 disabled:opacity-60`}
       >
-        {wallet.isConnected ? shortAddress(wallet.address) : "Connect wallet"}
+        {wallet.isConnected
+          ? shortAddress(wallet.address)
+          : wallet.connecting
+            ? "Check your wallet"
+            : "Connect wallet"}
       </button>
 
       {open ? (
