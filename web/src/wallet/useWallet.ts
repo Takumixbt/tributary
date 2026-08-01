@@ -82,6 +82,11 @@ export function useWallet() {
     wrongNetwork,
     connectors: ready,
     connect,
+    /** Connect the only wallet present, so a chooser of one is never shown. */
+    connectFirst: () => {
+      const first = ready[0];
+      if (first) connect({ connector: first });
+    },
     connecting,
     connectError,
     disconnect,

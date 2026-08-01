@@ -24,7 +24,7 @@ import { WagmiProvider } from "wagmi";
 import { GraphAnchorProvider, GraphCameraProvider } from "./graph";
 import { MotionProvider } from "./kinetic";
 import { EventStreamProvider, wagmiConfig } from "./data";
-import { DashboardPage } from "./dashboard";
+import AppPage from "./app/AppPage";
 import Landing from "./pages/Landing";
 import ErrorBoundary from "./shell/ErrorBoundary";
 import NotFound from "./shell/NotFound";
@@ -61,7 +61,7 @@ export function App() {
                     <ErrorBoundary>
                       <Routes>
                         <Route path="/" element={<Landing />} />
-                        <Route path="/app" element={<DashboardPage />} />
+                        <Route path="/app" element={<AppPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </ErrorBoundary>
