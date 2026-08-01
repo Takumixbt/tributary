@@ -40,7 +40,13 @@ export function VaultPanel() {
 
   return (
     <div>
-      <PanelHead title="Vault" note={`${padCount(vault.lenderCount)} lenders`} />
+      {/* Lender count comes from deposit events seen since this page opened, so
+          a fresh load legitimately does not know it yet. Better to say nothing
+          than to print a zero next to a funded vault. */}
+      <PanelHead
+        title="Vault"
+        note={vault.lenderCount > 0 ? `${padCount(vault.lenderCount)} lenders` : "Arc testnet"}
+      />
 
       {empty ? (
         <Waiting>waiting for the first deposit</Waiting>

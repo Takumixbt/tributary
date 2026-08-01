@@ -29,7 +29,7 @@ import type {
 } from "../../lib/types";
 import type { TributaryStream } from "../types";
 import { registryAbi, routerAbi, vaultAbi } from "./abi";
-import { publicClient, readRoster, readVault } from "./reads";
+import { publicClient, readRoster, readVault, withTimeout } from "./reads";
 
 export interface ChainStreamOptions {
   addresses: { vault: Address | null; registry: Address | null; router: Address | null };
@@ -145,7 +145,10 @@ export function createChainStream(options: ChainStreamOptions): TributaryStream 
 
   async function refresh(): Promise<void> {
     if (!vault || !registry) return;
-    const [nextVault, nextRoster] = await Promise.all([readVault(vault), readRoster(registry, vault)]);
+    const [nextVault, nextRoster] = await Promise.all([
+      withTimeout(readVault(vault), null, "vault read"),
+      withTimeout(readRoster(registry, vault), [], "roster read"),
+    ]);
 
     if (!nextVault) {
       hub.setStatus("stalled", "vault reads are not answering");
@@ -496,12 +499,25 @@ export function createChainStream(options: ChainStreamOptions): TributaryStream 
       }
 
       hub.setStatus("idle", "reading the loan book");
-      void refresh().then(() => {
-        if (!running) return;
-        watchAll();
-      });
 
-      refreshTimer = setInterval(() => void refresh(), REFRESH_MS);
+      // A read that throws used to reject into nothing, which left the desk
+      // sitting on an empty snapshot with no way to tell why.
+      const onReadFailure = (error: unknown) => {
+        const reason = error instanceof Error ? error.message : "read failed";
+        hub.setStatus("stalled", reason);
+        publish(reason);
+      };
+
+      void refresh()
+        .then(() => {
+          if (!running) return;
+          watchAll();
+        })
+        .catch(onReadFailure);
+
+      refreshTimer = setInterval(() => {
+        void refresh().catch(onReadFailure);
+      }, REFRESH_MS);
       watchdog = setInterval(() => {
         if (!running || lastEventAt === 0) return;
         if (Date.now() - lastEventAt > STALL_MS) {

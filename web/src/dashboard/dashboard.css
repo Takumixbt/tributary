@@ -98,24 +98,163 @@
   min-width: 0;
 }
 
+/* Every row sums to twelve, or the grid leaves a hole.
+ *   row 1  vault 4    position 4   borrower 4
+ *   row 2  loan book 8             underwriter 4
+ *   row 3  split on receipt 12
+ */
 .desk-vault {
-  grid-column: span 5;
+  grid-column: span 4;
+}
+
+.desk-lender {
+  grid-column: span 4;
 }
 
 .desk-featured {
   grid-column: span 4;
 }
 
-.desk-ticker {
-  grid-column: span 3;
-}
-
 .desk-roster {
-  grid-column: span 9;
+  grid-column: span 8;
 }
 
 .desk-underwriter {
-  grid-column: span 3;
+  grid-column: span 4;
+}
+
+.desk-ticker {
+  grid-column: span 12;
+}
+
+/* ------------------------------------------------------------------ lender
+ * Deposit and redeem. The only place on the desk that signs anything.
+ */
+
+.lender {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+
+.lender-tabs {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--hair);
+  width: fit-content;
+}
+
+.lender-tab {
+  padding: 6px 16px;
+  font-family: var(--font-mono);
+  font-size: var(--t-2xs);
+  color: var(--ink-mid);
+  transition: color var(--dur-fast), background var(--dur-fast);
+}
+
+.lender-tab.is-active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.lender-connect {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+}
+
+.lender-copy {
+  color: var(--ink-mid);
+  font-size: var(--t-sm);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.lender-field-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.lender-max {
+  font-family: var(--font-mono);
+  font-size: var(--t-3xs);
+  color: var(--ink-mid);
+}
+
+.lender-max:hover {
+  color: var(--ink);
+}
+
+.lender-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 14px;
+  background: transparent;
+  border: 1px solid var(--hair);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--t-lg);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+
+.lender-input:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.lender-rows {
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.lender-rows > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.lender-rows dt {
+  font-size: var(--t-xs);
+  color: var(--ink-mid);
+}
+
+.lender-rows dd {
+  margin: 0;
+  font-size: var(--t-xs);
+}
+
+.lender-submit {
+  height: 52px;
+  width: 100%;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: var(--t-2xs);
+  border-radius: 999px;
+  transition: opacity var(--dur-fast);
+}
+
+.lender-submit:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.lender-note {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--t-3xs);
+  color: var(--ink-mid);
+  line-height: 1.5;
+}
+
+.lender-link {
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 /* ------------------------------------------------------------ panel basics */

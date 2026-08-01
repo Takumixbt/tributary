@@ -21,6 +21,8 @@ import { SplitTicker } from "./SplitTicker";
 import { UnderwriterFeed } from "./UnderwriterFeed";
 import { VaultPanel } from "./VaultPanel";
 import { FeaturedAgent } from "./FeaturedAgent";
+import { PanelHead } from "./parts";
+import { LenderPanel } from "../wallet";
 import "./dashboard.css";
 
 function DeskStat({ label, value }: { label: string; value: ReactNode }) {
@@ -76,17 +78,21 @@ export function DashboardPage() {
           <section className="desk-cell desk-vault" aria-label="Vault">
             <VaultPanel />
           </section>
+          <section className="desk-cell desk-lender" aria-label="Lend or redeem">
+            <PanelHead title="Your position" note="Arc testnet" />
+            <LenderPanel />
+          </section>
           <section className="desk-cell desk-featured" aria-label="Borrower under review">
             <FeaturedAgent />
-          </section>
-          <section className="desk-cell desk-ticker" aria-label="Split on receipt">
-            <SplitTicker />
           </section>
           <section className="desk-cell desk-roster" aria-label="Loan book">
             <AgentRoster />
           </section>
           <section className="desk-cell desk-underwriter" aria-label="Underwriter decisions">
             <UnderwriterFeed />
+          </section>
+          <section className="desk-cell desk-ticker" aria-label="Split on receipt">
+            <SplitTicker />
           </section>
         </div>
 

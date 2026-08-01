@@ -34,6 +34,33 @@ export const publicClient: PublicClient = createPublicClient({
 
 const MICRO = 1_000_000n;
 
+/** How long a whole read pass may take before we give up on it. */
+const READ_TIMEOUT_MS = 9_000;
+
+/**
+ * A public endpoint that accepts a request and then never answers used to hang
+ * the whole refresh: the await never settled, so the desk sat on its empty
+ * opening snapshot with no error to show for it. Every read pass is now bounded.
+ */
+export function withTimeout<T>(work: Promise<T>, fallback: T, label: string): Promise<T> {
+  return new Promise<T>((resolve) => {
+    const timer = setTimeout(() => {
+      console.warn(`[tributary] ${label} timed out after ${READ_TIMEOUT_MS}ms`);
+      resolve(fallback);
+    }, READ_TIMEOUT_MS);
+    work
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error) => {
+        clearTimeout(timer);
+        console.warn(`[tributary] ${label} failed:`, error);
+        resolve(fallback);
+      });
+  });
+}
+
 /** Roster metadata the registry stores as a URI. Optional, and never trusted. */
 interface AgentMeta {
   label?: string;

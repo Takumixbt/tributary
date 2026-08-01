@@ -15,9 +15,22 @@ import type { Address, StreamMode } from "./types";
 
 /** Arc Testnet. */
 export const ARC_CHAIN_ID = 5042002;
-export const ARC_RPC_PRIMARY = "https://rpc.testnet.arc.network";
-/** Second endpoint, used when the primary rate-limits or drops a request. */
-export const ARC_RPC_SECONDARY = "https://arc-testnet.drpc.org";
+/**
+ * The browser primary. Arc's own endpoint answers a curl but sends no
+ * Access-Control-Allow-Origin, so a page cannot read it: every request fails
+ * preflight and the dashboard sits empty. dRPC serves the same chain with CORS,
+ * so it leads here. The offchain agents, which have no origin, still use Arc's
+ * endpoint directly.
+ */
+export const ARC_RPC_PRIMARY = "https://arc-testnet.drpc.org";
+/**
+ * No second endpoint by default. Arc's own RPC is the obvious candidate and it
+ * is deliberately absent: without CORS headers every browser request to it
+ * fails, and having it in the list only spends a retry per read on a call that
+ * cannot succeed. Set VITE_ARC_RPC_FALLBACK_URL to any CORS-enabled endpoint to
+ * add one back.
+ */
+export const ARC_RPC_SECONDARY = "";
 export const USDC_FALLBACK = "0x3600000000000000000000000000000000000000" as Address;
 
 function readEnv(key: string): string {

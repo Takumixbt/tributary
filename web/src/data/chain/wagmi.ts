@@ -11,6 +11,7 @@
  */
 
 import { createConfig, fallback, http } from "wagmi";
+import { injected } from "wagmi/connectors";
 import { arcTestnet } from "viem/chains";
 import { RPC_URLS } from "../../lib/env";
 
@@ -21,6 +22,7 @@ export const arcTransport = fallback(
 
 export const wagmiConfig = createConfig({
   chains: [arcTestnet],
+  connectors: [injected({ shimDisconnect: true })],
   transports: {
     [arcTestnet.id]: arcTransport,
   },

@@ -31,6 +31,11 @@ export function EventStreamProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     stream.start();
+    // Development only: lets a headless browser inspect what the reader holds
+    // without guessing from the rendered output.
+    if (import.meta.env.DEV) {
+      (window as unknown as { __stream?: unknown }).__stream = stream;
+    }
     return () => stream.stop();
   }, [stream]);
 

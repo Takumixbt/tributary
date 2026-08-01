@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
+import { ConnectButton } from "../wallet";
 import { Mark } from "./Mark";
 
 const LINKS = [
@@ -12,6 +13,8 @@ const LINKS = [
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // On the desk the wallet is the action. On the site it is the way in.
+  const onApp = useLocation().pathname.startsWith("/app");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 32);
@@ -54,24 +57,37 @@ export function Nav() {
             </Link>
 
             <div className="hidden md:flex items-center gap-1">
-              {LINKS.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
+              {onApp ? (
+                <Link
+                  to="/"
                   className="px-4 py-2 font-mono text-xs text-foreground/70 hover:text-foreground hover:bg-foreground/5 transition-colors"
                 >
-                  {link.label}
-                </a>
-              ))}
+                  Overview
+                </Link>
+              ) : (
+                LINKS.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    className="px-4 py-2 font-mono text-xs text-foreground/70 hover:text-foreground hover:bg-foreground/5 transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ))
+              )}
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link
-                to="/app"
-                className="font-mono border border-foreground/20 hover:border-foreground/60 hover:bg-foreground/5 transition-all duration-300 px-4 py-2 text-xs rounded-full"
-              >
-                Launch App
-              </Link>
+              {onApp ? (
+                <ConnectButton />
+              ) : (
+                <Link
+                  to="/app"
+                  className="font-mono border border-foreground/20 hover:border-foreground/60 hover:bg-foreground/5 transition-all duration-300 px-4 py-2 text-xs rounded-full"
+                >
+                  Launch App
+                </Link>
+              )}
             </div>
 
             <button

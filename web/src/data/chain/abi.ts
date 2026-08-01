@@ -46,5 +46,14 @@ export const routerAbi = parseAbi([
 
 export const erc20Abi = parseAbi([
   "function balanceOf(address) view returns (uint256)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function approve(address spender, uint256 amount) returns (bool)",
   "event Transfer(address indexed from, address indexed to, uint256 value)",
+]);
+
+/** The writes a lender signs. Kept apart from the read ABI so the read path
+ *  cannot accidentally be handed a state-changing call. */
+export const vaultWriteAbi = parseAbi([
+  "function deposit(uint256 assets) returns (uint256)",
+  "function withdraw(uint256 shares) returns (uint256)",
 ]);
