@@ -1,164 +1,163 @@
 /*
- * The app.
+ * The terminal.
  *
- * Written for someone who has never heard of any of this. The page answers
- * three questions in order: what is this, what happens to my money, and what
- * do I press. Anything that only a developer would want (addresses, share
- * price, basis points, event logs) is either translated into a sentence or
- * moved to the very bottom.
+ * Live protocol state, in the terms the contracts are written in. No
+ * explanation of what a loan is: the audience for this page can read a credit
+ * line. Every figure here is a chain read, refreshed on the stream cadence.
  */
 
 import { useAgents, useEventStream, useEvents, useVaultState } from "../data";
 import { BorrowerCard } from "./BorrowerCard";
 import { DepositCard } from "./DepositCard";
-import { usd } from "./Money";
+import { pct, sharePrice, usdc } from "./Money";
 
-const EXPLORER = "https://testnet.arcscan.app/address";
+const EXPLORER_TX = "https://testnet.arcscan.app/tx";
 
-const CONTRACTS = [
-  { name: "The pool", address: "0xe13572efdfea23fe04f7cc81f98c083254a44ba8" },
-  { name: "Agent register", address: "0x897e3607b3dc5229ed4052ed09af7f6a70ec6c22" },
-  { name: "Payment splitter", address: "0xF81EEE56be9Fd9d487A847f35CF4dfe563Eb778d" },
-];
-
-function Figure({ value, label }: { value: string; label: string }) {
+function Metric({ label, value, note }: { label: string; value: string; note?: string }) {
   return (
-    <div>
-      <div className="text-4xl lg:text-5xl font-display tracking-tight">{value}</div>
-      <div className="mt-2 text-muted-foreground">{label}</div>
+    <div className="px-6 py-5">
+      <div className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
+      <div className="font-mono text-2xl lg:text-3xl mt-2 tabular-nums">{value}</div>
+      {note ? <div className="text-xs text-muted-foreground mt-1">{note}</div> : null}
     </div>
   );
 }
 
-/** Events, rewritten as sentences a person can read at a glance. */
-function activityLine(kind: string, amount: bigint, who: string): string | null {
-  switch (kind) {
-    case "split":
-      return `${who} got paid, and part of it went to the pool`;
-    case "repay":
-      return `${who} paid back ${usd(amount)} USDC`;
-    case "draw":
-      return `${who} borrowed ${usd(amount)} USDC`;
-    case "deposit":
-      return `Someone added ${usd(amount)} USDC to the pool`;
-    case "score":
-      return `${who} was re-scored`;
-    case "register":
-      return `${who} joined`;
-    default:
-      return null;
-  }
-}
+const EVENT_LABEL: Record<string, string> = {
+  split: "RevenueSplit",
+  repay: "Repaid",
+  draw: "Drawn",
+  deposit: "Deposited",
+  withdraw: "Withdrawn",
+  score: "ScoreUpdated",
+  register: "AgentRegistered",
+  line: "LineUpdated",
+  payment: "Payment",
+  clearance: "DebtCleared",
+};
 
 export function AppPage() {
   const vault = useVaultState();
   const agents = useAgents();
-  const events = useEvents(undefined, 6);
+  const events = useEvents(undefined, 12);
   const simulated = useEventStream().mode === "demo";
 
-  const lentOut = vault.totalPrincipal;
-  const free = vault.availableLiquidity;
+  const utilization =
+    vault.totalAssets > 0n ? Number((vault.totalPrincipal * 10_000n) / vault.totalAssets) : 0;
 
   return (
     <main className="relative">
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-36 lg:pt-44 pb-24 lg:pb-32">
-        <div className="mb-16 lg:mb-24 max-w-3xl">
-          <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
-            <span className="w-8 h-px bg-foreground/30" />
-            {simulated ? "Practice mode" : "Live on Arc testnet"}
-          </span>
-          <h1 className="text-4xl lg:text-6xl font-display tracking-tight leading-[0.95] mb-6">
-            Put money behind agents
-            <br />
-            that already get paid.
-          </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed">
-            Your money is lent to software that earns a living doing small jobs. Every time
-            one of them gets paid, a fixed slice comes back here before the agent sees the
-            rest. That is how you get repaid, and it happens without anyone being trusted.
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12 pt-36 lg:pt-40 pb-24 lg:pb-32">
+        <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
+          <div>
+            <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-5">
+              <span className="w-8 h-px bg-foreground/30" />
+              {simulated ? "Simulation" : "Arc testnet · chain 5042002"}
+            </span>
+            <h1 className="text-4xl lg:text-5xl font-display tracking-tight">Loan book</h1>
+          </div>
+          <p className="font-mono text-xs text-muted-foreground max-w-sm leading-relaxed">
+            Interest accrues per second on outstanding principal. Repayment is withheld at
+            the router before revenue reaches the borrower.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-[1fr_400px] gap-12 lg:gap-16 items-start">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-px bg-foreground/10 border border-foreground/10 mb-12">
+          <div className="bg-background">
+            <Metric label="Total assets" value={usdc(vault.totalAssets, 4)} note="USDC" />
+          </div>
+          <div className="bg-background">
+            <Metric label="Principal" value={usdc(vault.totalPrincipal, 4)} note="outstanding" />
+          </div>
+          <div className="bg-background">
+            <Metric label="Liquidity" value={usdc(vault.availableLiquidity, 4)} note="withdrawable" />
+          </div>
+          <div className="bg-background">
+            <Metric label="Utilization" value={pct(utilization)} note="principal / assets" />
+          </div>
+          <div className="bg-background">
+            <Metric label="Share price" value={sharePrice(vault.sharePrice)} note="assets / shares" />
+          </div>
+          <div className="bg-background">
+            <Metric label="Book APR" value={pct(vault.apyBps)} note="principal weighted" />
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-[1fr_380px] gap-10 lg:gap-14 items-start">
           <div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 pb-12 border-b border-foreground/10">
-              <Figure value={usd(vault.totalAssets)} label="In the pool" />
-              <Figure value={usd(lentOut)} label="Lent to agents" />
-              <Figure value={usd(free)} label="Free to take out" />
+            <div className="flex items-baseline justify-between mb-6">
+              <h2 className="text-2xl font-display">Credit lines</h2>
+              <span className="font-mono text-xs text-muted-foreground">
+                {agents.length} borrower{agents.length === 1 ? "" : "s"}
+              </span>
             </div>
 
-            <div className="pt-12">
-              <h2 className="text-2xl lg:text-3xl font-display mb-2">Who is borrowing</h2>
-              <p className="text-muted-foreground mb-8">
-                {agents.length === 0
-                  ? "No agents have borrowed yet."
-                  : "Each one earns money on its own and repays out of that income."}
+            {agents.length === 0 ? (
+              <p className="font-mono text-xs text-muted-foreground border border-foreground/10 px-6 py-8">
+                No agents registered on this deployment yet.
               </p>
+            ) : (
               <div className="grid gap-4">
                 {agents.map((agent) => (
                   <BorrowerCard key={agent.address} agent={agent} />
                 ))}
               </div>
-            </div>
+            )}
 
             {events.length > 0 ? (
-              <div className="pt-12">
-                <h2 className="text-2xl lg:text-3xl font-display mb-8">Lately</h2>
-                <ul className="space-y-3">
+              <div className="mt-14">
+                <h2 className="text-2xl font-display mb-6">Events</h2>
+                <div className="border border-foreground/10 divide-y divide-foreground/10">
                   {events.map((event) => {
                     const amount =
-                      "amount" in event && typeof event.amount === "bigint" ? event.amount : 0n;
+                      "amount" in event && typeof event.amount === "bigint" ? event.amount : null;
                     const who =
                       "agentLabel" in event && typeof event.agentLabel === "string"
                         ? event.agentLabel
-                        : "An agent";
-                    const line = activityLine(event.kind, amount, who);
-                    if (!line) return null;
+                        : "";
+                    const tx =
+                      "txHash" in event && typeof event.txHash === "string" ? event.txHash : null;
                     return (
-                      <li
+                      <div
                         key={event.id}
-                        className="flex items-baseline justify-between gap-6 py-3 border-b border-foreground/10 last:border-0"
+                        className="px-5 py-3 flex items-baseline justify-between gap-4 font-mono text-xs"
                       >
-                        <span>{line}</span>
-                        <span className="text-sm text-muted-foreground whitespace-nowrap">
+                        <span className="w-40 shrink-0">
+                          {EVENT_LABEL[event.kind] ?? event.kind}
+                        </span>
+                        <span className="flex-1 text-muted-foreground truncate">{who}</span>
+                        <span className="tabular-nums">{amount !== null ? usdc(amount, 6) : ""}</span>
+                        {tx ? (
+                          <a
+                            href={`${EXPLORER_TX}/${tx}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-muted-foreground hover:text-foreground shrink-0"
+                          >
+                            tx
+                          </a>
+                        ) : (
+                          <span className="w-4 shrink-0" />
+                        )}
+                        <span className="text-muted-foreground shrink-0 tabular-nums">
                           {new Date(event.at).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit",
+                            second: "2-digit",
                           })}
                         </span>
-                      </li>
+                      </div>
                     );
                   })}
-                </ul>
+                </div>
               </div>
             ) : null}
           </div>
 
           <div className="lg:sticky lg:top-28">
             <DepositCard />
-            <p className="mt-6 text-sm text-muted-foreground leading-relaxed">
-              This is a testnet. The money is not real, and fees here are paid in USDC
-              rather than any other token.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-24 pt-8 border-t border-foreground/10">
-          <p className="text-sm text-muted-foreground mb-4">
-            Everything above runs on three open contracts. Anyone can read them.
-          </p>
-          <div className="flex flex-wrap gap-x-8 gap-y-2">
-            {CONTRACTS.map((contract) => (
-              <a
-                key={contract.address}
-                href={`${EXPLORER}/${contract.address}`}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
-              >
-                {contract.name}
-              </a>
-            ))}
           </div>
         </div>
       </div>

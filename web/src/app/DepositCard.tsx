@@ -5,17 +5,16 @@ import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 
 import { erc20Abi, vaultWriteAbi } from "../data/chain/abi";
 import { ADDRESSES } from "../lib/env";
 import { ARC_CHAIN_ID, shortAddress, useWallet } from "../wallet";
-import { usd } from "./Money";
+import { usdc } from "./Money";
 
 type Mode = "add" | "take";
 
 const EXPLORER_TX = "https://testnet.arcscan.app/tx";
 
 /**
- * The one thing a visitor is here to do. Everything else on the page is
- * context for this card, so it says what happens in plain words, keeps a
- * single button lit at any moment, and never shows a step that is not the
- * next step.
+ * Lender side. Deposit mints shares against total assets, withdraw burns them
+ * back, and both are pinned to Arc so a wallet on another chain cannot sign
+ * into a contract that does not exist there.
  */
 export function DepositCard() {
   const wallet = useWallet();
@@ -49,7 +48,7 @@ export function DepositCard() {
   useEffect(() => {
     if (!receipt.isSuccess) return;
     setAmount("");
-    setNote(mode === "add" ? "Done. Your money is in the pool." : "Done. Your money is back in your wallet.");
+    setNote("Confirmed on Arc.");
     wallet.refresh();
     void allowance.refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -76,7 +75,7 @@ export function DepositCard() {
               args: [vault, parsed],
             }),
           );
-          setNote("Permission granted. Press the button once more to add the money.");
+          setNote("Allowance set. Sign the deposit next.");
           return;
         }
         setHash(
@@ -100,9 +99,9 @@ export function DepositCard() {
         );
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Something went wrong";
-      // Wallet rejections are a choice, not a failure worth shouting about.
-      setNote(/rejected|denied/i.test(message) ? "Cancelled in your wallet." : message.split("\n")[0].slice(0, 140));
+      const message = error instanceof Error ? error.message : "Transaction failed";
+      // A wallet rejection is a choice, not a failure worth shouting about.
+      setNote(/rejected|denied/i.test(message) ? "Rejected in wallet." : message.split("\n")[0].slice(0, 140));
     }
   }
 
@@ -111,12 +110,12 @@ export function DepositCard() {
       ? "Confirming"
       : "Check your wallet"
     : overMax
-      ? "More than you have"
+      ? "Exceeds balance"
       : mode === "add"
         ? needsApproval
-          ? "Allow, then add"
-          : "Add money"
-        : "Take money out";
+          ? "Approve USDC"
+          : "Deposit"
+        : "Withdraw";
 
   return (
     <div className="border border-foreground/15 bg-background">
@@ -130,13 +129,13 @@ export function DepositCard() {
               setAmount("");
               setNote(null);
             }}
-            className={`flex-1 py-4 text-sm transition-colors ${
+            className={`flex-1 py-4 font-mono text-xs uppercase tracking-wide transition-colors ${
               mode === m
                 ? "bg-foreground text-background"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {m === "add" ? "Add money" : "Take out"}
+            {m === "add" ? "Deposit" : "Withdraw"}
           </button>
         ))}
       </div>
@@ -144,9 +143,9 @@ export function DepositCard() {
       <div className="p-6 lg:p-8">
         {!wallet.isConnected ? (
           <>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              Connect a wallet to put money in. You can take it out again whenever it is
-              not currently lent out.
+            <p className="font-mono text-xs text-muted-foreground leading-relaxed mb-6">
+              Connect to supply USDC against agent revenue, or to redeem shares. Withdrawals
+              are limited to idle liquidity.
             </p>
             <button
               type="button"
@@ -159,9 +158,8 @@ export function DepositCard() {
           </>
         ) : wallet.wrongNetwork ? (
           <>
-            <p className="text-muted-foreground leading-relaxed mb-6">
-              Your wallet is on a different network. Tributary runs on Arc, where fees are
-              paid in USDC.
+            <p className="font-mono text-xs text-muted-foreground leading-relaxed mb-6">
+              Wrong network. Arc testnet is chain 5042002 and gas is paid in USDC.
             </p>
             <button
               type="button"
@@ -174,15 +172,18 @@ export function DepositCard() {
         ) : (
           <>
             <div className="flex items-baseline justify-between mb-2">
-              <label htmlFor="amount" className="text-sm text-muted-foreground">
-                {mode === "add" ? "How much" : "How much to take out"}
+              <label
+                htmlFor="amount"
+                className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground"
+              >
+                {mode === "add" ? "Amount USDC" : "Shares to burn"}
               </label>
               <button
                 type="button"
-                className="text-sm text-muted-foreground hover:text-foreground"
+                className="font-mono text-xs text-muted-foreground hover:text-foreground"
                 onClick={() => setAmount(formatUnits(max, 6))}
               >
-                You have {usd(mode === "add" ? wallet.usdcBalance : wallet.positionValue)}
+                Max {usdc(max, mode === "add" ? 4 : 6)}
               </button>
             </div>
             <input
@@ -203,28 +204,36 @@ export function DepositCard() {
               {label}
             </button>
 
-            <dl className="mt-6 space-y-2 text-sm">
+            <dl className="mt-6 space-y-2 font-mono text-xs">
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">In the pool for you</dt>
-                <dd className="font-mono">{usd(wallet.positionValue)} USDC</dd>
+                <dt className="text-muted-foreground">Wallet USDC</dt>
+                <dd className="tabular-nums">{usdc(wallet.usdcBalance, 6)}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">Wallet</dt>
-                <dd className="font-mono">{shortAddress(wallet.address)}</dd>
+                <dt className="text-muted-foreground">Shares held</dt>
+                <dd className="tabular-nums">{wallet.shares.toString()}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Position value</dt>
+                <dd className="tabular-nums">{usdc(wallet.positionValue, 6)} USDC</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-muted-foreground">Account</dt>
+                <dd>{shortAddress(wallet.address)}</dd>
               </div>
             </dl>
           </>
         )}
 
-        {note ? <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{note}</p> : null}
+        {note ? <p className="mt-4 font-mono text-xs text-muted-foreground leading-relaxed">{note}</p> : null}
         {hash ? (
           <a
-            className="mt-2 inline-block text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            className="mt-2 inline-block font-mono text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
             href={`${EXPLORER_TX}/${hash}`}
             target="_blank"
             rel="noreferrer"
           >
-            See the receipt
+            View transaction
           </a>
         ) : null}
       </div>

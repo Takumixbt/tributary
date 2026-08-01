@@ -1,33 +1,23 @@
 import { formatUnits } from "viem";
 
 /**
- * Money on this page is written the way a person writes it. Six decimal places
- * are true but unreadable, so amounts round to cents unless they are genuinely
- * smaller than a cent, and the unit is spelled out rather than abbreviated.
+ * Amounts keep six decimals. This protocol settles sub-cent payments, so
+ * rounding to cents would hide the thing that makes it work.
  */
-export function usd(value: bigint): string {
-  const n = Number(formatUnits(value, 6));
-  if (n === 0) return "0.00";
-  if (n < 0.01) return n.toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
-  if (n < 1000) return n.toFixed(2);
-  return n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+export function usdc(value: bigint, decimals = 6): string {
+  return Number(formatUnits(value, 6)).toFixed(decimals);
 }
 
-/** A rate as a person says it: "19.6% a year". */
-export function yearlyRate(bps: number): string {
-  return `${(bps / 100).toFixed(1)}% a year`;
+/** Basis points as a percentage, two places. */
+export function pct(bps: number, decimals = 2): string {
+  return `${(bps / 100).toFixed(decimals)}%`;
 }
 
-/** A share as a person says it: "20% of every payment". */
-export function share(bps: number): string {
-  return `${Math.round(bps / 100)}%`;
+/** Share price is carried at 1e6, and moves in the sixth decimal. */
+export function sharePrice(value: bigint): string {
+  return Number(formatUnits(value, 6)).toFixed(6);
 }
 
-export function Amount({ value, className }: { value: bigint; className?: string }) {
-  return (
-    <span className={className}>
-      {usd(value)}
-      <span className="text-muted-foreground"> USDC</span>
-    </span>
-  );
+export function shortHash(value: string): string {
+  return `${value.slice(0, 10)}…${value.slice(-6)}`;
 }
