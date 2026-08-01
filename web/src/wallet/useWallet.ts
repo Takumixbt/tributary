@@ -85,7 +85,23 @@ export function useWallet() {
     connecting,
     connectError,
     disconnect,
-    switchToArc: () => switchChain({ chainId: ARC_CHAIN_ID }),
+    /**
+     * Move the wallet onto Arc, adding the network if it has never seen it.
+     * Without the add parameters a wallet that lacks Arc simply refuses, and
+     * the visitor is left on whatever chain they were already on. Gas on Arc is
+     * USDC, so a transaction signed on the wrong chain would spend that chain's
+     * native token instead. Nothing may be signed until this succeeds.
+     */
+    switchToArc: () =>
+      switchChain({
+        chainId: ARC_CHAIN_ID,
+        addEthereumChainParameter: {
+          chainName: arcTestnet.name,
+          nativeCurrency: arcTestnet.nativeCurrency,
+          rpcUrls: [...arcTestnet.rpcUrls.default.http],
+          blockExplorerUrls: [arcTestnet.blockExplorers.default.url],
+        },
+      }),
     switching,
     usdcBalance: (usdc.data as bigint | undefined) ?? 0n,
     shares: (shares.data as bigint | undefined) ?? 0n,

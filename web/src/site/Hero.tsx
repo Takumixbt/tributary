@@ -5,12 +5,16 @@ import { GlyphGlobe } from "./GlyphGlobe";
 
 const ANIMATED_WORD = "earn";
 
+/**
+ * One figure and one plain line each. No stacked caps label, because a mono
+ * shout under every number turned the strip into noise.
+ */
 const MARQUEE_STATS = [
-  { figure: "$0.000001", note: "Smallest payment settled", tag: "PAYMENTS" },
-  { figure: "20%", note: "Of each payment clears the loan", tag: "REPAYMENT" },
-  { figure: "268", note: "Credit score, up from 139", tag: "UNDERWRITING" },
-  { figure: "Sub-second", note: "Settlement on Arc", tag: "SPEED" },
-  { figure: "Live", note: "Deployed on testnet", tag: "STATUS" },
+  { figure: "$0.000001", note: "Smallest payment settled" },
+  { figure: "20%", note: "Of each payment clears the loan" },
+  { figure: "268", note: "Credit score, up from 139" },
+  { figure: "0.29", note: "USDC credit line, priced by the second" },
+  { figure: "3", note: "Contracts live on Arc testnet" },
 ];
 
 function GridField() {
@@ -41,12 +45,11 @@ function StatRun() {
   return (
     <div className="flex gap-16 shrink-0">
       {MARQUEE_STATS.map((stat) => (
-        <div key={stat.tag} className="flex items-baseline gap-4">
-          <span className="text-4xl lg:text-5xl font-display">{stat.figure}</span>
-          <span className="text-sm text-muted-foreground">
-            {stat.note}
-            <span className="block font-mono text-xs mt-1">{stat.tag}</span>
+        <div key={stat.note} className="flex items-baseline gap-4 shrink-0">
+          <span className="text-4xl lg:text-5xl font-display whitespace-nowrap">
+            {stat.figure}
           </span>
+          <span className="text-sm text-muted-foreground whitespace-nowrap">{stat.note}</span>
         </div>
       ))}
     </div>

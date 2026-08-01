@@ -13,11 +13,10 @@
  */
 
 import { useState, type ReactNode } from "react";
-import { useEventStream, useStats } from "../data";
-import { compactUsdc, formatRate, formatUsdc, padCount } from "../lib/format";
+import { useAgents, useEventStream, useStats } from "../data";
+import { formatUsdc, padCount } from "../lib/format";
 import { AgentRoster } from "./AgentRoster";
 import { EventLedger } from "./EventLedger";
-import { SplitTicker } from "./SplitTicker";
 import { UnderwriterFeed } from "./UnderwriterFeed";
 import { VaultPanel } from "./VaultPanel";
 import { FeaturedAgent } from "./FeaturedAgent";
@@ -36,6 +35,7 @@ function DeskStat({ label, value }: { label: string; value: ReactNode }) {
 
 export function DashboardPage() {
   const stats = useStats();
+  const agentCount = useAgents().length;
   const simulated = useEventStream().mode === "demo";
   const [activityOpen, setActivityOpen] = useState(false);
 
@@ -55,23 +55,12 @@ export function DashboardPage() {
           </p>
         </header>
 
+        {/* Three readings, not six. The rest of the numbers live in the panel
+            they belong to, where they have room to be read. */}
         <div className="desk-stats">
-          <DeskStat label="Payments per min" value={formatRate(stats.paymentsPerMin)} />
-          <DeskStat label="Gross volume" value={compactUsdc(stats.volumeTotal)} />
-          <DeskStat
-            label="Routed to vault"
-            value={formatUsdc(stats.routedToVault, { decimals: 4 })}
-          />
-          <DeskStat label="Agents live" value={padCount(stats.activeAgents)} />
-          <DeskStat label="Mean score" value={padCount(stats.avgScore)} />
-          <DeskStat
-            label="Smallest payment"
-            value={
-              stats.smallestPayment > 0n
-                ? formatUsdc(stats.smallestPayment, { decimals: 6 })
-                : "0.000000"
-            }
-          />
+          <DeskStat label="Routed to vault" value={formatUsdc(stats.routedToVault, { decimals: 4 })} />
+          <DeskStat label="Borrowers" value={padCount(agentCount)} />
+          <DeskStat label="Mean score" value={stats.avgScore > 0 ? padCount(stats.avgScore) : "000"} />
         </div>
 
         <div className="desk-grid">
@@ -90,9 +79,6 @@ export function DashboardPage() {
           </section>
           <section className="desk-cell desk-underwriter" aria-label="Underwriter decisions">
             <UnderwriterFeed />
-          </section>
-          <section className="desk-cell desk-ticker" aria-label="Split on receipt">
-            <SplitTicker />
           </section>
         </div>
 

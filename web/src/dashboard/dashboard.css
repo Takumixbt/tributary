@@ -59,7 +59,9 @@
 /* Six readings in a hairline grid. The gap is the border. */
 .desk-stats {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  /* Follows however many readings are shown, so the strip never reserves an
+   * empty column. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   background: var(--hair);
   border: 1px solid var(--hair);
@@ -101,7 +103,6 @@
 /* Every row sums to twelve, or the grid leaves a hole.
  *   row 1  vault 4    position 4   borrower 4
  *   row 2  loan book 8             underwriter 4
- *   row 3  split on receipt 12
  */
 .desk-vault {
   grid-column: span 4;

@@ -5,7 +5,7 @@ import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 
 import { erc20Abi, vaultWriteAbi } from "../data/chain/abi";
 import { ADDRESSES } from "../lib/env";
 import { ConnectButton } from "./ConnectButton";
-import { useWallet } from "./useWallet";
+import { ARC_CHAIN_ID, useWallet } from "./useWallet";
 
 type Mode = "deposit" | "withdraw";
 
@@ -73,6 +73,7 @@ export function LenderPanel() {
         if (current < parsed) {
           setStep("approving");
           const approveHash = await writeContractAsync({
+            chainId: ARC_CHAIN_ID,
             address: ADDRESSES.usdc,
             abi: erc20Abi,
             functionName: "approve",
@@ -85,6 +86,7 @@ export function LenderPanel() {
         }
         setStep("depositing");
         const depositHash = await writeContractAsync({
+          chainId: ARC_CHAIN_ID,
           address: vault,
           abi: vaultWriteAbi,
           functionName: "deposit",
@@ -94,6 +96,7 @@ export function LenderPanel() {
       } else {
         setStep("withdrawing");
         const withdrawHash = await writeContractAsync({
+          chainId: ARC_CHAIN_ID,
           address: vault,
           abi: vaultWriteAbi,
           functionName: "withdraw",
@@ -143,8 +146,14 @@ export function LenderPanel() {
         </div>
       ) : wallet.wrongNetwork ? (
         <div className="lender-connect">
-          <p className="lender-copy">This wallet is on another network.</p>
-          <ConnectButton />
+          <p className="lender-copy">
+            This wallet is on another network. Switch to Arc testnet before signing:
+            gas here is paid in USDC, and a transaction signed anywhere else would
+            spend that chain's own token and never reach the vault.
+          </p>
+          <button type="button" className="lender-submit" onClick={() => wallet.switchToArc()}>
+            {wallet.switching ? "Check your wallet" : "Switch to Arc testnet"}
+          </button>
         </div>
       ) : (
         <>

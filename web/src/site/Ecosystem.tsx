@@ -17,10 +17,11 @@ const ROW_TWO = [
 function Card({ name, role }: { name: string; role: string }) {
   return (
     <div className="shrink-0 px-8 py-6 border border-foreground/10 hover:border-foreground/30 hover:bg-foreground/[0.02] transition-all duration-300 group">
-      <div className="text-lg font-medium group-hover:translate-x-1 transition-transform">
+      {/* nowrap on both lines: a card that wraps mid-phrase reads as broken */}
+      <div className="text-lg font-medium whitespace-nowrap group-hover:translate-x-1 transition-transform">
         {name}
       </div>
-      <div className="text-sm text-muted-foreground">{role}</div>
+      <div className="text-sm text-muted-foreground whitespace-nowrap">{role}</div>
     </div>
   );
 }
