@@ -1,8 +1,7 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   useAccount,
   useBalance,
-  useChainId,
   useConnect,
   useDisconnect,
   useReadContract,
@@ -27,13 +26,47 @@ export function shortAddress(address?: string): string {
  * position in the vault is worth right now.
  */
 export function useWallet() {
-  const { address, isConnected, connector } = useAccount();
-  const chainId = useChainId();
+  // The wallet's own chain, not the config's. useChainId() falls back to the
+  // first configured chain when the wallet sits on one we do not list, which
+  // made a wallet on mainnet look like it was already on Arc: the form opened,
+  // and the write then failed at signing time instead of prompting a switch.
+  const { address, isConnected, connector, chainId } = useAccount();
   const { connectors, connect, isPending: connecting, error: connectError } = useConnect();
   const { disconnect } = useDisconnect();
   const { switchChain, isPending: switching } = useSwitchChain();
 
   const wrongNetwork = isConnected && chainId !== ARC_CHAIN_ID;
+
+  /**
+   * Move the wallet onto Arc, adding the network if it has never seen it.
+   * Without the add parameters a wallet that lacks Arc simply refuses, and the
+   * visitor is left on whatever chain they were already on. Gas on Arc is USDC,
+   * so a transaction signed elsewhere would spend that chain's native token.
+   */
+  const switchToArc = useCallback(() => {
+    switchChain({
+      chainId: ARC_CHAIN_ID,
+      addEthereumChainParameter: {
+        chainName: arcTestnet.name,
+        nativeCurrency: arcTestnet.nativeCurrency,
+        rpcUrls: [...arcTestnet.rpcUrls.default.http],
+        blockExplorerUrls: [arcTestnet.blockExplorers.default.url],
+      },
+    });
+  }, [switchChain]);
+
+  // Ask for Arc the moment a wallet turns up on the wrong chain, so the switch
+  // is the first thing that happens rather than a failure at signing time.
+  const asked = useRef(false);
+  useEffect(() => {
+    if (!wrongNetwork) {
+      asked.current = false;
+      return;
+    }
+    if (asked.current) return;
+    asked.current = true;
+    switchToArc();
+  }, [wrongNetwork, switchToArc]);
 
   // Gas balance is the same pool as USDC on Arc, read through the ERC-20 view.
   const usdc = useReadContract({
@@ -97,16 +130,7 @@ export function useWallet() {
      * USDC, so a transaction signed on the wrong chain would spend that chain's
      * native token instead. Nothing may be signed until this succeeds.
      */
-    switchToArc: () =>
-      switchChain({
-        chainId: ARC_CHAIN_ID,
-        addEthereumChainParameter: {
-          chainName: arcTestnet.name,
-          nativeCurrency: arcTestnet.nativeCurrency,
-          rpcUrls: [...arcTestnet.rpcUrls.default.http],
-          blockExplorerUrls: [arcTestnet.blockExplorers.default.url],
-        },
-      }),
+    switchToArc,
     switching,
     usdcBalance: (usdc.data as bigint | undefined) ?? 0n,
     shares: (shares.data as bigint | undefined) ?? 0n,

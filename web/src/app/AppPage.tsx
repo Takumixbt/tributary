@@ -85,11 +85,11 @@ export function AppPage() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-[1fr_380px] gap-10 lg:gap-14 items-start">
-          <div>
-            <div className="flex items-baseline justify-between mb-6">
+        <div className="grid min-w-0 lg:grid-cols-[minmax(0,1fr)_380px] gap-10 lg:gap-14 items-start">
+          <div className="min-w-0">
+            <div className="flex min-w-0 items-baseline justify-between gap-4 mb-6">
               <h2 className="text-2xl font-display">Credit lines</h2>
-              <span className="font-mono text-xs text-muted-foreground">
+              <span className="shrink-0 font-mono text-xs text-muted-foreground">
                 {agents.length} borrower{agents.length === 1 ? "" : "s"}
               </span>
             </div>
@@ -99,7 +99,7 @@ export function AppPage() {
                 No agents registered on this deployment yet.
               </p>
             ) : (
-              <div className="grid gap-4">
+              <div className="grid min-w-0 gap-4">
                 {agents.map((agent) => (
                   <BorrowerCard key={agent.address} agent={agent} />
                 ))}
@@ -122,13 +122,17 @@ export function AppPage() {
                     return (
                       <div
                         key={event.id}
-                        className="px-5 py-3 flex items-baseline justify-between gap-4 font-mono text-xs"
+                        className="min-w-0 px-4 sm:px-5 py-3 flex items-baseline gap-x-3 sm:gap-4 font-mono text-xs"
                       >
-                        <span className="w-40 shrink-0">
+                        <span className="sm:w-40 shrink-0">
                           {EVENT_LABEL[event.kind] ?? event.kind}
                         </span>
-                        <span className="flex-1 text-muted-foreground truncate">{who}</span>
-                        <span className="tabular-nums">{amount !== null ? usdc(amount, 6) : ""}</span>
+                        <span className="hidden sm:block min-w-0 flex-1 text-muted-foreground truncate">
+                          {who}
+                        </span>
+                        <span className="ml-auto shrink-0 tabular-nums">
+                          {amount !== null ? usdc(amount, 6) : ""}
+                        </span>
                         {tx ? (
                           <a
                             href={`${EXPLORER_TX}/${tx}`}
@@ -139,7 +143,7 @@ export function AppPage() {
                             tx
                           </a>
                         ) : (
-                          <span className="w-4 shrink-0" />
+                          <span className="hidden sm:block w-4 shrink-0" />
                         )}
                         <span className="text-muted-foreground shrink-0 tabular-nums">
                           {new Date(event.at).toLocaleTimeString([], {

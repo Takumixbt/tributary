@@ -90,11 +90,16 @@ export function Nav() {
               )}
             </div>
 
-            <button
-              className="md:hidden p-2"
-              aria-label="Toggle menu"
-              onClick={() => setMenuOpen((open) => !open)}
-            >
+            {onApp ? (
+              <div className="md:hidden">
+                <ConnectButton compact />
+              </div>
+            ) : (
+              <button
+                className="md:hidden p-2"
+                aria-label="Toggle menu"
+                onClick={() => setMenuOpen((open) => !open)}
+              >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -120,12 +125,13 @@ export function Nav() {
                   </>
                 )}
               </svg>
-            </button>
+              </button>
+            )}
           </div>
         </nav>
       </header>
 
-      <div
+      {!onApp ? <div
         className={`md:hidden fixed inset-0 bg-background z-40 transition-all duration-500 ${
           menuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
@@ -161,7 +167,7 @@ export function Nav() {
             </Link>
           </div>
         </div>
-      </div>
+      </div> : null}
     </>
   );
 }

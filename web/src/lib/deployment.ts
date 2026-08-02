@@ -24,19 +24,19 @@ export const DEPLOYED: Deployed[] = [
     key: "vault",
     name: "TributaryVault",
     role: "Holds lender USDC, prices lines per second, books interest",
-    address: ADDRESSES.vault ?? ("0xe13572efdfea23fe04f7cc81f98c083254a44ba8" as Address),
+    address: ADDRESSES.vault,
   },
   {
     key: "registry",
     name: "AgentRegistry",
     role: "Agent identity, router binding, the score of record",
-    address: ADDRESSES.registry ?? ("0x897e3607b3dc5229ed4052ed09af7f6a70ec6c22" as Address),
+    address: ADDRESSES.registry,
   },
   {
     key: "router",
     name: "RevenueRouter",
     role: "Splits every incoming payment until the debt clears",
-    address: ADDRESSES.router ?? ("0xF81EEE56be9Fd9d487A847f35CF4dfe563Eb778d" as Address),
+    address: ADDRESSES.router,
   },
 ];
 

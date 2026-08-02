@@ -68,7 +68,7 @@ export function Hero() {
 
   return (
     <section className="relative min-h-[145vh] flex flex-col overflow-hidden">
-      <div className="absolute right-0 top-1/3 -translate-y-1/2 w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] pointer-events-none">
+      <div className="absolute right-0 top-1/3 -translate-y-1/2 w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] pointer-events-none opacity-55 sm:opacity-75 lg:opacity-100">
         <GlyphGlobe />
       </div>
 

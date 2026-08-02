@@ -170,7 +170,7 @@ contract TributaryTest is Test {
         (uint256 debt,) = vault.debtInfo(agent);
         // 5 paid, all against interest first: principal 100, interest 5
         assertApproxEqAbs(debt, 105 * ONE, 2);
-        (, , uint128 principal, , , , ,) = vault.lines(agent);
+        (,, uint128 principal,,,,,) = vault.lines(agent);
         assertEq(principal, 100 * ONE);
     }
 
@@ -248,7 +248,7 @@ contract TributaryTest is Test {
     function test_underwriterPostsScore() public {
         vm.prank(underwriter);
         registry.setScore(agent, 742, "30d revenue consistent, 41 unique payers");
-        (, , uint32 score, ,) = registry.agents(agent);
+        (,, uint32 score,,) = registry.agents(agent);
         assertEq(score, 742);
 
         vm.expectRevert(AgentRegistry.NotUnderwriter.selector);

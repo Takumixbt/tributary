@@ -66,9 +66,27 @@ This is the same logic that makes unsecured consumer credit work, applied to bor
 
 ```
 contracts/   Solidity (Foundry): vault, registry, router + tests
-agents/      TypeScript: seller agent (x402), underwriter agent   [in progress]
-web/         Lender dashboard + live split visualization          [in progress]
+agents/      TypeScript: seller, buyer, keeper and underwriter agents
+web/         Live Arc loan book, lender actions and deterministic demo
 ```
+
+## Judge quickstart
+
+The web app reads the proven Arc testnet deployment with no environment setup.
+The deterministic pitch path is explicit and labelled:
+
+```bash
+pnpm install --frozen-lockfile
+pnpm check
+pnpm --filter @tributary/web dev
+```
+
+- Live Arc state: `http://127.0.0.1:5273/`
+- Deterministic demo: `http://127.0.0.1:5273/?demo=1&speed=4`
+- Three-minute runbook: [`DEMO.md`](./DEMO.md)
+
+Environment variables in `web/.env.example` are optional overrides for another
+deployment. The simulator is never an unlabelled fallback.
 
 ## Development
 
@@ -103,4 +121,8 @@ The full credit loop is proven on testnet with real transactions:
 
 ## Status
 
-Built for the Arc Programmable Money hackathon (Encode Club, 2026). Contracts deployed and tested, agent loop proven on testnet, dashboard in progress.
+Built for the Arc Programmable Money hackathon (Encode Club, 2026). Contracts
+are deployed and tested, the x402/Gateway credit loop is proven on Arc testnet,
+the live loan book reads the chain, and lenders can connect a wallet to deposit
+or withdraw testnet USDC. CI repeats the TypeScript build and all Foundry tests
+on every push and pull request.

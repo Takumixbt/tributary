@@ -22,10 +22,10 @@ contract AgentRegistry {
 
     struct AgentInfo {
         address router;
-        uint256 erc8004Id;   // ERC-8004 identity token id, 0 if unregistered
-        uint32 score;        // 0-1000 credit score set by the underwriter
+        uint256 erc8004Id; // ERC-8004 identity token id, 0 if unregistered
+        uint32 score; // 0-1000 credit score set by the underwriter
         uint64 scoredAt;
-        string metadataURI;  // what the agent does, service endpoint, etc.
+        string metadataURI; // what the agent does, service endpoint, etc.
     }
 
     IERC20 public immutable usdc;
@@ -53,13 +53,8 @@ contract AgentRegistry {
     function register(uint256 erc8004Id, string calldata metadataURI) external returns (address router) {
         if (agents[msg.sender].router != address(0)) revert AlreadyRegistered();
         router = address(new RevenueRouter(usdc, vault, msg.sender));
-        agents[msg.sender] = AgentInfo({
-            router: router,
-            erc8004Id: erc8004Id,
-            score: 0,
-            scoredAt: 0,
-            metadataURI: metadataURI
-        });
+        agents[msg.sender] =
+            AgentInfo({router: router, erc8004Id: erc8004Id, score: 0, scoredAt: 0, metadataURI: metadataURI});
         agentList.push(msg.sender);
         emit AgentRegistered(msg.sender, router, erc8004Id, metadataURI);
     }

@@ -4,11 +4,11 @@
  * Chain is the default and the simulator is the exception. The rule:
  *   ?demo=1            -> demo, and the dashboard says so on screen
  *   VITE_STREAM_MODE   -> explicit override, left blank in the shipped env
- *   otherwise          -> chain whenever the addresses are configured
- *   no addresses       -> demo, because there is nothing to read
+ *   otherwise          -> the live Arc testnet deployment
  *
- * The deployed .env carries the three live Arc testnet addresses, so a visitor
- * who does not ask for the simulator never sees it.
+ * The public testnet deployment is a source default, not a hosting-dashboard
+ * secret. Environment variables can override it for a new deployment, while a
+ * clean clone and a fresh preview still show judges the real protocol.
  */
 
 import type { Address, StreamMode } from "./types";
@@ -33,6 +33,14 @@ export const ARC_RPC_PRIMARY = "https://arc-testnet.drpc.org";
 export const ARC_RPC_SECONDARY = "";
 export const USDC_FALLBACK = "0x3600000000000000000000000000000000000000" as Address;
 
+/** The deployment proven in README.md. Public addresses are safe source defaults. */
+export const DEFAULT_ADDRESSES = {
+  vault: "0xe13572efdfea23fe04f7cc81f98c083254a44ba8" as Address,
+  registry: "0x897e3607b3dc5229ed4052ed09af7f6a70ec6c22" as Address,
+  router: "0xF81EEE56be9Fd9d487A847f35CF4dfe563Eb778d" as Address,
+  usdc: USDC_FALLBACK,
+} as const;
+
 function readEnv(key: string): string {
   const value = (import.meta.env as Record<string, string | undefined>)[key];
   return typeof value === "string" ? value.trim() : "";
@@ -50,10 +58,10 @@ function query(): URLSearchParams {
 const params = query();
 
 export const ADDRESSES = {
-  vault: asAddress(readEnv("VITE_VAULT_ADDRESS")),
-  registry: asAddress(readEnv("VITE_REGISTRY_ADDRESS")),
-  router: asAddress(readEnv("VITE_ROUTER_ADDRESS")),
-  usdc: asAddress(readEnv("VITE_USDC_ADDRESS")) ?? USDC_FALLBACK,
+  vault: asAddress(readEnv("VITE_VAULT_ADDRESS")) ?? DEFAULT_ADDRESSES.vault,
+  registry: asAddress(readEnv("VITE_REGISTRY_ADDRESS")) ?? DEFAULT_ADDRESSES.registry,
+  router: asAddress(readEnv("VITE_ROUTER_ADDRESS")) ?? DEFAULT_ADDRESSES.router,
+  usdc: asAddress(readEnv("VITE_USDC_ADDRESS")) ?? DEFAULT_ADDRESSES.usdc,
 } as const;
 
 export const RPC_URL = readEnv("VITE_ARC_RPC_URL") || ARC_RPC_PRIMARY;
