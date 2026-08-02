@@ -54,7 +54,7 @@ export function AppPage() {
           <div>
             <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-5">
               <span className="w-8 h-px bg-foreground/30" />
-              {simulated ? "Simulation" : "Arc testnet · chain 5042002"}
+              {simulated ? "Simulation" : "Arc testnet"}
             </span>
             <h1 className="text-4xl lg:text-5xl font-display tracking-tight">Loan book</h1>
           </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo } from "react";
 import {
   useAccount,
   useBalance,
@@ -55,19 +55,6 @@ export function useWallet() {
     });
   }, [switchChain]);
 
-  // Ask for Arc the moment a wallet turns up on the wrong chain, so the switch
-  // is the first thing that happens rather than a failure at signing time.
-  const asked = useRef(false);
-  useEffect(() => {
-    if (!wrongNetwork) {
-      asked.current = false;
-      return;
-    }
-    if (asked.current) return;
-    asked.current = true;
-    switchToArc();
-  }, [wrongNetwork, switchToArc]);
-
   // Gas balance is the same pool as USDC on Arc, read through the ERC-20 view.
   const usdc = useReadContract({
     address: ADDRESSES.usdc,
@@ -115,11 +102,6 @@ export function useWallet() {
     wrongNetwork,
     connectors: ready,
     connect,
-    /** Connect the only wallet present, so a chooser of one is never shown. */
-    connectFirst: () => {
-      const first = ready[0];
-      if (first) connect({ connector: first });
-    },
     connecting,
     connectError,
     disconnect,

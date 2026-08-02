@@ -4,7 +4,7 @@ import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 
 
 import { erc20Abi, vaultWriteAbi } from "../data/chain/abi";
 import { ADDRESSES } from "../lib/env";
-import { ARC_CHAIN_ID, shortAddress, useWallet } from "../wallet";
+import { ARC_CHAIN_ID, ConnectButton, shortAddress, useWallet } from "../wallet";
 import { usdc } from "./Money";
 
 type Mode = "add" | "take";
@@ -147,19 +147,12 @@ export function DepositCard() {
               Connect to supply USDC against agent revenue, or to redeem shares. Withdrawals
               are limited to idle liquidity.
             </p>
-            <button
-              type="button"
-              onClick={() => wallet.connectFirst()}
-              disabled={wallet.connecting}
-              className="w-full h-14 rounded-full bg-foreground text-background text-base font-medium disabled:opacity-50"
-            >
-              {wallet.connecting ? "Check your wallet" : "Connect wallet"}
-            </button>
+            <ConnectButton fullWidth />
           </>
         ) : wallet.wrongNetwork ? (
           <>
             <p className="font-mono text-xs text-muted-foreground leading-relaxed mb-6">
-              Wrong network. Arc testnet is chain 5042002 and gas is paid in USDC.
+              Wrong network. Switch to Arc testnet before signing. Gas on Arc is paid in USDC.
             </p>
             <button
               type="button"
