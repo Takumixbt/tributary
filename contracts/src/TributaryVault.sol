@@ -50,13 +50,13 @@ contract TributaryVault {
     uint256 public totalPrincipal;
 
     struct CreditLine {
-        address router;         // RevenueRouter enforcing repayment for this agent
-        uint128 limit;          // max outstanding principal
-        uint128 principal;      // outstanding principal
-        uint128 accruedInterest;// interest accrued but not yet paid
-        uint64 lastAccrual;     // timestamp of last interest accrual
-        uint16 aprBps;          // simple annual interest rate, basis points
-        uint16 repaymentBps;    // share of routed revenue that services the debt
+        address router; // RevenueRouter enforcing repayment for this agent
+        uint128 limit; // max outstanding principal
+        uint128 principal; // outstanding principal
+        uint128 accruedInterest; // interest accrued but not yet paid
+        uint64 lastAccrual; // timestamp of last interest accrual
+        uint16 aprBps; // simple annual interest rate, basis points
+        uint16 repaymentBps; // share of routed revenue that services the debt
         bool active;
     }
     mapping(address => CreditLine) public lines;
@@ -151,10 +151,7 @@ contract TributaryVault {
 
     /// @notice Resize or reprice a line. Setting limit below current principal
     ///         throttles further draws without forgiving existing debt.
-    function updateLine(address agent, uint128 limit, uint16 aprBps, uint16 repaymentBps)
-        external
-        onlyUnderwriter
-    {
+    function updateLine(address agent, uint128 limit, uint16 aprBps, uint16 repaymentBps) external onlyUnderwriter {
         CreditLine storage line = lines[agent];
         if (!line.active) revert LineNotActive();
         if (repaymentBps == 0 || repaymentBps > BPS) revert BadParams();

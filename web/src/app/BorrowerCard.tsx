@@ -26,9 +26,9 @@ export function BorrowerCard({ agent }: { agent: AgentState }) {
   const headroom = agent.limit > agent.debt ? agent.limit - agent.debt : 0n;
 
   return (
-    <div className="border border-foreground/10">
+    <div className="min-w-0 border border-foreground/10">
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 px-6 lg:px-8 py-5 border-b border-foreground/10">
-        <div className="flex items-baseline gap-4">
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-2">
           <h3 className="text-lg font-display">{agent.label}</h3>
           <a
             href={`${EXPLORER}/${agent.address}`}

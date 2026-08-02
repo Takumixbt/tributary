@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { GlyphGlobe } from "./GlyphGlobe";
+import { Marquee } from "../kinetic";
 
 const ANIMATED_WORD = "earn";
 
@@ -43,7 +44,7 @@ function GridField() {
 
 function StatRun() {
   return (
-    <div className="flex gap-16 shrink-0">
+    <div className="flex gap-16 pr-16 shrink-0">
       {MARQUEE_STATS.map((stat) => (
         <div key={stat.note} className="flex items-baseline gap-4 shrink-0">
           <span className="text-4xl lg:text-5xl font-display whitespace-nowrap">
@@ -68,7 +69,7 @@ export function Hero() {
 
   return (
     <section className="relative min-h-[145vh] flex flex-col overflow-hidden">
-      <div className="absolute right-0 top-1/3 -translate-y-1/2 w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] pointer-events-none">
+      <div className="absolute right-0 top-1/3 -translate-y-1/2 w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] pointer-events-none opacity-55 sm:opacity-75 lg:opacity-100">
         <GlyphGlobe />
       </div>
 
@@ -159,10 +160,9 @@ export function Hero() {
           mounted ? "opacity-100" : "opacity-0"
         }`}
       >
-        <div className="flex gap-16 marquee whitespace-nowrap">
+        <Marquee speed={30} label="Tributary proof points">
           <StatRun />
-          <StatRun />
-        </div>
+        </Marquee>
       </div>
     </section>
   );

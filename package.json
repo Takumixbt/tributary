@@ -2,6 +2,13 @@
   "name": "tributary",
   "private": true,
   "description": "Credit infrastructure for the agent economy on Arc",
+  "packageManager": "pnpm@11.17.0",
+  "scripts": {
+    "typecheck": "pnpm --filter @tributary/agents typecheck && pnpm --filter @tributary/web typecheck",
+    "build": "pnpm --filter @tributary/web build",
+    "test:contracts": "cd contracts && forge test",
+    "check": "pnpm typecheck && pnpm build && pnpm test:contracts"
+  },
   "engines": {
     "node": ">=22.6"
   }

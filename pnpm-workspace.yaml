@@ -1,6 +1,9 @@
 packages:
   - agents
   - web
+overrides:
+  axios@1.16.0: 1.19.0
+  ws@8.18.0: 8.21.1
 allowBuilds:
   # esbuild ships its platform binary through a postinstall script. Vite needs it.
   esbuild: true

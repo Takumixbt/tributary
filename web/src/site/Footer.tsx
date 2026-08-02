@@ -8,9 +8,9 @@ const COLUMNS = [
   {
     title: "Product",
     links: [
-      { label: "How it works", href: "#how-it-works" },
-      { label: "Risk", href: "#security" },
-      { label: "Contracts", href: "#protocol" },
+      { label: "How it works", href: "/#how-it-works" },
+      { label: "Risk", href: "/#security" },
+      { label: "Contracts", href: "/#protocol" },
     ],
   },
   {
